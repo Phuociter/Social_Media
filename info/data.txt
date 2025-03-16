@@ -1,0 +1,138 @@
+Tiêu đề:
+ Tổng hợp các bảng và mối quan hệ trong hệ thống Social Media
+Nội dung PDF:
+Bảng users
+
+
+Mục đích: Lưu trữ thông tin cá nhân của người dùng.
+Các cột chính:
+user_id: Khóa chính, định danh duy nhất.
+username: Tên đăng nhập (unique).
+email: Địa chỉ email (unique).
+password: Mật khẩu đã băm.
+screenName: Tên hiển thị.
+profileImage: Đường dẫn ảnh đại diện.
+profileCover: Đường dẫn ảnh bìa.
+bio: Thông tin giới thiệu.
+country: Quốc gia.
+website: Website cá nhân.
+role: Phân quyền (USER/ADMIN).
+phoneNumber: Số điện thoại.
+Quan hệ: Các bảng khác tham chiếu đến user.
+Bảng posts
+
+
+Mục đích: Lưu bài đăng của người dùng.
+Các cột chính:
+PostID: Khóa chính.
+UserID: Khóa ngoại từ users.
+content: Nội dung bài đăng.
+mediaType: Loại media (image, video, …).
+mediaURL: Đường dẫn file media.
+status: Trạng thái duyệt (pending/approved/rejected).
+likeCount: Số lượt thích.
+commentCount: Số bình luận.
+timestamp: Thời gian đăng bài.
+Quan hệ: Thuộc về user; có nhiều bình luận và lượt thích.
+Bảng comments
+
+
+Mục đích: Lưu bình luận dưới bài đăng.
+Các cột chính:
+CommentID: Khóa chính.
+PostID: Khóa ngoại đến posts.
+UserID: Khóa ngoại đến users.
+content: Nội dung bình luận.
+isEdited: Cờ đánh dấu đã chỉnh sửa.
+editTimestamp: Thời gian chỉnh sửa.
+timestamp: Thời gian tạo bình luận.
+Quan hệ: Mỗi bình luận thuộc về một bài đăng và một user.
+Bảng likes
+
+
+Mục đích: Ghi nhận lượt thích của người dùng.
+Các cột chính:
+LikeID: Khóa chính.
+PostID: Khóa ngoại đến posts (hoặc NULL nếu dành cho bình luận).
+CommentID: Khóa ngoại đến comments (hoặc NULL nếu dành cho bài đăng).
+UserID: Khóa ngoại từ users.
+timestamp: Thời gian like.
+Quan hệ: Liên kết posts/comments với người dùng.
+Bảng friendship
+
+
+Mục đích: Lưu quan hệ kết bạn hai chiều giữa các người dùng.
+Các cột chính:
+FriendshipID: Khóa chính.
+UserID1: Khóa ngoại từ users.
+UserID2: Khóa ngoại từ users.
+timestamp: Thời gian tạo quan hệ.
+acceptedAt: Thời gian xác nhận (tuỳ chọn).
+Quan hệ: Hai người dùng được liên kết qua bảng này.
+Bảng friend_request
+
+
+Mục đích: Lưu lời mời kết bạn chưa xử lý.
+Các cột chính:
+RequestID: Khóa chính.
+SenderID: Khóa ngoại, người gửi lời mời.
+ReceiverID: Khóa ngoại, người nhận lời mời.
+requestTime: Thời gian gửi.
+status: Trạng thái (pending/accepted/rejected).
+requestMessage: Lời nhắn kèm theo (tuỳ chọn).
+Quan hệ: Liên kết giữa hai người dùng.
+Bảng conversation
+
+
+Mục đích: Lưu thông tin về các cuộc trò chuyện (chat) giữa người dùng.
+Các cột chính:
+ConversationID: Khóa chính.
+conversationName: Tên cuộc trò chuyện (đối với nhóm chat).
+isGroup: Xác định chat nhóm hay 1-1.
+createdAt: Thời gian tạo.
+Quan hệ: Là bảng cha cho chat, liên kết với conversation_user và message.
+Bảng conversation_user
+
+
+Mục đích: Liên kết thành viên với cuộc trò chuyện.
+Các cột chính:
+ConversationID: Khóa ngoại đến conversation.
+UserID: Khóa ngoại đến users.
+roleInConversation: Vai trò của thành viên (OWNER, ADMIN, MEMBER).
+Quan hệ: Bảng liên kết giữa conversation và users.
+Bảng message
+
+
+Mục đích: Lưu tin nhắn trong các cuộc trò chuyện.
+Các cột chính:
+MessageID: Khóa chính.
+ConversationID: Khóa ngoại đến conversation.
+SenderID: Khóa ngoại đến users.
+messageContent: Nội dung tin nhắn.
+isRead: Đánh dấu tin đã đọc.
+timestamp: Thời gian gửi tin.
+Quan hệ: Tin nhắn thuộc về một cuộc trò chuyện và có người gửi.
+Bảng notification
+
+
+Mục đích: Gửi thông báo đến người dùng về các hoạt động như like, comment, friend_request, tin nhắn mới,…
+Các cột chính:
+NotificationID: Khóa chính.
+UserID: Khóa ngoại, người nhận thông báo.
+type: Loại thông báo.
+message: Nội dung thông báo.
+targetId: (Tuỳ chọn) ID của đối tượng gây thông báo.
+targetType: (Tuỳ chọn) Loại đối tượng (ví dụ: POST, COMMENT).
+isRead: Đánh dấu đã đọc.
+timestamp: Thời gian tạo thông báo.
+Quan hệ: Liên kết với user và tham chiếu đối tượng gây ra thông báo.
+Mối quan hệ giữa các bảng:
+users là trung tâm, liên kết với hầu hết các bảng khác.
+posts được tạo bởi người dùng và có nhiều bình luận, lượt thích.
+comments thuộc về bài đăng và người dùng.
+likes có thể áp dụng cho posts hoặc comments, liên kết với người dùng.
+friendship và friend_request quản lý quan hệ kết bạn giữa người dùng.
+conversation là cuộc trò chuyện (chat), trong đó conversation_user xác định thành viên tham gia và vai trò của họ.
+message lưu tin nhắn trong cuộc trò chuyện.
+notification gửi thông báo cho người dùng về các hoạt động trong hệ thống.
+
