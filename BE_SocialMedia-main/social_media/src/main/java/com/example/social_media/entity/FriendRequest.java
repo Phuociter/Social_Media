@@ -29,10 +29,6 @@ public class FriendRequest {
     @Column(nullable = false, length = 8)
     private Status status = Status.PENDING;
 
-    // MỚI: Lời nhắn kèm khi gửi yêu cầu (tuỳ chọn)
-    @Column(length = 255)
-    private String requestMessage;
-
     public enum Status {
         PENDING, ACCEPTED, REJECTED
     }

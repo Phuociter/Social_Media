@@ -43,10 +43,6 @@ public class User {
     @Column(length = 5, nullable = false)
     private Role role = Role.USER;
 
-    // MỚI: Lưu số điện thoại (tuỳ chọn)
-    @Column(length = 20)
-    private String phoneNumber;
-
     public enum Role {
         USER, ADMIN
     }
