@@ -24,14 +24,6 @@ public class Comment {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    // MỚI: Cờ đánh dấu đã chỉnh sửa (tuỳ chọn)
-    @Column(nullable = false)
-    private Boolean isEdited = false;
-
-    // MỚI: Thời gian chỉnh sửa cuối (tuỳ chọn)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date editTimestamp;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false, updatable = false)
     private Date timestamp = new Date();

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 16, 2025 lúc 08:28 PM
+-- Thời gian đã tạo: Th3 17, 2025 lúc 07:00 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.2.12
+-- Phiên bản PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -44,49 +44,6 @@ INSERT INTO `comments` (`CommentID`, `PostID`, `UserID`, `Content`, `Timestamp`)
 (2, 1, 3, 'Really insightful.', '2025-03-15 21:45:17'),
 (3, 2, 1, 'I love your design!', '2025-03-15 21:45:17'),
 (4, 3, 2, 'Thanks for sharing, Alex!', '2025-03-15 21:45:17');
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `conversation`
---
-
-CREATE TABLE `conversation` (
-  `ConversationID` int(11) NOT NULL,
-  `ConversationName` varchar(100) DEFAULT NULL,
-  `isGroup` tinyint(1) NOT NULL DEFAULT 0,
-  `CreatedAt` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `conversation`
---
-
-INSERT INTO `conversation` (`ConversationID`, `ConversationName`, `isGroup`, `CreatedAt`) VALUES
-(1, NULL, 0, '2025-03-15 21:45:17'),
-(2, 'Group Chat: Project Team', 0, '2025-03-15 21:45:17');
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `conversation_user`
---
-
-CREATE TABLE `conversation_user` (
-  `ConversationID` int(11) NOT NULL,
-  `UserID` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `conversation_user`
---
-
-INSERT INTO `conversation_user` (`ConversationID`, `UserID`) VALUES
-(1, 1),
-(1, 2),
-(2, 1),
-(2, 2),
-(2, 3);
 
 -- --------------------------------------------------------
 
@@ -156,31 +113,6 @@ INSERT INTO `likes` (`LikeID`, `PostID`, `CommentID`, `UserID`, `Timestamp`) VAL
 (2, NULL, 1, 3, '2025-03-15 21:45:17'),
 (3, 2, NULL, 1, '2025-03-15 21:45:17'),
 (4, NULL, 2, 1, '2025-03-15 21:45:17');
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `message`
---
-
-CREATE TABLE `message` (
-  `MessageID` int(11) NOT NULL,
-  `ConversationID` int(11) NOT NULL,
-  `SenderID` int(11) NOT NULL,
-  `MessageContent` text NOT NULL,
-  `isRead` tinyint(1) NOT NULL DEFAULT 0,
-  `Timestamp` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `message`
---
-
-INSERT INTO `message` (`MessageID`, `ConversationID`, `SenderID`, `MessageContent`, `isRead`, `Timestamp`) VALUES
-(1, 1, 1, 'Hi Jane, how are you?', 0, '2025-03-15 21:45:17'),
-(2, 1, 2, 'I am good, thanks John!', 0, '2025-03-15 21:45:17'),
-(3, 2, 1, 'Hello everyone, let\'s discuss the project.', 0, '2025-03-15 21:45:17'),
-(4, 2, 3, 'Sure, I have some ideas.', 0, '2025-03-15 21:45:17');
 
 -- --------------------------------------------------------
 
@@ -277,19 +209,6 @@ ALTER TABLE `comments`
   ADD KEY `UserID` (`UserID`);
 
 --
--- Chỉ mục cho bảng `conversation`
---
-ALTER TABLE `conversation`
-  ADD PRIMARY KEY (`ConversationID`);
-
---
--- Chỉ mục cho bảng `conversation_user`
---
-ALTER TABLE `conversation_user`
-  ADD PRIMARY KEY (`ConversationID`,`UserID`),
-  ADD KEY `UserID` (`UserID`);
-
---
 -- Chỉ mục cho bảng `friendship`
 --
 ALTER TABLE `friendship`
@@ -313,14 +232,6 @@ ALTER TABLE `likes`
   ADD KEY `PostID` (`PostID`),
   ADD KEY `CommentID` (`CommentID`),
   ADD KEY `UserID` (`UserID`);
-
---
--- Chỉ mục cho bảng `message`
---
-ALTER TABLE `message`
-  ADD PRIMARY KEY (`MessageID`),
-  ADD KEY `ConversationID` (`ConversationID`),
-  ADD KEY `SenderID` (`SenderID`);
 
 --
 -- Chỉ mục cho bảng `notification`
@@ -355,12 +266,6 @@ ALTER TABLE `comments`
   MODIFY `CommentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT cho bảng `conversation`
---
-ALTER TABLE `conversation`
-  MODIFY `ConversationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
 -- AUTO_INCREMENT cho bảng `friendship`
 --
 ALTER TABLE `friendship`
@@ -377,12 +282,6 @@ ALTER TABLE `friend_request`
 --
 ALTER TABLE `likes`
   MODIFY `LikeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT cho bảng `message`
---
-ALTER TABLE `message`
-  MODIFY `MessageID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `notification`
@@ -414,52 +313,11 @@ ALTER TABLE `comments`
   ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `conversation_user`
---
-ALTER TABLE `conversation_user`
-  ADD CONSTRAINT `conversation_user_ibfk_1` FOREIGN KEY (`ConversationID`) REFERENCES `conversation` (`ConversationID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `conversation_user_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
-
---
 -- Các ràng buộc cho bảng `friendship`
 --
 ALTER TABLE `friendship`
   ADD CONSTRAINT `friendship_ibfk_1` FOREIGN KEY (`UserID1`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `friendship_ibfk_2` FOREIGN KEY (`UserID2`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `friend_request`
---
-ALTER TABLE `friend_request`
-  ADD CONSTRAINT `friend_request_ibfk_1` FOREIGN KEY (`SenderID`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `friend_request_ibfk_2` FOREIGN KEY (`ReceiverID`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `likes`
---
-ALTER TABLE `likes`
-  ADD CONSTRAINT `likes_ibfk_1` FOREIGN KEY (`PostID`) REFERENCES `posts` (`PostID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `likes_ibfk_2` FOREIGN KEY (`CommentID`) REFERENCES `comments` (`CommentID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `likes_ibfk_3` FOREIGN KEY (`UserID`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `message`
---
-ALTER TABLE `message`
-  ADD CONSTRAINT `message_ibfk_1` FOREIGN KEY (`ConversationID`) REFERENCES `conversation` (`ConversationID`) ON DELETE CASCADE,
-  ADD CONSTRAINT `message_ibfk_2` FOREIGN KEY (`SenderID`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `notification`
---
-ALTER TABLE `notification`
-  ADD CONSTRAINT `notification_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `posts`
---
-ALTER TABLE `posts`
-  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
