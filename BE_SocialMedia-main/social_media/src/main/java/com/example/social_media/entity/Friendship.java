@@ -2,7 +2,6 @@ package com.example.social_media.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.util.Date;
 
 @Data
@@ -11,6 +10,7 @@ import java.util.Date;
 public class Friendship {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "FriendshipID")
     private Integer friendshipId;
 
     @ManyToOne
