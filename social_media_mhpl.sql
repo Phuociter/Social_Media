@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 17, 2025 lúc 07:00 PM
+-- Thời gian đã tạo: Th3 18, 2025 lúc 04:17 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -117,32 +117,6 @@ INSERT INTO `likes` (`LikeID`, `PostID`, `CommentID`, `UserID`, `Timestamp`) VAL
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `notification`
---
-
-CREATE TABLE `notification` (
-  `NotificationID` int(11) NOT NULL,
-  `UserID` int(11) NOT NULL,
-  `Type` varchar(50) NOT NULL,
-  `Message` text NOT NULL,
-  `targetID` int(11) DEFAULT NULL,
-  `targetType` varchar(50) DEFAULT NULL,
-  `IsRead` tinyint(1) DEFAULT 0,
-  `Timestamp` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `notification`
---
-
-INSERT INTO `notification` (`NotificationID`, `UserID`, `Type`, `Message`, `targetID`, `targetType`, `IsRead`, `Timestamp`) VALUES
-(1, 1, 'friend_request', 'You have a new friend request from Jane Smith.', NULL, NULL, 0, '2025-03-15 21:45:17'),
-(2, 2, 'post', 'Your post has been liked by Alex Lee.', NULL, NULL, 0, '2025-03-15 21:45:17'),
-(3, 3, 'comment', 'Jane Smith commented on your post.', NULL, NULL, 1, '2025-03-15 21:45:17');
-
--- --------------------------------------------------------
-
---
 -- Cấu trúc bảng cho bảng `posts`
 --
 
@@ -234,13 +208,6 @@ ALTER TABLE `likes`
   ADD KEY `UserID` (`UserID`);
 
 --
--- Chỉ mục cho bảng `notification`
---
-ALTER TABLE `notification`
-  ADD PRIMARY KEY (`NotificationID`),
-  ADD KEY `UserID` (`UserID`);
-
---
 -- Chỉ mục cho bảng `posts`
 --
 ALTER TABLE `posts`
@@ -282,12 +249,6 @@ ALTER TABLE `friend_request`
 --
 ALTER TABLE `likes`
   MODIFY `LikeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT cho bảng `notification`
---
-ALTER TABLE `notification`
-  MODIFY `NotificationID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `posts`
