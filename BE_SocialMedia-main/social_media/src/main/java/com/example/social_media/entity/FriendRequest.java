@@ -3,7 +3,7 @@ package com.example.social_media.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -11,6 +11,7 @@ import java.util.Date;
 public class FriendRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "RequestID") // tên cột trong DB
     private Integer requestId;
 
     @ManyToOne
@@ -21,9 +22,9 @@ public class FriendRequest {
     @JoinColumn(name = "ReceiverID", nullable = false)
     private User receiver;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false, updatable = false)
-    private Date requestTime = new Date();
+    @Column(name = "request_time", nullable = false, updatable = false, 
+            columnDefinition = "DATETIME(6) DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime requestTime;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 8)
@@ -33,4 +34,3 @@ public class FriendRequest {
         PENDING, ACCEPTED, REJECTED
     }
 }
-
