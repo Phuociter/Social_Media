@@ -11,11 +11,13 @@ import java.util.Date;
 public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "LikeID")
     private Integer likeId;
 
     @ManyToOne
     @JoinColumn(name = "PostID")
     private Post post;
+
 
     @ManyToOne
     @JoinColumn(name = "CommentID")
@@ -29,5 +31,3 @@ public class Like {
     @Column(nullable = false, updatable = false)
     private Date timestamp = new Date();
 }
-
-
