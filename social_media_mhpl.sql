@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 18, 2025 lúc 04:17 AM
+-- Thời gian đã tạo: Th3 28, 2025 lúc 08:28 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -55,17 +55,18 @@ CREATE TABLE `friendship` (
   `FriendshipID` int(11) NOT NULL,
   `UserID1` int(11) NOT NULL,
   `UserID2` int(11) NOT NULL,
-  `Timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+  `Timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `accepted_at` datetime(6) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `friendship`
 --
 
-INSERT INTO `friendship` (`FriendshipID`, `UserID1`, `UserID2`, `Timestamp`) VALUES
-(1, 1, 2, '2025-03-15 21:45:17'),
-(2, 1, 3, '2025-03-15 21:45:17'),
-(3, 2, 3, '2025-03-15 21:45:17');
+INSERT INTO `friendship` (`FriendshipID`, `UserID1`, `UserID2`, `Timestamp`, `accepted_at`) VALUES
+(1, 1, 2, '2025-03-15 21:45:17', NULL),
+(2, 3, 1, '2025-03-15 21:45:17', NULL),
+(3, 2, 3, '2025-03-15 21:45:17', NULL);
 
 -- --------------------------------------------------------
 
@@ -78,17 +79,39 @@ CREATE TABLE `friend_request` (
   `SenderID` int(11) NOT NULL,
   `ReceiverID` int(11) NOT NULL,
   `RequestTime` timestamp NOT NULL DEFAULT current_timestamp(),
-  `Status` enum('pending','accepted','rejected') DEFAULT 'pending'
+  `Status` enum('pending','accepted','rejected') DEFAULT 'pending',
+  `request_time` datetime(6) NOT NULL DEFAULT current_timestamp(6)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `friend_request`
 --
 
-INSERT INTO `friend_request` (`RequestID`, `SenderID`, `ReceiverID`, `RequestTime`, `Status`) VALUES
-(1, 2, 1, '2025-03-15 21:45:17', 'accepted'),
-(2, 3, 1, '2025-03-15 21:45:17', 'pending'),
-(3, 1, 3, '2025-03-15 21:45:17', 'rejected');
+INSERT INTO `friend_request` (`RequestID`, `SenderID`, `ReceiverID`, `RequestTime`, `Status`, `request_time`) VALUES
+(1, 2, 1, '2025-03-15 21:45:17', 'accepted', '2025-03-19 03:10:19.329017'),
+(2, 3, 2, '2025-03-15 21:45:17', 'pending', '2025-03-19 03:10:19.329017'),
+(3, 1, 3, '2025-03-15 21:45:17', 'rejected', '2025-03-19 03:10:19.329017');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `friend_suggestion`
+--
+
+CREATE TABLE `friend_suggestion` (
+  `suggestionid` int(11) NOT NULL,
+  `suggestion_time` datetime(6) NOT NULL DEFAULT current_timestamp(6),
+  `suggested_userid` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `friend_suggestion`
+--
+
+INSERT INTO `friend_suggestion` (`suggestionid`, `suggestion_time`, `suggested_userid`) VALUES
+(1, '2025-03-22 04:13:53.465490', 1),
+(2, '2025-03-22 04:13:53.465490', 2),
+(3, '2025-03-22 04:13:53.465490', 3);
 
 -- --------------------------------------------------------
 
@@ -101,18 +124,19 @@ CREATE TABLE `likes` (
   `PostID` int(11) DEFAULT NULL,
   `CommentID` int(11) DEFAULT NULL,
   `UserID` int(11) NOT NULL,
-  `Timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+  `Timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `post_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `likes`
 --
 
-INSERT INTO `likes` (`LikeID`, `PostID`, `CommentID`, `UserID`, `Timestamp`) VALUES
-(1, 1, NULL, 2, '2025-03-15 21:45:17'),
-(2, NULL, 1, 3, '2025-03-15 21:45:17'),
-(3, 2, NULL, 1, '2025-03-15 21:45:17'),
-(4, NULL, 2, 1, '2025-03-15 21:45:17');
+INSERT INTO `likes` (`LikeID`, `PostID`, `CommentID`, `UserID`, `Timestamp`, `post_id`) VALUES
+(1, 1, NULL, 2, '2025-03-15 21:45:17', NULL),
+(2, NULL, 1, 3, '2025-03-15 21:45:17', NULL),
+(3, 2, NULL, 1, '2025-03-15 21:45:17', NULL),
+(4, NULL, 2, 1, '2025-03-15 21:45:17', NULL);
 
 -- --------------------------------------------------------
 
@@ -129,17 +153,20 @@ CREATE TABLE `posts` (
   `status` enum('pending','approved','rejected') DEFAULT 'approved',
   `likeCount` int(11) NOT NULL DEFAULT 0,
   `commentCount` int(11) NOT NULL DEFAULT 0,
-  `Timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+  `Timestamp` timestamp NOT NULL DEFAULT current_timestamp(),
+  `comment_count` int(11) NOT NULL,
+  `like_count` int(11) NOT NULL,
+  `media_type` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `posts`
 --
 
-INSERT INTO `posts` (`PostID`, `UserID`, `Content`, `MediaType`, `MediaURL`, `status`, `likeCount`, `commentCount`, `Timestamp`) VALUES
-(1, 1, 'This is my first post on social media!', 'text', NULL, 'approved', 0, 0, '2025-03-15 21:45:17'),
-(2, 2, 'Loving the new design trends!', 'image', 'images/design_trend.jpg', 'approved', 0, 0, '2025-03-15 21:45:17'),
-(3, 3, 'Check out my latest marketing strategies.', 'text', NULL, 'approved', 0, 0, '2025-03-15 21:45:17');
+INSERT INTO `posts` (`PostID`, `UserID`, `Content`, `MediaType`, `MediaURL`, `status`, `likeCount`, `commentCount`, `Timestamp`, `comment_count`, `like_count`, `media_type`) VALUES
+(1, 1, 'This is my first post on social media!', 'text', NULL, 'approved', 0, 0, '2025-03-15 21:45:17', 0, 0, NULL),
+(2, 2, 'Loving the new design trends!', 'image', 'images/design_trend.jpg', 'approved', 0, 0, '2025-03-15 21:45:17', 0, 0, NULL),
+(3, 3, 'Check out my latest marketing strategies.', 'text', NULL, 'approved', 0, 0, '2025-03-15 21:45:17', 0, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -158,17 +185,20 @@ CREATE TABLE `users` (
   `bio` varchar(140) DEFAULT NULL,
   `country` varchar(255) DEFAULT NULL,
   `website` varchar(255) DEFAULT NULL,
-  `role` enum('user','admin') DEFAULT 'user'
+  `role` enum('user','admin') DEFAULT 'user',
+  `profile_cover` varchar(255) DEFAULT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
+  `screen_name` varchar(40) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `screenName`, `profileImage`, `profileCover`, `bio`, `country`, `website`, `role`) VALUES
-(1, 'john_doe', 'john@example.com', 'hashedpassword1', 'John Doe', 'images/john.jpg', 'images/john_cover.jpg', 'Developer and Blogger', 'USA', 'https://johndoe.com', 'user'),
-(2, 'jane_smith', 'jane@example.com', 'hashedpassword2', 'Jane Smith', 'images/jane.jpg', 'images/jane_cover.jpg', 'Designer and Photographer', 'UK', 'https://janesmith.com', 'user'),
-(3, 'alex_lee', 'alex@example.com', 'hashedpassword3', 'Alex Lee', 'images/alex.jpg', 'images/alex_cover.jpg', 'Digital Marketer', 'Canada', 'https://alexlee.ca', 'user');
+INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `screenName`, `profileImage`, `profileCover`, `bio`, `country`, `website`, `role`, `profile_cover`, `profile_image`, `screen_name`) VALUES
+(1, 'john_doe', 'john@example.com', 'hashedpassword1', 'John Doe', 'images/john.jpg', 'images/john_cover.jpg', 'Developer and Blogger', 'USA', 'https://johndoe.com', 'user', NULL, NULL, ''),
+(2, 'jane_smith', 'jane@example.com', 'hashedpassword2', 'Jane Smith', 'images/jane.jpg', 'images/jane_cover.jpg', 'Designer and Photographer', 'UK', 'https://janesmith.com', 'user', NULL, NULL, ''),
+(3, 'alex_lee', 'alex@example.com', 'hashedpassword3', 'Alex Lee', 'images/alex.jpg', 'images/alex_cover.jpg', 'Digital Marketer', 'Canada', 'https://alexlee.ca', 'user', NULL, NULL, '');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -199,13 +229,21 @@ ALTER TABLE `friend_request`
   ADD KEY `ReceiverID` (`ReceiverID`);
 
 --
+-- Chỉ mục cho bảng `friend_suggestion`
+--
+ALTER TABLE `friend_suggestion`
+  ADD PRIMARY KEY (`suggestionid`),
+  ADD KEY `FKfcsmy9mckd262a6am3tvky476` (`suggested_userid`);
+
+--
 -- Chỉ mục cho bảng `likes`
 --
 ALTER TABLE `likes`
   ADD PRIMARY KEY (`LikeID`),
   ADD KEY `PostID` (`PostID`),
   ADD KEY `CommentID` (`CommentID`),
-  ADD KEY `UserID` (`UserID`);
+  ADD KEY `UserID` (`UserID`),
+  ADD KEY `FKry8tnr4x2vwemv2bb0h5hyl0x` (`post_id`);
 
 --
 -- Chỉ mục cho bảng `posts`
@@ -245,6 +283,12 @@ ALTER TABLE `friend_request`
   MODIFY `RequestID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT cho bảng `friend_suggestion`
+--
+ALTER TABLE `friend_suggestion`
+  MODIFY `suggestionid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT cho bảng `likes`
 --
 ALTER TABLE `likes`
@@ -279,6 +323,34 @@ ALTER TABLE `comments`
 ALTER TABLE `friendship`
   ADD CONSTRAINT `friendship_ibfk_1` FOREIGN KEY (`UserID1`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `friendship_ibfk_2` FOREIGN KEY (`UserID2`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `friend_request`
+--
+ALTER TABLE `friend_request`
+  ADD CONSTRAINT `FKhp7fljfahqqi9peabfpcth2ry` FOREIGN KEY (`ReceiverID`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `FKmvpty05j78tvn14phc7mqkkvx` FOREIGN KEY (`SenderID`) REFERENCES `users` (`user_id`);
+
+--
+-- Các ràng buộc cho bảng `friend_suggestion`
+--
+ALTER TABLE `friend_suggestion`
+  ADD CONSTRAINT `FKfcsmy9mckd262a6am3tvky476` FOREIGN KEY (`suggested_userid`) REFERENCES `users` (`user_id`);
+
+--
+-- Các ràng buộc cho bảng `likes`
+--
+ALTER TABLE `likes`
+  ADD CONSTRAINT `FKalvqqqd3rgterjn6xrdg4dvh5` FOREIGN KEY (`CommentID`) REFERENCES `comments` (`CommentID`),
+  ADD CONSTRAINT `FKhtad8wmxkw770qkrkxnm5ijd8` FOREIGN KEY (`UserID`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `FKry8tnr4x2vwemv2bb0h5hyl0x` FOREIGN KEY (`post_id`) REFERENCES `posts` (`PostID`),
+  ADD CONSTRAINT `FKtedhkrww6dvgniujgrp0bc93s` FOREIGN KEY (`PostID`) REFERENCES `posts` (`PostID`);
+
+--
+-- Các ràng buộc cho bảng `posts`
+--
+ALTER TABLE `posts`
+  ADD CONSTRAINT `FKtc10cvjiaj3p7ldl526coc36a` FOREIGN KEY (`UserID`) REFERENCES `users` (`user_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

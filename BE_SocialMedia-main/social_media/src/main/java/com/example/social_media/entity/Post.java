@@ -11,6 +11,7 @@ import java.util.Date;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "PostID")
     private Integer postId;
 
     @ManyToOne
@@ -26,12 +27,10 @@ public class Post {
     @Column(length = 255)
     private String mediaURL;
 
-    // MỚI: Trạng thái duyệt bài (pending/approved/rejected) - tuỳ chọn
     @Enumerated(EnumType.STRING)
     @Column(length = 8, nullable = false)
     private Status status = Status.APPROVED;
 
-    // MỚI: Lưu sẵn số lượt thích/bình luận (nếu đã thêm cột trong DB)
     @Column(nullable = false)
     private Integer likeCount = 0;
 
@@ -46,5 +45,3 @@ public class Post {
         PENDING, APPROVED, REJECTED
     }
 }
-
-

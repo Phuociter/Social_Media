@@ -11,7 +11,9 @@ import java.util.Date;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "CommentID")
     private Integer commentId;
+
 
     @ManyToOne
     @JoinColumn(name = "PostID", nullable = false)
