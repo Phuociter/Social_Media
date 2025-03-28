@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import axios from "axios";
 import { useForm } from "react-hook-form";
 import { TbSocial } from "react-icons/tb";
 import { BsShare } from "react-icons/bs";
@@ -8,6 +9,7 @@ import { AiOutlineInteraction } from "react-icons/ai";
 import { ImConnection } from "react-icons/im";
 import { CustomButton, Loading, TextInput } from "../components";
 import { BgImage } from "../assets";
+import { UserLogin } from "../redux/userSlice";
 
 const Login = () => {
   const {
@@ -18,7 +20,45 @@ const Login = () => {
     mode: "onChange",
   });
 
-  const onSubmit = async (data) => {};
+  const navigate = useNavigate();
+  
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    try {
+      const response = await axios.post("http://localhost:8080/api/users/login", {
+        email: data.email,
+        password: data.password
+      });
+      console.log(response.data); 
+      dispatch(UserLogin(response.data));
+      console.log("UserLogin đã được dispatch");
+      setErrMsg({
+        status: "success",message: "Đăng nhập thành công!"
+      });
+      navigate("/Home");
+
+
+    } catch (error) {
+      if (error.response) {
+        setErrMsg({
+          status: "failed",
+          message: error.response.data.message || "Email hoặc mật khẩu không chính xác"
+        });
+      } else if (error.request) {
+        setErrMsg({
+          status: "failed",
+          message: "Không thể kết nối đến server. Vui lòng thử lại sau!"
+        });
+      } else {
+        setErrMsg({
+          status: "failed",
+          message: "Có lỗi xảy ra. Vui lòng thử lại!"
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const [errMsg, setErrMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -5,12 +5,13 @@ import { Home, Login, Profile, Register, ResetPassword } from "./pages";
 function Layout() {
   const { user } = useSelector((state) => state.user);
   const location = useLocation();
+  console.log("User:", user);          // Kiểm tra toàn bộ object user
+  console.log("User token:", user?.token); //
+  return user ?
+   <Outlet />
+    : 
+    <Navigate to='/login' state={{ from: location }} replace />;
 
-  return user?.token ? (
-    <Outlet />
-  ) : (
-    <Navigate to='/login' state={{ from: location }} replace />
-  );
 }
 
 function App() {
@@ -20,7 +21,7 @@ function App() {
     <div data-theme={theme} className='w-full min-h-[100vh]'>
       <Routes>
         <Route element={<Layout />}>
-          <Route path='/' element={<Home />} />
+          <Route path='/Home' element={<Home />} />
           <Route path='/profile/:id?' element={<Profile />} />
         </Route>
 
