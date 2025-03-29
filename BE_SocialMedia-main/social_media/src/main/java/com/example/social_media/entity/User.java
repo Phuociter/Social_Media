@@ -23,9 +23,6 @@ public class User {
     @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = false, length = 40)
-    private String screenName;
-
     @Column(length = 255)
     private String profileImage;
 
