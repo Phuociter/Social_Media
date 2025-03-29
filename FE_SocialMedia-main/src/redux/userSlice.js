@@ -1,8 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Khởi tạo state ban đầu, không sử dụng localStorage và không dùng dữ liệu mẫu từ asset
 const initialState = {
-  user: null,
+  user: JSON.parse(window?.localStorage.getItem("user")),
   edit: false,
 };
 

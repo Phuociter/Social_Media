@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 28, 2025 lúc 08:28 AM
+-- Thời gian đã tạo: Th3 29, 2025 lúc 07:54 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -179,26 +179,22 @@ CREATE TABLE `users` (
   `username` varchar(40) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `screenName` varchar(40) NOT NULL,
   `profileImage` varchar(255) NOT NULL,
   `profileCover` varchar(255) NOT NULL,
   `bio` varchar(140) DEFAULT NULL,
   `country` varchar(255) DEFAULT NULL,
   `website` varchar(255) DEFAULT NULL,
-  `role` enum('user','admin') DEFAULT 'user',
-  `profile_cover` varchar(255) DEFAULT NULL,
-  `profile_image` varchar(255) DEFAULT NULL,
-  `screen_name` varchar(40) NOT NULL
+  `role` enum('user','admin') DEFAULT 'user'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `screenName`, `profileImage`, `profileCover`, `bio`, `country`, `website`, `role`, `profile_cover`, `profile_image`, `screen_name`) VALUES
-(1, 'john_doe', 'john@example.com', 'hashedpassword1', 'John Doe', 'images/john.jpg', 'images/john_cover.jpg', 'Developer and Blogger', 'USA', 'https://johndoe.com', 'user', NULL, NULL, ''),
-(2, 'jane_smith', 'jane@example.com', 'hashedpassword2', 'Jane Smith', 'images/jane.jpg', 'images/jane_cover.jpg', 'Designer and Photographer', 'UK', 'https://janesmith.com', 'user', NULL, NULL, ''),
-(3, 'alex_lee', 'alex@example.com', 'hashedpassword3', 'Alex Lee', 'images/alex.jpg', 'images/alex_cover.jpg', 'Digital Marketer', 'Canada', 'https://alexlee.ca', 'user', NULL, NULL, '');
+INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `profileImage`, `profileCover`, `bio`, `country`, `website`, `role`) VALUES
+(1, 'john_doe', 'john@example.com', '123', 'images/john.jpg', 'images/john_cover.jpg', 'Developer and Blogger', 'USA', 'https://johndoe.com', 'user'),
+(2, 'jane_smith', 'jane@example.com', 'hashedpassword2', 'images/jane.jpg', 'images/jane_cover.jpg', 'Designer and Photographer', 'UK', 'https://janesmith.com', 'user'),
+(3, 'alex_lee', 'alex@example.com', 'hashedpassword3', 'images/alex.jpg', 'images/alex_cover.jpg', 'Digital Marketer', 'Canada', 'https://alexlee.ca', 'user');
 
 --
 -- Chỉ mục cho các bảng đã đổ
