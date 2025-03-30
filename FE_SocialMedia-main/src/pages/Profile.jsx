@@ -9,6 +9,7 @@ import {
   TopBar,
 } from "../components";
 import { posts } from "../assets/data";
+import { NoCover } from "../assets";
 
 const Profile = () => {
   const { id } = useParams();
@@ -27,16 +28,31 @@ const Profile = () => {
         <TopBar />
         <div className='w-full flex gap-2 lg:gap-4 md:pl-4 pt-5 pb-10 h-full'>
           {/* LEFT */}
-          <div className='hidden w-1/3 lg:w-1/4 md:flex flex-col gap-6 overflow-y-auto'>
-            <ProfileCard user={userInfo} />
+          {/*Thử dời vị trí của profìe care sang phân giữa để hợp lý hơn */}
+          <div className='hidden w-1/6 lg:w-1/7 md:flex flex-col gap-6 overflow-y-auto'>
+            {/*<ProfileCard user={userInfo} />
 
             <div className='block lg:hidden'>
               <FriendsCard friends={userInfo?.friends} />
-            </div>
+            </div>*/}
           </div>
 
           {/* CENTER */}
           <div className=' flex-1 h-full bg-orimary px-4 flex flex-col gap-6 overflow-y-auto'>
+            
+            {/*Load ảnh bìa */}
+            <img
+              src={user?.coverUrl ?? NoCover}
+              alt={user?.email}
+              className='w-[100%] h-[17.5rem] object-cover' 
+            />
+            {/*Vị trí mới của phần thông tin người dùng */}
+
+            <ProfileCard user={userInfo} />
+              <div className='block lg:hidden'>
+              <FriendsCard friends={userInfo?.friends} />
+              </div>
+
             {loading ? (
               <Loading />
             ) : posts?.length > 0 ? (
