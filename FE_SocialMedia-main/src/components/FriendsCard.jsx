@@ -1,42 +1,56 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { NoProfile } from "../assets";
+// src/components/FriendList.jsx
+import React, { useEffect, useState } from 'react';
+import FriendsCard from './FriendsCard';
+import { getFriendList, unfriend } from '../api/FriendAPI';
+import Loading from './Loading';
 
-const FriendsCard = ({ friends }) => {
+const FriendList = ({ currentUserId }) => {
+  const [friends, setFriends] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchFriends = async () => {
+    try {
+      const data = await getFriendList(currentUserId);
+      setFriends(data);
+    } catch (error) {
+      console.error('Error fetching friend list:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFriends();
+  }, [currentUserId]);
+
+  if (loading) return <Loading />;
+
   return (
     <div>
-      <div className='w-full bg-primary shadow-sm rounded-lg px-6 py-5'>
-        <div className='flex items-center justify-between text-ascent-1 pb-2 border-b border-[#66666645]'>
-          <span> Friends</span>
-          <span>{friends?.length}</span>
-        </div>
-
-        <div className='w-full flex flex-col gap-4 pt-4'>
-          {friends?.map((friend) => (
-            <Link
-              to={"/profile/" + friend?._id}
-              key={friend?._id}
-              className='w-full flex gap-4 items-center cursor-pointer'
-            >
-              <img
-                src={friend?.profileUrl ?? NoProfile}
-                alt={friend?.firstName}
-                className='w-10 h-10 object-cover rounded-full'
+      <h2>Danh sách bạn bè</h2>
+      {friends.length === 0 ? (
+        <p>Không có bạn bè nào.</p>
+      ) : (
+        <div className="friend-list">
+          {friends.map((friendship) => {
+            // Giả sử FriendsCard nhận prop "friend" chứa thông tin bạn bè.
+            // Nếu mối quan hệ lưu hai user, hãy xác định bạn là ai và bạn bè là user còn lại.
+            const friendId = friendship.userID1 === currentUserId ? friendship.userID2 : friendship.userID1;
+            return (
+              <FriendsCard
+                key={friendship.friendshipID}
+                friendId={friendId}
+                currentUserId={currentUserId}
+                onUnfriend={() => {
+                  unfriend(currentUserId, friendId).then(fetchFriends);
+                }}
               />
-              <div className='flex-1'>
-                <p className='text-base font-medium text-ascent-1'>
-                  {friend?.firstName} {friend?.lastName}
-                </p>
-                <span className='text-sm text-ascent-2'>
-                  {friend?.profession ?? "No Profession"}
-                </span>
-              </div>
-            </Link>
-          ))}
+            );
+          })}
         </div>
-      </div>
+      )}
     </div>
   );
 };
 
-export default FriendsCard;
+export default FriendList;

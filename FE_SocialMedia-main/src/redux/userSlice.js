@@ -1,8 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { user } from "../assets/data";
 
 const initialState = {
-  user: JSON.parse(window?.localStorage.getItem("user")) ?? user,
+  user: JSON.parse(window?.localStorage.getItem("user")),
   edit: false,
 };
 
@@ -12,33 +11,43 @@ const userSlice = createSlice({
   reducers: {
     login(state, action) {
       state.user = action.payload;
-      localStorage.setItem("user", JSON.stringify(action.payload));
+      // Không lưu vào localStorage
     },
     logout(state) {
       state.user = null;
-      localStorage?.removeItem("user");
+      // Không xóa dữ liệu từ localStorage
     },
     updateProfile(state, action) {
       state.edit = action.payload;
     },
   },
 });
+
 export default userSlice.reducer;
 
+// Action creator dùng để dispatch action đăng nhập với dữ liệu từ API
 export function UserLogin(user) {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch(userSlice.actions.login(user));
   };
 }
 
+// Nếu cần đăng ký, bạn phải định nghĩa reducer register trong slice, nếu không, loại bỏ UserRegister.
+export function UserRegister(user) {
+  return (dispatch) => {
+    // Giả sử bạn có reducer register, nếu không, loại bỏ function này.
+    dispatch(userSlice.actions.register(user));
+  };
+}
+
 export function Logout() {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch(userSlice.actions.logout());
   };
 }
 
 export function UpdateProfile(val) {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch(userSlice.actions.updateProfile(val));
   };
 }

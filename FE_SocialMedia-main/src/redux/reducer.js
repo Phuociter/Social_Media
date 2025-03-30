@@ -10,4 +10,5 @@ const rootReducer = combineReducers({
   posts: postSlice,
 });
 
+
 export { rootReducer };
