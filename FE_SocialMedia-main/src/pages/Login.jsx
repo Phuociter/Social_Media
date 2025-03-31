@@ -35,7 +35,7 @@ const Login = () => {
       setErrMsg({
         status: "success",message: "Đăng nhập thành công!"
       });
-      navigate("/Home");
+      navigate("/");
 
 
     } catch (error) {
