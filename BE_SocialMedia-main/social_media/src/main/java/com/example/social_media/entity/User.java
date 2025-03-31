@@ -23,23 +23,21 @@ public class User {
     @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = false, length = 40)
-    private String screenName;
+    @Column(length = 255)
+    private String profileImage = "";
+
 
     @Column(length = 255)
-    private String profileImage;
-
-    @Column(length = 255)
-    private String profileCover;
+    private String profileCover = "";
 
     @Column(length = 140)
-    private String bio;
+    private String bio = null;
 
     @Column(length = 255)
-    private String country;
+    private String country = null;
 
     @Column(length = 255)
-    private String website;
+    private String website = null;
 
     // MỚI: Quản lý phân quyền (user/admin)
     @Enumerated(EnumType.STRING)

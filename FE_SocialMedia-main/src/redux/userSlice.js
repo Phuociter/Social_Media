@@ -4,6 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   user: JSON.parse(window?.localStorage.getItem("user")),
   edit: false,
+
 };
 
 const userSlice = createSlice({
@@ -12,10 +13,16 @@ const userSlice = createSlice({
   reducers: {
     login(state, action) {
       state.user = action.payload;
+      window.localStorage.setItem("user", JSON.stringify(action.payload));
       // Không lưu vào localStorage
+    },
+    register(state, action) {
+      state.user = action.payload;
+      window.localStorage.setItem("user", JSON.stringify(action.payload));
     },
     logout(state) {
       state.user = null;
+      window.localStorage.removeItem("user");
       // Không xóa dữ liệu từ localStorage
     },
     updateProfile(state, action) {
@@ -26,7 +33,7 @@ const userSlice = createSlice({
 
 export default userSlice.reducer;
 
-// Action creator dùng để dispatch action đăng nhập với dữ liệu từ API
+// Action creator dùng để action đăng nhập với dữ liệu từ API
 export function UserLogin(user) {
   return (dispatch) => {
     dispatch(userSlice.actions.login(user));
@@ -35,8 +42,7 @@ export function UserLogin(user) {
 
 // Nếu cần đăng ký, bạn phải định nghĩa reducer register trong slice, nếu không, loại bỏ UserRegister.
 export function UserRegister(user) {
-  return (dispatch) => {
-    // Giả sử bạn có reducer register, nếu không, loại bỏ function này.
+  return (dispatch, getState) => {
     dispatch(userSlice.actions.register(user));
   };
 }

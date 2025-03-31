@@ -1,6 +1,7 @@
 package com.example.social_media.controller;
 
 
+import com.example.social_media.config.MessageResponse;
 import com.example.social_media.entity.User;
 import com.example.social_media.service.UserService;
 
@@ -23,6 +24,25 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        try {
+            
+            String email = user.getEmail();
+            String username = user.getUsername();
+            if(userService.getUserByEmail(email) != null || userService.getUserByUsername(username) != null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Email hoặc username đã tồn tại"));
+            }
+            User registeredUser = userService.registerUser(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new MessageResponse("Có lỗi xảy ra khi đăng ký"));
+        }
+            
+        
+        }
+    
+
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user) {
         try {
@@ -38,13 +58,11 @@ public class UserController {
             }
 
             User userLogin = userService.loginUser(email, password);
-            
             // Nếu đăng nhập thành công
             if (userLogin != null) {
                 userLogin.setPassword(null);
                 return ResponseEntity.ok(userLogin);
             }
-            
             return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new MessageResponse("Email hoặc mật khẩu không chính xác"));
@@ -72,20 +90,6 @@ public class UserController {
         userService.deleteUser(id);
     }
 
-    public class MessageResponse {
-        private String message;
     
-        public MessageResponse(String message) {
-            this.message = message;
-        }
-    
-        public String getMessage() {
-            return message;
-        }
-    
-        public void setMessage(String message) {
-            this.message = message;
-        }
-    }
 }
 
