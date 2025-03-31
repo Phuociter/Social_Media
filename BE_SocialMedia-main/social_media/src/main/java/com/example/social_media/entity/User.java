@@ -23,12 +23,11 @@ public class User {
     @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(length = 255)
-    private String profileImage = "";
+    @Column(nullable = true, length = 255)
+    private String profileimage = "";
 
-
-    @Column(length = 255)
-    private String profileCover = "";
+    @Column(nullable = true, length = 255)
+    private String profilecover = "";
 
     @Column(length = 140)
     private String bio = null;
@@ -44,13 +43,12 @@ public class User {
     @Column(length = 5, nullable = false)
     private Role role = Role.user;
 
-    // public enum Role {
-    //     user, admin
-    // }
 
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         User user = (User) o;
         return Objects.equals(userId, user.userId);
     }
@@ -59,5 +57,3 @@ public class User {
         return Objects.hash(userId);
     }
 }
-
-

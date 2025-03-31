@@ -30,6 +30,7 @@ public class UserService {
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+
     public User createUser(User user) {
         return userRepository.save(user);
     }
@@ -38,9 +39,10 @@ public class UserService {
         user.setRole(Role.user);
         return userRepository.save(user);
     }
+
     public User loginUser(String email, String password) {
         User user = userRepository.findByEmail(email);
-        
+
         if (user != null && user.getPassword().equals(password)) {
             return user;
         }
@@ -51,4 +53,3 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 }
-
