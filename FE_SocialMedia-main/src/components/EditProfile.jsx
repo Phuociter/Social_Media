@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { MdClose } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import TextInput from "./TextInput";
 import Loading from "./Loading";
 import CustomButton from "./CustomButton";
@@ -10,6 +11,8 @@ import { UpdateProfile } from "../redux/userSlice";
 const EditProfile = () => {
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Khởi tạo hook useNavigate
+
   const [errMsg, setErrMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [picture, setPicture] = useState(null);
@@ -23,11 +26,15 @@ const EditProfile = () => {
     defaultValues: { ...user },
   });
 
-  const onSubmit = async (data) => {};
-
-  const handleClose = () => {
-    dispatch(UpdateProfile(false));
+  const onSubmit = async (data) => {
+    // Xử lý submit form
   };
+
+  // Sửa hàm đóng modal: khi nhấn nút đóng quay lại trang trước đó
+  const handleClose = () => {
+    navigate(-1);
+  };
+
   const handleSelect = (e) => {
     setPicture(e.target.files[0]);
   };
@@ -54,7 +61,6 @@ const EditProfile = () => {
               >
                 Edit Profile
               </label>
-
               <button className='text-ascent-1' onClick={handleClose}>
                 <MdClose size={22} />
               </button>
@@ -85,7 +91,22 @@ const EditProfile = () => {
                 })}
                 error={errors.lastName ? errors.lastName?.message : ""}
               />
+              <TextInput
+                label='Screen Name (Optional)'
+                placeholder='Screen name'
+                type='screenname'
+                styles='w-full'
+                register={register("screenname")}
+              />
 
+              <TextInput
+                name='Bio'
+                label='Bio'
+                placeholder='Bio'
+                type='text'
+                styles='w-full'
+                register={register("bio")}
+              />
               <TextInput
                 name='profession'
                 label='Profession'
@@ -113,11 +134,26 @@ const EditProfile = () => {
                 className='flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer my-4'
                 htmlFor='imgUpload'
               >
+                Profile picture
                 <input
                   type='file'
-                  className=''
+                  className='profilePic'
                   id='imgUpload'
-                  onChange={(e) => handleSelect(e)}
+                  onChange={handleSelect}
+                  accept='.jpg, .png, .jpeg'
+                />
+              </label>
+
+              <label
+                className='flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer my-4'
+                htmlFor='imgUpload'
+              >
+                Cover Picture
+                <input
+                  type='file'
+                  className='coverPic'
+                  id='imgUpload'
+                  onChange={handleSelect}
                   accept='.jpg, .png, .jpeg'
                 />
               </label>
@@ -141,7 +177,7 @@ const EditProfile = () => {
                 ) : (
                   <CustomButton
                     type='submit'
-                    containerStyles={`inline-flex justify-center rounded-md bg-blue px-8 py-3 text-sm font-medium text-white outline-none`}
+                    containerStyles='inline-flex justify-center rounded-md bg-blue px-8 py-3 text-sm font-medium text-white outline-none'
                     title='Submit'
                   />
                 )}
