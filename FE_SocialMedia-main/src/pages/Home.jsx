@@ -30,9 +30,8 @@ import {
 import { posts } from "../assets/data";
 
 const Home = () => {
-  console.log("Home component rendered");
   const { user, edit } = useSelector((state) => state.user);
-
+  // console.log(user.userId);
   const [friendRequests, setFriendRequests] = useState([]);
   const [suggestedFriends, setSuggestedFriends] = useState([]);
   const [errMsg, setErrMsg] = useState("");
@@ -49,11 +48,13 @@ const Home = () => {
 
   // Gọi API lấy friendRequests và suggestedFriends khi component mount
   useEffect(() => {
-    if (user?._id) {
-      fetchFriendRequests(user._id);
-      fetchSuggestedFriends(user._id);
+    if (user?.userId) {
+      fetchFriendRequests(user.userId);
+      fetchSuggestedFriends(user.userId);
     }
-  }, [user?._id]);
+    else
+    console.log("User ID không tồn tại");
+  }, [user?.userId]);
 
   // Hàm gọi API để lấy danh sách friend requests
   const fetchFriendRequests = async (userId) => {
@@ -71,6 +72,7 @@ const Home = () => {
     try {
       const data = await getSuggestedFriends(userId);
       setSuggestedFriends(data);
+      console.log("Gợi ý bạn bè:", data);
     } catch (error) {
       console.error("Lỗi khi lấy gợi ý bạn bè:", error);
     }
@@ -82,7 +84,7 @@ const Home = () => {
       await acceptFriendRequest(requestId);
       // Xoá request khỏi danh sách
       setFriendRequests((prev) =>
-        prev.filter((req) => req._id !== requestId)
+        prev.filter((req) => req.requestId !== requestId)
       );
       alert("Đã chấp nhận lời mời kết bạn!");
     } catch (error) {
@@ -95,7 +97,7 @@ const Home = () => {
     try {
       await denyFriendRequest(requestId);
       setFriendRequests((prev) =>
-        prev.filter((req) => req._id !== requestId)
+        prev.filter((req) => req.requestId !== requestId)
       );
       alert("Đã từ chối lời mời kết bạn!");
     } catch (error) {
@@ -105,12 +107,16 @@ const Home = () => {
 
   // Gửi lời mời kết bạn (từ gợi ý)
   const handleAddFriend = async (receiverId) => {
+    if (!receiverId) {
+      console.error("Lỗi: receiverId không hợp lệ!");
+      return;
+    }
     try {
-      await sendFriendRequest(user?._id, receiverId);
+      await sendFriendRequest(user?.userId, receiverId);
       alert("Đã gửi lời mời kết bạn!");
       // Loại bỏ user này khỏi danh sách gợi ý
       setSuggestedFriends((prev) =>
-        prev.filter((f) => f._id !== receiverId)
+        prev.filter((f) => f.receiverId !== receiverId)
       );
     } catch (error) {
       console.error("Lỗi khi gửi lời mời kết bạn:", error);
@@ -259,27 +265,27 @@ const Home = () => {
             <div className='w-full bg-primary shadow-sm rounded-lg px-6 py-5'>
               <div className='flex items-center justify-between text-xl text-ascent-1 pb-2 border-b border-[#66666645]'>
                 <span> Friend Request</span>
-                <span>{friendRequests?.length}</span>
+                <span>{ friendRequests?.length}</span>
               </div>
 
               <div className='w-full flex flex-col gap-4 pt-4'>
                 {friendRequests?.map((request, index) => (
-                  <div key={request._id || index} className='flex items-center justify-between'>
+                  <div key={request.suggestedUser?.userId || index} className='flex items-center justify-between'>
                     <Link
-                      to={`/profile/${request.requestFrom?._id}`}
+                      to={`/profile/${request.suggestedUser?.userId}`}
                       className='w-full flex gap-4 items-center cursor-pointer'
                     >
                       <img
-                        src={request.requestFrom?.profileUrl ?? NoProfile}
-                        alt={request.requestFrom?.firstName}
+                        src={request.suggestedUser?.profileImage ?? NoProfile}
+                        alt={request.suggestedUser?.username}
                         className='w-10 h-10 object-cover rounded-full'
                       />
                       <div className='flex-1'>
                         <p className='text-base font-medium text-ascent-1'>
-                          {request.requestFrom?.firstName} {request.requestFrom?.lastName}
+                          {request.suggestedUser?.username}
                         </p>
                         <span className='text-sm text-ascent-2'>
-                          {request.requestFrom?.profession ?? "No Profession"}
+                          {request.suggestedUser?.username ?? "No Profession"}
                         </span>
                       </div>
                     </Link>
@@ -288,12 +294,12 @@ const Home = () => {
                       <CustomButton
                         title='Accept'
                         containerStyles='bg-[#0444a4] text-xs text-white px-1.5 py-1 rounded-full'
-                        onClick={() => handleAccept(request._id)}
+                        onClick={() => handleAccept(request.suggestedUser?.userId)}
                       />
                       <CustomButton
                         title='Deny'
                         containerStyles='border border-[#666] text-xs text-ascent-1 px-1.5 py-1 rounded-full'
-                        onClick={() => handleDeny(request._id)}
+                        onClick={() => handleDeny(request.suggestedUser?.userId)}
                       />
                     </div>
                   </div>
@@ -307,10 +313,10 @@ const Home = () => {
                 <span>Friend Suggestion</span>
               </div>
               <div className='w-full flex flex-col gap-4 pt-4'>
-                {suggestedFriends?.map((friend, index) => (
-                  <div className='flex items-center justify-between' key={friend._id || index}>
+                {suggestedFriends?.filter(friend => friend.suggestedUser.userId !== user.userId).map((friend, index) => (
+                  <div className='flex items-center justify-between' key={friend.suggestedUser.username || index}>
                     <Link
-                      to={`/profile/${friend?._id}`}
+                      to={`/profile/${friend?.receiverId}`}
                       className='w-full flex gap-4 items-center cursor-pointer'
                     >
                       <img
@@ -318,12 +324,12 @@ const Home = () => {
                         alt={friend?.firstName}
                         className='w-10 h-10 object-cover rounded-full'
                       />
-                      <div className='flex-1 '>
+                      <div className='flex-1'>
                         <p className='text-base font-medium text-ascent-1'>
                           {friend?.firstName} {friend?.lastName}
                         </p>
                         <span className='text-sm text-ascent-2'>
-                          {friend?.profession ?? "No Profession"}
+                          {friend?.suggestedUser.username ?? "No Profession"}
                         </span>
                       </div>
                     </Link>
@@ -331,7 +337,7 @@ const Home = () => {
                     <div className='flex gap-1'>
                       <button
                         className='bg-[#0444a430] text-sm text-white p-1 rounded'
-                        onClick={() => handleAddFriend(friend._id)}
+                        onClick={() => handleAddFriend(friend.suggestedUser.userId)}
                       >
                         <BsPersonFillAdd size={20} className='text-[#0f52b6]' />
                       </button>
@@ -340,6 +346,7 @@ const Home = () => {
                 ))}
               </div>
             </div>
+
           </div>
         </div>
       </div>
