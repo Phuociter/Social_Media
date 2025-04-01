@@ -31,7 +31,6 @@ const Login = () => {
       });
       console.log(response.data); 
       dispatch(UserLogin(response.data));
-      console.log("UserLogin đã được dispatch");
       setErrMsg({
         status: "success",message: "Đăng nhập thành công!"
       });
