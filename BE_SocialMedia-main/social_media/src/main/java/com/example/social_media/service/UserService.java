@@ -19,6 +19,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public long count() {
+        return userRepository.count();
+    }
+
     public Optional<User> getUserById(Integer userId) {
         return userRepository.findById(userId);
     }
@@ -31,15 +35,15 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public User createUser(User user) {
-        return userRepository.save(user);
+    public User getUserByStatus(String status) {
+        return userRepository.findByStatus(status);
     }
-
+    //Đăng ký
     public User registerUser(User user) {
         user.setRole(Role.user);
         return userRepository.save(user);
     }
-
+    //Đăng nhập
     public User loginUser(String email, String password) {
         User user = userRepository.findByEmail(email);
 
@@ -49,7 +53,26 @@ public class UserService {
         return null;
     }
 
-    public void deleteUser(Integer userId) {
-        userRepository.deleteById(userId);
+    //Cập nhật thông tin user
+    public User updateUser(Integer userId, User user) {
+        User existingUser = userRepository.findById(userId).orElse(null);
+        if (existingUser != null) {
+            existingUser.setUsername(user.getUsername());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setRole(user.getRole());
+            existingUser.setStatus(user.getStatus());
+            return userRepository.save(existingUser);
+        }
+        return null;
+    }
+
+    //Khóa tài khoản
+    public User blockUser(Integer userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+            user.setStatus("Blocked");
+            return userRepository.save(user);
+        }
+        return null;
     }
 }

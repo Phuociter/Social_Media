@@ -23,10 +23,10 @@ public class User {
     @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = true, length = 255)
+    @Column(nullable = false, length = 255)
     private String profileimage = "";
 
-    @Column(nullable = true, length = 255)
+    @Column(nullable = false, length = 255)
     private String profilecover = "";
 
     @Column(length = 140)
@@ -38,11 +38,13 @@ public class User {
     @Column(length = 255)
     private String website = null;
 
+    @Column(nullable = false, length = 255)
+    private String status = "active";
+
     // MỚI: Quản lý phân quyền (user/admin)
     @Enumerated(EnumType.STRING)
     @Column(length = 5, nullable = false)
     private Role role = Role.user;
-
 
     public boolean equals(Object o) {
         if (this == o)

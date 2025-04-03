@@ -13,5 +13,6 @@ public class UserDTO {
     private String profileImage;
     private String country;
     private String website;
+    private String status;
 }
 

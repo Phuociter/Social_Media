@@ -21,7 +21,7 @@ const Login = () => {
   });
 
   const navigate = useNavigate();
-  
+
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
@@ -29,12 +29,16 @@ const Login = () => {
         email: data.email,
         password: data.password
       });
-      console.log(response.data); 
+      console.log(response.data);
       dispatch(UserLogin(response.data));
       setErrMsg({
-        status: "success",message: "Đăng nhập thành công!"
+        status: "success", message: "Đăng nhập thành công!"
       });
-      navigate("/");
+      if (response.data.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
 
 
     } catch (error) {
@@ -120,11 +124,10 @@ const Login = () => {
 
             {errMsg?.message && (
               <span
-                className={`text-sm ${
-                  errMsg?.status == "failed"
-                    ? "text-[#f64949fe]"
-                    : "text-[#2ba150fe]"
-                } mt-0.5`}
+                className={`text-sm ${errMsg?.status == "failed"
+                  ? "text-[#f64949fe]"
+                  : "text-[#2ba150fe]"
+                  } mt-0.5`}
               >
                 {errMsg?.message}
               </span>

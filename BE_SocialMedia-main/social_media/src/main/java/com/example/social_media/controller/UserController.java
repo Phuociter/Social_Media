@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -23,6 +25,7 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    // Đăng ký
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
@@ -42,6 +45,7 @@ public class UserController {
 
     }
 
+    // Đăng nhập
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user) {
         try {
@@ -55,10 +59,18 @@ public class UserController {
                         .badRequest()
                         .body(new MessageResponse("Email và mật khẩu không được để trống"));
             }
-
             User userLogin = userService.loginUser(email, password);
             // Nếu đăng nhập thành công
+            // Kiểm tra status của user
             if (userLogin != null) {
+                if (userLogin.getStatus().equals("Blocked")) {
+                    return ResponseEntity
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .body(new MessageResponse("Tài khoản của bạn đã bị khóa"));
+
+                }
+                // Nếu đăng nhập thành công
+                // Xóa password
                 userLogin.setPassword(null);
                 return ResponseEntity.ok(userLogin);
             }
@@ -79,14 +91,15 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    @PutMapping("/block/{id}")
+    public void blockUser(@PathVariable Integer id) {
+        userService.blockUser(id);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Integer id) {
-        userService.deleteUser(id);
+    @PutMapping("/{id}")
+    public void updateUser(@PathVariable Integer id, @RequestBody User user) {
+        userService.updateUser(id, user);
+        System.out.println("User updated successfully");
     }
 
 }
