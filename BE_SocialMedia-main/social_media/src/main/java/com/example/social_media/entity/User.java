@@ -64,6 +64,10 @@ public class User {
     @JsonIgnore
     private List<Post> posts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Comment> comments = new ArrayList<>();
+
     public boolean equals(Object o) {
         if (this == o)
             return true;

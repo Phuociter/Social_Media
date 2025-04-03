@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   posts: [],
+  comments: {},
   loading: false,
   error: null
 
@@ -18,8 +19,8 @@ const postSlice = createSlice({
     },
     getPostsSuccess(state, action){
       console.log("Updating Redux state with:", action.payload);
-  state.posts = [...action.payload]; // Gán dữ liệu mới
-  state.loading = false;
+      state.posts = [...action.payload]; // Gán dữ liệu mới
+      state.loading = false;
     },
     getPostsFailed(state, action){
       state.loading = false;
@@ -43,6 +44,41 @@ const postSlice = createSlice({
         state.posts[index] = action.payload;
       }
     },
+
+    toggleLikeState(state, action){
+      const { postId, userId } = action.payload;
+      const post = state.posts.find((p) => p.postId === postId);
+      if (post) {
+        const likes = post.likes || [];
+        const isLiked = likes.some(like => like.userId === userId);
+        if (isLiked) {
+          post.likes = likes.filter(like => like.userId !== userId);
+          post.likeCount -= 1;
+        } else {
+          post.likes = [...likes, { userId, postId }];
+          post.likeCount += 1;
+        }
+      }
+    },
+
+    setCommentsState(state, action){
+      const { postId, comments } = action.payload;
+      state.comments[postId] = comments; // Lưu comments theo postId
+    },
+
+    addCommentState(state, action){
+      const {postId, comment} = action.payload;
+      if(!state.comments[postId]){
+        state.comments[postId] = [];
+      }
+      state.comments[postId].unshift(comment);
+
+      // Tăng số lượng cmt
+      const post = state.posts.find(p => p.postId === postId);;
+      if(post){
+        post.commentCount = (post.commentCount || 0) + 1;
+      }
+    }
   },
 });
 
@@ -52,7 +88,10 @@ export const{
   getPostsFailed, 
   addPost,
   deletePost,
-  updatePost
+  updatePost, 
+  toggleLikeState,
+  setCommentsState,
+  addCommentState,
 } = postSlice.actions;
 
 

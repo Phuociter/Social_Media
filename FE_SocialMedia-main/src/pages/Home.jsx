@@ -26,12 +26,33 @@ import {
   sendFriendRequest,
 } from "../api/FriendAPI";
 
+import { 
+  getPosts,
+  createPost,
+  editPost,
+  removePost,
+  commentPost,
+  sharePost,
+  toggleLikeAPI,
+ } from "../api/PostAPI";
+
+ import { 
+  getPostsStart, 
+  getPostsSuccess, 
+  getPostsFailed, 
+  addPost, 
+  deletePost, 
+  updatePost , 
+  toggleLikeState
+} from "../redux/postSlice";
+
 // Dữ liệu mock cho posts
 // import { posts } from "../assets/data";
 
 const Home = () => {
   const { user, edit } = useSelector((state) => state.user);
-  // console.log(user.userId);
+  console.log("userrrrr: ", user);
+  const userId = user?.userId;
   const [friendRequests, setFriendRequests] = useState([]);
   const [suggestedFriends, setSuggestedFriends] = useState([]);
   const [errMsg, setErrMsg] = useState("");
@@ -131,12 +152,12 @@ const Home = () => {
     }
   };
 
-  // Hàm handle post (chưa có API nên để trống)
-  const handlePostSubmit = async (data) => {
-    console.log("Nội dung post:", data);
-    console.log("File:", file);
-    // Gọi API post nếu có
-  };
+  // // Hàm handle post (chưa có API nên để trống)
+  // const handlePostSubmit = async (data) => {
+  //   console.log("Nội dung post:", data);
+  //   console.log("File:", file);
+  //   // Gọi API post nếu có
+  // };
 
   //Post
 
@@ -293,14 +314,16 @@ const Home = () => {
 
             {loading ? (
               <Loading />
-            ) : posts?.length > 0 ? (
-              posts?.map((post, index) => (
+            ) : posts.length > 0 ? (
+              [...posts]
+              .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sắp xếp giảm dần theo timestamp
+              .map((post, index) => (
                 <PostCard
                   key={post.postId || index}
                   post={post}
                   user={user}
-                  deletePost={() => {}}
-                  likePost={() => {}}
+                  deletePost={() => handleDeletePost(post.postId)}
+                  likePost={() => handleLikePost(post.postId)}
                 />
               ))
             ) : (
