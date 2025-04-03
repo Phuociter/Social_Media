@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   TopBar,
@@ -27,7 +27,7 @@ import {
 } from "../api/FriendAPI";
 
 // Dữ liệu mock cho posts
-import { posts } from "../assets/data";
+// import { posts } from "../assets/data";
 
 const Home = () => {
   const { user, edit } = useSelector((state) => state.user);
@@ -36,13 +36,21 @@ const Home = () => {
   const [suggestedFriends, setSuggestedFriends] = useState([]);
   const [errMsg, setErrMsg] = useState("");
   const [file, setFile] = useState(null);
+  const dispatch = useDispatch();
+  const {posts = [], loading = false} = useSelector((state)=>state.posts || {});
   const [posting, setPosting] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
+  // const [posts, setPosts] = useState([]);
+  const [content, setContent] = useState("");
+  const [editPostId, setEditPostId] = useState(null);
+  const [commentText, setCommentText] = useState("");
 
   // React Hook Form
   const {
     register,
     handleSubmit,
+    setValue,
+    reset,
     formState: { errors },
   } = useForm();
 
@@ -130,6 +138,62 @@ const Home = () => {
     // Gọi API post nếu có
   };
 
+  //Post
+
+  // Lấy danh sách bài viết khi trang đang load
+  useEffect(() => {
+    const fetchPosts = async () => {
+      if (!userId) return;
+      dispatch(getPostsStart());
+  
+      try {
+        const data = await getPosts(userId);
+        dispatch(getPostsSuccess(data));
+      } catch (err) {
+        dispatch(getPostsFailed(err.message));
+      }
+    };
+  
+    fetchPosts();
+  }, [dispatch, userId]); 
+  
+  // Tạo bài viết 
+  const handlePostSubmit = async () => {
+    try{
+      
+      const newPost = await createPost(user.userId, content, file);
+      dispatch(addPost(newPost));
+      console.log(newPost);
+      setContent('');
+      reset({ description: '' }); // Reset giá trị của ô input
+      setFile(null);
+      setErrMsg(null);
+    }catch(err){
+      setErrMsg({message: "Failed to post!", status: "failed"});
+    }
+  };
+
+  // Xóa bài viết
+  const handleDeletePost = async (postId) => {
+    try{
+      await removePost(postId);
+      dispatch(deletePost(postId));
+    }catch(err){
+      alert("Failed to delete post!");
+    }
+  };
+
+  // Like/unlike
+  const handleLikePost  = async(postId) => {
+    try{  
+      dispatch(toggleLikeState({postId, userId: userId}));
+      await toggleLikeAPI(postId, userId);
+    }
+    catch(err){
+      dispatch(toggleLikeState({postId, userId: userId}));
+      console.error("Like failed: ", err);
+    }
+  }
   return (
     <>
       <div className='w-full px-0 lg:px-10 pb-20 2xl:px-40 bg-bgColor lg:rounded-lg h-screen overflow-hidden'>
@@ -160,6 +224,7 @@ const Home = () => {
                   name='description'
                   register={register("description", {
                     required: "Write something about post",
+                    onChange: (e) => setContent(e.target.value) // Cập nhật state content
                   })}
                   error={errors.description ? errors.description.message : ""}
                 />
@@ -210,21 +275,7 @@ const Home = () => {
                   <span>Video</span>
                 </label>
 
-                <label
-                  className='flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer'
-                  htmlFor='vgifUpload'
-                >
-                  <input
-                    type='file'
-                    data-max-size='5120'
-                    onChange={(e) => setFile(e.target.files[0])}
-                    className='hidden'
-                    id='vgifUpload'
-                    accept='.gif'
-                  />
-                  <BsFiletypeGif />
-                  <span>Gif</span>
-                </label>
+                
 
                 <div>
                   {posting ? (
@@ -245,7 +296,7 @@ const Home = () => {
             ) : posts?.length > 0 ? (
               posts?.map((post, index) => (
                 <PostCard
-                  key={post?._id || index}
+                  key={post.postId || index}
                   post={post}
                   user={user}
                   deletePost={() => {}}

@@ -1,9 +1,20 @@
 package com.example.social_media.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
-
 import java.util.Date;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.Data;
 
 @Data
 @Entity
@@ -29,7 +40,7 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 8, nullable = false)
-    private Status status = Status.APPROVED;
+    private Status status = Status.approved;
 
     @Column(nullable = false)
     private Integer likeCount = 0;
@@ -42,6 +53,7 @@ public class Post {
     private Date timestamp = new Date();
 
     public enum Status {
-        PENDING, APPROVED, REJECTED
+        pending, approved, rejected;
     }
+
 }
