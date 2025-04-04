@@ -1,7 +1,8 @@
 import { Outlet, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Home, Login, Profile, Register, ResetPassword, Dashboard, Team, Form, UserManagement } from "./pages";
+import { Home, Login, Profile, Register, ResetPassword, Dashboard, Team, UserManagement, PostManagement } from "./pages";
 import Admin from "./admin/admin";
+
 
 function Layout() {
   const { user } = useSelector((state) => state.user);
@@ -17,7 +18,7 @@ function Layout() {
   )
 }
 
-function App() {
+function App() {  
   const { theme } = useSelector((state) => state.theme);
   return (
     <div data-theme={theme} className='w-full min-h-[100vh]'>
@@ -30,7 +31,7 @@ function App() {
             <Route path='dashboard' element={<Dashboard />} />
             <Route path='UserManagement' element={<UserManagement />} />
             <Route path='Team' element={<Team />} />
-            <Route path='Form' element={<Form />} />
+            <Route path='PostManagement' element={<PostManagement />} />  
           </Route>
           
         </Route>
@@ -44,3 +45,4 @@ function App() {
 }
 
 export default App;
+  

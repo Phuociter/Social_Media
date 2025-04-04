@@ -58,10 +58,6 @@ const Register = () => {
     } finally {
       setIsSubmitting(false);
     }
-
-
-
-
   };
 
   const [errMsg, setErrMsg] = useState("");

@@ -19,14 +19,16 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";  
+import { useNavigate } from "react-router-dom"; 
+
 
 const Topbar = ({ setIsSidebar }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
   const [anchorEl, setAnchorEl] = useState(null);
-
+  const navigate = useNavigate();
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -36,6 +38,11 @@ const Topbar = ({ setIsSidebar }) => {
     setAnchorEl(null);
   };
 
+  const logout = () => {
+    localStorage.removeItem('user');
+    navigate("/login");
+  };
+  
   return (
     <Box 
       display="flex" 
@@ -56,26 +63,7 @@ const Topbar = ({ setIsSidebar }) => {
         <MenuOutlinedIcon />
       </IconButton>
 
-      {/* SEARCH BAR */}
-      <Box
-        display="flex"
-        backgroundColor={colors.primary[400]}
-        borderRadius="8px"
-        width="300px"
-        alignItems="center"
-        px={2}
-      >
-        <SearchIcon sx={{ color: colors.grey[100], mr: 1 }} />
-        <InputBase 
-          placeholder="Tìm kiếm..." 
-          sx={{ 
-            color: colors.grey[100],
-            '& .MuiInputBase-input': {
-              p: 1,
-            }
-          }} 
-        />
-      </Box>
+      
 
       {/* ICONS */}
       <Box display="flex" alignItems="center" gap={1}>
@@ -127,7 +115,7 @@ const Topbar = ({ setIsSidebar }) => {
         >
           <MenuItem onClick={handleClose}>Hồ sơ</MenuItem>
           <MenuItem onClick={handleClose}>Cài đặt</MenuItem>
-          <MenuItem onClick={handleClose}>Đăng xuất</MenuItem>
+          <MenuItem onClick={logout}>Đăng xuất</MenuItem>
         </Menu>
 
         {/* Notifications Menu */}

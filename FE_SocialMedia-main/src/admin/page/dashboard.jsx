@@ -164,16 +164,6 @@ const Dashboard = () => {
           alignItems="center"
           justifyContent="center"
         >
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            mt="25px"
-          >
-            <Button variant="contained" color="primary">
-              Thêm bài viết
-            </Button>
-          </Box>
         </Box>
       </Box>
     </Box>

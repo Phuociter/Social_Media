@@ -23,11 +23,8 @@ import { CssBaseline, ThemeProvider, Box } from "@mui/material";
 // Local imports
 import { ColorModeContext, useMode } from "./theme";
 import Topbar from "./component/Topbar";
-import Sidebar from "./component/Sidebar";
-import Dashboard from "./page/dashboard";
-import UserManagement from './page/UserManagement';
-import Team from './page/team';
-import Form from './page/form';
+import Sidebar from "./component/Sidebar";  
+
 
 /**
  * Admin Component

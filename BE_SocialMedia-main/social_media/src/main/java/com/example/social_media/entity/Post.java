@@ -29,7 +29,7 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 8, nullable = false)
-    private Status status = Status.APPROVED;
+    private Status status = Status.approved;
 
     @Column(nullable = false)
     private Integer likeCount = 0;
@@ -42,6 +42,6 @@ public class Post {
     private Date timestamp = new Date();
 
     public enum Status {
-        PENDING, APPROVED, REJECTED
+        pending, approved, rejected
     }
 }

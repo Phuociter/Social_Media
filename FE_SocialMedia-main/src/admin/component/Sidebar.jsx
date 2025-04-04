@@ -20,7 +20,7 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect } from "react";  
 
 /**
  * Component Item - Hiển thị một mục menu đơn lẻ
@@ -217,8 +217,8 @@ const Sidebar = ({ isSidebar }) => {
               setSelected={setSelected}
             />
             <Item
-              title="Form"
-              to="/admin/form"
+              title="Post Management"
+              to="/admin/PostManagement"
               icon={<ArticleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
