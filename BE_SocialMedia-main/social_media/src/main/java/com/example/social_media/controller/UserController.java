@@ -63,7 +63,7 @@ public class UserController {
             // Nếu đăng nhập thành công
             // Kiểm tra status của user
             if (userLogin != null) {
-                if (userLogin.getStatus().equals("Blocked")) {
+                if (userLogin.getStatus().equals(0)) {
                     return ResponseEntity
                             .status(HttpStatus.UNAUTHORIZED)
                             .body(new MessageResponse("Tài khoản của bạn đã bị khóa"));

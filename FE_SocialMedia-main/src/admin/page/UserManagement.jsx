@@ -250,7 +250,7 @@ const UserManagement = () => {
     // Lọc users dựa trên trạng thái
     if (searchParams.status !== 'all') {
       filtered = filtered.filter(user =>
-        user.status.toLowerCase() === searchParams.status.toLowerCase()
+        user.status === parseInt(searchParams.status)
       );
     }
 
@@ -267,13 +267,13 @@ const UserManagement = () => {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3  }}>
       {/* Tiêu đề */}
       <Typography variant="h4" gutterBottom>
         Quản lý người dùng
       </Typography>
       {/* Form tìm kiếm */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mb: 2 }}>
         {/* Input tìm kiếm theo tên */}
         <TextField
           label="Tìm theo tên"
@@ -305,8 +305,8 @@ const UserManagement = () => {
             onChange={handleSearchChange}
           >
             <MenuItem value="all">Tất cả</MenuItem>
-            <MenuItem value="active">Hoạt động</MenuItem>
-            <MenuItem value="blocked">Đã khóa</MenuItem>
+            <MenuItem value="0">Hoạt động</MenuItem>
+            <MenuItem value="1">Đã khóa</MenuItem>
           </Select>
         </FormControl>
       </Box>

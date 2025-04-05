@@ -70,7 +70,7 @@ public class UserService {
     public User blockUser(Integer userId) {
         User user = userRepository.findById(userId).orElse(null);
         if (user != null) {
-            user.setStatus(1);  
+            user.setStatus(0);  
             return userRepository.save(user);
         }
         return null;
