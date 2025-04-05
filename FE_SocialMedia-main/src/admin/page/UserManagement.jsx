@@ -305,8 +305,8 @@ const UserManagement = () => {
             onChange={handleSearchChange}
           >
             <MenuItem value="all">Tất cả</MenuItem>
-            <MenuItem value="0">Hoạt động</MenuItem>
-            <MenuItem value="1">Đã khóa</MenuItem>
+            <MenuItem value="1">Hoạt động</MenuItem>
+            <MenuItem value="0">Đã khóa</MenuItem>
           </Select>
         </FormControl>
       </Box>

@@ -1,16 +1,13 @@
 /**
- * Form/index.jsx - Trang tạo mới người dùng
+ * PostManagement.jsx - Trang quản lý bài viết
  * 
  * Chức năng:
- * - Form tạo mới thông tin người dùng
- * - Các trường thông tin:
- *   + Họ
- *   + Tên
- *   + Email
- *   + Số điện thoại
- * - Sử dụng Formik để quản lý form
- * - Sử dụng Yup để validate dữ liệu
- * - Responsive trên các thiết bị di động
+ * - Hiển thị danh sách bài viết
+ * - Tìm kiếm và lọc bài viết theo:
+ *   + Nội dung
+ *   + Loại media
+ *   + Trạng thái
+ * - Chỉnh sửa và xóa bài viết
  */
 
 import { Box, Button, TextField, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, Typography, IconButton } from "@mui/material";  
@@ -23,12 +20,20 @@ import { useTheme } from "@mui/material/styles";
 import { tokens } from "../theme";
 import axios from "axios";
 import { useState, useEffect } from "react";
-  const PostManagement = () => {
+
+const PostManagement = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
   const [posts, setPosts] = useState([]);
-  //Lấy danh sách bài viết
+  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [searchParams, setSearchParams] = useState({
+    name: '',
+    mediaType: '',
+    status: 'all'
+  }); 
+
+  // Lấy danh sách bài viết từ API
   const fetchPosts = async () => {
     try {
       const response = await axios.get("http://localhost:8080/api/posts", {
@@ -37,78 +42,163 @@ import { useState, useEffect } from "react";
         },
       });
       setPosts(response.data);
+      setFilteredPosts(response.data); // Khởi tạo filteredPosts ban đầu
     } catch (error) {
       console.log(error);
     }
   };
-  //Sử dụng useEffect để lấy danh sách bài viết
+
+  // API tìm kiếm bài viết
+  const searchPosts = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/posts?name=${searchParams.name}&mediaType=${searchParams.mediaType}&status=${searchParams.status}`
+      );
+      setPosts(response.data);
+      setFilteredPosts(response.data);
+    } catch (error) {
+      console.log(error);                     
+    } 
+  };
+
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  useEffect(() => {
+    filterPosts();
+  }, [searchParams, posts]);
+
   const handleEdit = (postId) => {
     console.log(postId);
   };
+
   const handleDelete = (postId) => {
     console.log(postId);
   };      
   
+  // Lọc bài viết theo điều kiện tìm kiếm
+  const filterPosts = () => { 
+    let filtered = [...posts];
+
+    if (searchParams.name) {
+      filtered = filtered.filter(post => 
+        post.content.toLowerCase().includes(searchParams.name.toLowerCase())
+      );
+    }
+
+    if (searchParams.mediaType) {
+      filtered = filtered.filter(post => 
+        post.mediaType.toLowerCase() === searchParams.mediaType.toLowerCase()
+      );
+    }
+
+    if (searchParams.status !== 'all') {
+      filtered = filtered.filter(post => 
+        post.status.toLowerCase() === searchParams.status.toLowerCase()
+      );
+    }
+
+    setFilteredPosts(filtered); 
+  };
+
+  // Xử lý thay đổi giá trị tìm kiếm
+  const handleSearchChange = (e) => {
+    const { name, value } = e.target;
+    setSearchParams(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Xử lý tìm kiếm
+  const handleSearch = () => {
+    searchPosts();
+  };  
 
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         Quản lý bài viết
       </Typography>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mb: 2  }}>
         <TextField
-          label="Tìm theo tên"
+          name="name"
+          label="Tìm theo nội dung" 
           variant="outlined"
           size="small"
           sx={{ width: 200 }}
+          value={searchParams.name}
+          onChange={handleSearchChange}
         />
-        <TextField
-          label="Tìm theo media type"
-          variant="outlined"
-          size="small"
-          sx={{ width: 200 }}
-        />
+
         <FormControl size="small" sx={{ width: 200 }}>
-          <InputLabel>Status</InputLabel>
-          <Select label="Status">
-            <MenuItem value="pending">Pending</MenuItem>
-            <MenuItem value="approved">Approved</MenuItem>
+          <InputLabel>Loại media</InputLabel>
+          <Select
+            name="mediaType"
+            label="Loại media"
+            value={searchParams.mediaType}
+            onChange={handleSearchChange} 
+          >
+            <MenuItem value="">Tất cả</MenuItem>
+            <MenuItem value="image">Hình ảnh</MenuItem>
+            <MenuItem value="video">Video</MenuItem>
+          </Select>
+        </FormControl>  
+
+        <FormControl size="small" sx={{ width: 200 }}>
+          <InputLabel>Trạng thái</InputLabel>
+          <Select 
+            name="status"
+            label="Trạng thái"
+            value={searchParams.status}
+            onChange={handleSearchChange}
+          >
+            <MenuItem value="all">Tất cả</MenuItem>  
+            <MenuItem value="pending">Chờ duyệt</MenuItem>
+            <MenuItem value="approved">Đã duyệt</MenuItem>
           </Select>
         </FormControl>
+
       </Box>
      
-      
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow >
+            <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Content</TableCell>
-              <TableCell>Media Type</TableCell>
-              <TableCell>Media URL</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell>Nội dung</TableCell>
+              <TableCell>Loại media</TableCell>
+              <TableCell>URL media</TableCell>
+              <TableCell>Trạng thái</TableCell>
+              <TableCell>Thao tác</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody  >
-            {posts.map((post) => (
-              <TableRow key={post.postId}>
+          <TableBody>
+            {filteredPosts.map((post) => (
+              <TableRow key={post.postId}>  
                 <TableCell>{post.postId}</TableCell>
                 <TableCell>{post.content}</TableCell>
                 <TableCell>{post.mediaType}</TableCell>
                 <TableCell>{post.mediaURL}</TableCell>
                 <TableCell>{post.status}</TableCell>
-                <TableCell >
-                    <IconButton onClick={() => handleEdit(post.postId)} color="blue" aria-label="edit">
+                <TableCell>
+                  <IconButton 
+                    onClick={() => handleEdit(post.postId)} 
+                    color="primary" 
+                    aria-label="edit"
+                  >
                     <EditIcon />
                   </IconButton>
-                  <IconButton onClick={() => handleDelete(post.postId)} color="error" aria-label="delete">
+                  <IconButton 
+                    onClick={() => handleDelete(post.postId)} 
+                    color="error" 
+                    aria-label="delete"
+                  >
                     <DeleteIcon />
                   </IconButton>
-              </TableCell>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -118,4 +208,4 @@ import { useState, useEffect } from "react";
   );
 };
 
-export default PostManagement;  
+export default PostManagement;

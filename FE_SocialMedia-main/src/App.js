@@ -1,6 +1,6 @@
 import { Outlet, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Home, Login, Profile, Register, ResetPassword, Dashboard, Team, UserManagement, PostManagement } from "./pages";
+  import { Home, Login, Profile, Register, ResetPassword, Dashboard, UserManagement, PostManagement } from "./pages";
 import Admin from "./admin/admin";
 
 
@@ -30,7 +30,6 @@ function App() {
             <Route index element={<Navigate to='dashboard' replace />} />
             <Route path='dashboard' element={<Dashboard />} />
             <Route path='UserManagement' element={<UserManagement />} />
-            <Route path='Team' element={<Team />} />
             <Route path='PostManagement' element={<PostManagement />} />  
           </Route>
           
