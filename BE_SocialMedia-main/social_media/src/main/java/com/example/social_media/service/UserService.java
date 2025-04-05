@@ -35,7 +35,7 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public User getUserByStatus(String status) {
+    public User getUserByStatus(Integer status) {
         return userRepository.findByStatus(status);
     }
     //Đăng ký
@@ -70,7 +70,7 @@ public class UserService {
     public User blockUser(Integer userId) {
         User user = userRepository.findById(userId).orElse(null);
         if (user != null) {
-            user.setStatus("Blocked");
+            user.setStatus(1);  
             return userRepository.save(user);
         }
         return null;

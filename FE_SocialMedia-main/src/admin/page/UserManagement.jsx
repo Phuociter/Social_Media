@@ -180,10 +180,10 @@ const UserManagement = () => {
         email: user.email,
         role: user.role,
         password: user.password,
-        status: 'Blocked'
+        status: 1
       };
       await updateUser(userId, userData);
-      showSnackbar('Block user thành công', 'success');
+      showSnackbar('Block user thành công', 'success'); 
       fetchUsers(); // Refresh danh sách users
     } catch (error) {
       console.error('Error blocking user:', error);
@@ -204,7 +204,7 @@ const UserManagement = () => {
         email: user.email,
         role: user.role,
         password: user.password,
-        status: 'active'
+        status: 0
       };
 
       await updateUser(userId, userData);
@@ -330,22 +330,22 @@ const UserManagement = () => {
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
-                <TableCell>{user.status}</TableCell>
+                <TableCell>{user.status === 0  ? 'Đã khóa' : 'Hoạt động' }</TableCell>
                 <TableCell>
                   <IconButton onClick={() => handleOpenDialog(user)} color="primary" aria-label="edit">
                     <VisibilityIcon sx={{ color: 'blue' }} />
                   </IconButton>
                   <IconButton onClick={() => {
-                    if (user.status === 'active') {
+                    if (user.status === 0) {  
                       handleBlock(user.userId);
                     } else {
                       handleUnblock(user.userId);
                     }
                   }} color="error" aria-label="block">
-                    {user.status === 'active' ? <BlockIcon /> : <CheckCircleIcon />}
+                    {user.status === 0 ? <CheckCircleIcon /> : <BlockIcon />}
                   </IconButton>
                 </TableCell>
-              </TableRow>
+              </TableRow> 
             ))}
           </TableBody>
         </Table>
@@ -414,4 +414,4 @@ const UserManagement = () => {
   );
 };
 
-export default UserManagement; 
+export default UserManagement;  

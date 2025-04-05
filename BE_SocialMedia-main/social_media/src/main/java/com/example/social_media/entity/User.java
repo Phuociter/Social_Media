@@ -23,34 +23,36 @@ public class User {
     @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = false, length = 255)
-    private String profileimage = "";
+    @Column(name = "profileimage",length = 255)
+    private String profileImage;
 
-    @Column(nullable = false, length = 255)
-    private String profilecover = "";
+    @Column(name = "profilecover",length = 255)
+    private String profileCover;
 
-    @Column(length = 140)
-    private String bio = null;
+    @Column(name = "bio",length = 140)
+    private String bio;
 
-    @Column(length = 255)
-    private String country = null;
+    @Column(name = "country",length = 255)
+    private String country;
 
-    @Column(length = 255)
-    private String website = null;
+    @Column(name = "website",length = 255)
+    private String website;
 
-    @Column(nullable = false, length = 255)
-    private String status = "active";
+    @Column(name = "status",nullable = false, length = 255)
+    private Integer status = 0;
 
     // MỚI: Quản lý phân quyền (user/admin)
     @Enumerated(EnumType.STRING)
     @Column(length = 5, nullable = false)
     private Role role = Role.user;
 
+    // public enum Role {
+    //     user, admin
+    // }
+
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return Objects.equals(userId, user.userId);
     }
@@ -59,3 +61,5 @@ public class User {
         return Objects.hash(userId);
     }
 }
+
+

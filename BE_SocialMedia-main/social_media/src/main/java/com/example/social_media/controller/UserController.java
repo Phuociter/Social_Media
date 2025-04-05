@@ -21,7 +21,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() {   
         return userService.getAllUsers();
     }
 
@@ -93,7 +93,7 @@ public class UserController {
 
     @PutMapping("/block/{id}")
     public void blockUser(@PathVariable Integer id) {
-        userService.blockUser(id);
+        userService.blockUser(id);      
     }
 
     @PutMapping("/{id}")
