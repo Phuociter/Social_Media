@@ -1,56 +1,100 @@
-// src/components/FriendList.jsx
-import React, { useEffect, useState } from 'react';
-import FriendsCard from './FriendsCard';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useSelector } from 'react-redux';
+import { NoProfile } from "../assets";
 import { getFriendList, unfriend } from '../api/FriendAPI';
-import Loading from './Loading';
 
-const FriendList = ({ currentUserId }) => {
+const FriendsCard = ({ userId }) => {
   const [friends, setFriends] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const user = useSelector((state) => state.user);
 
-  const fetchFriends = async () => {
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        // Giả sử API trả về một đối tượng có thuộc tính `friends` chứa mảng
+        const data = await getFriendList(user.user.userId);
+        setFriends(data); 
+      } catch (error) {
+        console.error("Error fetching friends:", error);
+      }
+    };
+
+    if (userId) {
+      fetchFriends();
+    }
+  }, [userId, user.user.userId]);
+
+  const handleUnfriend = async (friendId) => {
     try {
-      const data = await getFriendList(currentUserId);
-      setFriends(data);
+      // Gọi API hủy kết bạn: truyền userId của người dùng hiện tại và friendId cần hủy kết bạn
+      await unfriend(user.user.userId, friendId);
+      // Cập nhật lại danh sách bạn bè sau khi hủy kết bạn thành công
+      setFriends(prev =>
+        prev.filter((friendship) => {
+          const currentFriendId =
+            friendship.user1.userId === userId
+              ? friendship.user2.userId
+              : friendship.user1.userId;
+          return currentFriendId !== friendId;
+        })
+      );
+      alert("Đã hủy kết bạn!");
     } catch (error) {
-      console.error('Error fetching friend list:', error);
-    } finally {
-      setLoading(false);
+      console.error("Lỗi khi hủy kết bạn:", error);
     }
   };
 
-  useEffect(() => {
-    fetchFriends();
-  }, [currentUserId]);
-
-  if (loading) return <Loading />;
-
   return (
     <div>
-      <h2>Danh sách bạn bè</h2>
-      {friends.length === 0 ? (
-        <p>Không có bạn bè nào.</p>
-      ) : (
-        <div className="friend-list">
-          {friends.map((friendship) => {
-            // Giả sử FriendsCard nhận prop "friend" chứa thông tin bạn bè.
-            // Nếu mối quan hệ lưu hai user, hãy xác định bạn là ai và bạn bè là user còn lại.
-            const friendId = friendship.userID1 === currentUserId ? friendship.userID2 : friendship.userID1;
+      <div className='w-full bg-primary shadow-sm rounded-lg px-6 py-5'>
+        <div className='flex items-center justify-between text-ascent-1 pb-2 border-b border-[#66666645]'>
+          <span>Friends</span>
+          <span>{friends?.length}</span>
+        </div>
+
+        <div className='w-full flex flex-col gap-4 pt-4'>
+          {friends?.map((friendship) => {
+            const friendId =
+              friendship.user1.userId === userId
+                ? friendship.user2.userId
+                : friendship.user1.userId;
+            const friend =
+              friendship.user1.userId === userId
+                ? friendship.user2
+                : friendship.user1;
             return (
-              <FriendsCard
-                key={friendship.friendshipID}
-                friendId={friendId}
-                currentUserId={currentUserId}
-                onUnfriend={() => {
-                  unfriend(currentUserId, friendId).then(fetchFriends);
-                }}
-              />
+              <div key={friendId} className="flex items-center justify-between">
+                <Link
+                  to={`/profile/${friendId}`}
+                  className='flex gap-4 items-center cursor-pointer'
+                >
+                  <img
+                    src={friend?.profileImage ?? NoProfile}
+                    alt={friend?.username}
+                    className='w-10 h-10 object-cover rounded-full'
+                  />
+                  <div className='flex-1'>
+                    <p className='text-base font-medium text-ascent-1'>
+                      {friend?.username}
+                    </p>
+                    <span className='text-sm text-ascent-2'>
+                      {friend?.country ?? "No Profession"}
+                    </span>
+                  </div>
+                </Link>
+                <button
+                  className='bg-red-500 text-white text-xs px-2 py-1 rounded'
+                  onClick={() => handleUnfriend(friendId)}
+                >
+                  Hủy kết bạn
+                </button>
+              </div>
             );
           })}
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
-export default FriendList;
+export default FriendsCard;

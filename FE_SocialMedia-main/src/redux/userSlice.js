@@ -11,10 +11,16 @@ const userSlice = createSlice({
   reducers: {
     login(state, action) {
       state.user = action.payload;
+      window.localStorage.setItem("user", JSON.stringify(action.payload));
       // Không lưu vào localStorage
+    },
+    register(state, action) {
+      state.user = action.payload;
+      window.localStorage.setItem("user", JSON.stringify(action.payload));
     },
     logout(state) {
       state.user = null;
+      window.localStorage.removeItem("user");
       // Không xóa dữ liệu từ localStorage
     },
     updateProfile(state, action) {

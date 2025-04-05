@@ -3,12 +3,13 @@ package com.example.social_media.controller;
 import com.example.social_media.entity.FriendRequest;
 import com.example.social_media.entity.Friendship;
 import com.example.social_media.service.FriendService;
-import com.example.social_media.entity.FriendSuggestion;
+import com.example.social_media.entity.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/friends")
@@ -18,10 +19,8 @@ public class FriendController {
     private FriendService friendService;
 
     @GetMapping("/suggestions")
-    public ResponseEntity<List<FriendSuggestion>> getFriendSuggestions(
-            @RequestParam Integer userId,
-            @RequestParam(defaultValue = "5") int limit) {
-        List<FriendSuggestion> suggestions = friendService.getFriendSuggestions(limit);
+    public ResponseEntity<List<User>> getFriendSuggestions(@RequestParam Integer userId, @RequestParam(defaultValue = "10") int limit) {
+        List<User> suggestions = friendService.getFriendSuggestions(limit);
         return ResponseEntity.ok(suggestions);
     }
 
@@ -44,14 +43,14 @@ public class FriendController {
     @PutMapping("/request/accept/{requestId}")
     public ResponseEntity<?> acceptRequest(@PathVariable Integer requestId) {
         friendService.acceptFriendRequest(requestId);
-        return ResponseEntity.ok("Lời mời đã được chấp nhận.");
+        return ResponseEntity.ok("loi moi da duoc chap nhan.");
     }
 
     // Hủy kết bạn
     @DeleteMapping("/unfriend")
     public ResponseEntity<?> unfriend(@RequestParam Integer userId1, @RequestParam Integer userId2) {
         friendService.unfriend(userId1, userId2);
-        return ResponseEntity.ok("Đã hủy kết bạn.");
+        return ResponseEntity.ok("da huy ket ban.");
     }
 
     // Lấy danh sách bạn bè
@@ -60,5 +59,18 @@ public class FriendController {
         List<Friendship> friendList = friendService.getFriendList(userId);
         return ResponseEntity.ok(friendList);
     }
+
+    @GetMapping("/isFriend")
+    public ResponseEntity<String> checkIsFriend(@RequestParam Integer userId1, @RequestParam Integer userId2) {
+
+        Optional<Friendship> friendship = friendService.isFriend(userId1, userId2);
+
+        if (friendship.isPresent()) {
+            return ResponseEntity.ok("Hai nguoi la ban be.");
+        } else {
+            return ResponseEntity.ok("hai nguoi khong phai la ban be.");
+        }
+    }
+    
 }
 

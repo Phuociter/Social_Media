@@ -3,6 +3,7 @@ package com.example.social_media.entity;
 import java.util.Objects;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.Data;
 
 @Data
@@ -14,6 +15,10 @@ public class User {
     @Column(name = "user_id")
     private Integer userId;
 
+    public Integer getUserId() {
+        return userId;
+    }
+
     @Column(nullable = false, unique = true, length = 40)
     private String username;
 
@@ -23,20 +28,23 @@ public class User {
     @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(length = 255)
+    @Column(name = "profileimage",length = 255)
     private String profileImage;
 
-    @Column(length = 255)
+    @Column(name = "profilecover",length = 255)
     private String profileCover;
 
-    @Column(length = 140)
+    @Column(name = "bio",length = 140)
     private String bio;
 
-    @Column(length = 255)
+    @Column(name = "country",length = 255)
     private String country;
 
-    @Column(length = 255)
+    @Column(name = "website",length = 255)
     private String website;
+
+    @Column(name = "status",nullable = false, length = 255)
+    private Integer status = 0;
 
     // MỚI: Quản lý phân quyền (user/admin)
     @Enumerated(EnumType.STRING)
@@ -57,6 +65,8 @@ public class User {
     public int hashCode() {
         return Objects.hash(userId);
     }
+
+
 }
 
 

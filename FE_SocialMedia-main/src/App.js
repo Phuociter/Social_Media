@@ -19,7 +19,7 @@ function App() {
     <div data-theme={theme} className='w-full min-h-[100vh]'>
       <Routes>
         <Route element={<Layout />}>
-          <Route path='/Home' element={<Home />} />
+          <Route path='/' element={<Home />} />
           <Route path='/profile/:id?' element={<Profile />} />
         </Route>
 

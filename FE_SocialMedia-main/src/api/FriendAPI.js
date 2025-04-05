@@ -7,6 +7,11 @@ export const loginUser = async (email, password) => {
   return response.data; // giả sử response.data chứa { userId: 123, ... }
 };
 
+// Lấy danh sách bạn bè
+export const getFriendList = async (userId) => {
+  const response = await axios.get(`/api/friends/list?userId=${userId}`);
+  return response.data;
+};
 
 // Gửi lời mời kết bạn
 export const sendFriendRequest = async (senderId, receiverId) => {
@@ -16,15 +21,13 @@ export const sendFriendRequest = async (senderId, receiverId) => {
 
 // Lấy danh sách lời mời chờ duyệt
 export const getFriendRequests = async (receiverId) => {
-  const response = await axios.get(`/api/friends/requests?receiverId=${2}`);
+  const response = await axios.get(`/api/friends/requests?receiverId=${receiverId}`);
   return response.data;
 };
-/////////////////////// 
-/////////////////////// NHỚ LÀM HÀM ĐỂ GỌI RANDOM CÁC ID TRONG FILE NÀY
 // Hàm lấy danh sách gợi ý bạn bè
 export const getSuggestedFriends = async (userId) => {
     // Thay đổi endpoint tùy theo backend
-    const response = await axios.get(`/api/friends/suggestions?userId=${1}`);
+    const response = await axios.get(`/api/friends/suggestions?userId=${userId}`);
     return response.data;
   };
   
@@ -47,8 +50,4 @@ export const unfriend = async (userId1, userId2) => {
   return response.data;
 };
 
-// Lấy danh sách bạn bè
-export const getFriendList = async (userId) => {
-  const response = await axios.get(`/api/friends/list?userId=${1}`);
-  return response.data;
-};
+
