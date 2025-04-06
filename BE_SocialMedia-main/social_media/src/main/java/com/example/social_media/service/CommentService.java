@@ -22,8 +22,8 @@ public class CommentService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<Comment> getCommentsByPostId(Integer postId) {
-        return commentRepository.findByPost_PostId(postId);
+    public List<Comment> getCommentsWithLikesByPostId(Integer postId) {
+        return commentRepository.findAllCommentsWithLikes(postId);
     }
 
     public Comment addComment(Integer postId, Integer userId, String content) {

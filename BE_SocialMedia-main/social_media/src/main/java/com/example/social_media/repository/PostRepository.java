@@ -20,4 +20,16 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query("SELECT p.likeCount FROM Post p WHERE p.postId = :postId")
     int getLikeCount(@Param("postId") Integer postId);
 
+    // Lấy post chưa like + fetch luôn likes
+    @Query("SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.likes WHERE p NOT IN " +
+            "(SELECT p2 FROM Post p2 JOIN p2.likes l WHERE l.user.userId = :userId)")
+    List<Post> findUnlikedPostsWithLikesByUser(@Param("userId") Integer userId);
+
+    // Lấy tất cả post kèm likes
+    @Query("SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.likes")
+    List<Post> findAllWithLikes();
+
+    @Query("SELECT p FROM Post p WHERE p.postId = :postId")
+    Post findByPostId(@Param("postId") Integer postId);
+
 }

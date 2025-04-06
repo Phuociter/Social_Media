@@ -21,8 +21,8 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping("/{postId}")
-    public ResponseEntity<List<Comment>> getComments(@PathVariable Integer postId) {
-        return ResponseEntity.ok(commentService.getCommentsByPostId(postId));
+    public ResponseEntity<List<Comment>> getCommentsWithLikes(@PathVariable Integer postId) {
+        return ResponseEntity.ok(commentService.getCommentsWithLikesByPostId(postId));
     }
 
     @PostMapping("/add")
@@ -31,4 +31,5 @@ public class CommentController {
             @RequestParam String comment) {
         return ResponseEntity.ok(commentService.addComment(postId, userId, comment));
     }
+
 }

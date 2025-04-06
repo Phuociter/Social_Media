@@ -31,4 +31,11 @@ public class LikeController {
         likeService.toggleLike(userId, postId);
         return ResponseEntity.ok("Like/unlike thành công");
     }
+
+    @PostMapping("/likes/comment")
+    public ResponseEntity<?> handleLikeComment(@RequestParam("userId") Integer userId,
+            @RequestParam("commentId") Integer commentId) {
+        likeService.toggleLikeComment(userId, commentId);
+        return ResponseEntity.ok("Like/unlike thành công");
+    }
 }

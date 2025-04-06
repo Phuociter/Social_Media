@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -38,7 +39,7 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(length = 20)
+    @Column(name = "mediatype", length = 20)
     private String mediaType;
 
     @Column(length = 255)
@@ -48,10 +49,10 @@ public class Post {
     @Column(length = 8, nullable = false)
     private Status status = Status.approved;
 
-    @Column(nullable = false)
+    @Column(name = "likecount", nullable = false)
     private Integer likeCount = 0;
 
-    @Column(nullable = false)
+    @Column(name = "commentcount", nullable = false)
     private Integer commentCount = 0;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -63,7 +64,7 @@ public class Post {
     }
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @JsonManagedReference
     private List<Like> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)

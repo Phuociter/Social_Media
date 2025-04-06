@@ -15,4 +15,7 @@ public interface LikeRepository extends JpaRepository<Like, Integer> {
     // Tìm like của commentId và userId
     @Query("SELECT l FROM Like l WHERE l.comment.commentId = :commentId AND l.user.userId = :userId")
     Like findBycommentIdAndUserId(@Param("commentId") Integer commentId, @Param("userId") Integer userId);
+
+    @Query("SELECT c.post.postId FROM Comment c WHERE c.commentId = :commentId")
+    Integer findPostIdByCommentId(@Param("commentId") Integer commentId);
 }

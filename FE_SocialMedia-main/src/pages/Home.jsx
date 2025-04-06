@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -15,7 +15,7 @@ import {
 
 import { NoProfile } from "../assets";
 import { BsFiletypeGif, BsPersonFillAdd } from "react-icons/bs";
-import { BiImages, BiSolidVideo } from "react-icons/bi";
+import { BiImages, BiSolidVideo, BiSolidXCircle } from "react-icons/bi";
 import { useForm } from "react-hook-form";
 
 import {
@@ -34,6 +34,7 @@ import {
   commentPost,
   sharePost,
   toggleLikeAPI,
+  getPostById,
  } from "../api/PostAPI";
 
  import { 
@@ -63,9 +64,11 @@ const Home = () => {
   // const [loading, setLoading] = useState(false);
   // const [posts, setPosts] = useState([]);
   const [content, setContent] = useState("");
-  const [editPostId, setEditPostId] = useState(null);
-  const [commentText, setCommentText] = useState("");
+  const [preview, setPreview] = useState(null);
+  // const [editedFile, setEditedFile] = useState(null);
+  
 
+ 
   // React Hook Form
   const {
     register,
@@ -152,31 +155,35 @@ const Home = () => {
     }
   };
 
-  // // Hàm handle post (chưa có API nên để trống)
-  // const handlePostSubmit = async (data) => {
-  //   console.log("Nội dung post:", data);
-  //   console.log("File:", file);
-  //   // Gọi API post nếu có
-  // };
+
 
   //Post
 
+  const {postId} = useParams();
+  const count = 5;
   // Lấy danh sách bài viết khi trang đang load
-  useEffect(() => {
-    const fetchPosts = async () => {
-      if (!userId) return;
-      dispatch(getPostsStart());
-  
-      try {
-        const data = await getPosts(userId);
-        dispatch(getPostsSuccess(data));
-      } catch (err) {
-        dispatch(getPostsFailed(err.message));
+  const fetchPosts = async () => {
+    dispatch(getPostsStart());
+    try{
+      if (postId){ // Chế độ xem 1 bài
+        console.log("Chế độ xem 1 bài  viết với ID: ", postId);
+        const singlePost = await getPostById(postId);
+        console.log("singlePost: ", singlePost);
+        dispatch(getPostsSuccess([singlePost]));
+        console.log(posts);
       }
-    };
-  
+      else{
+      const data = await getPosts(count);
+      dispatch(getPostsSuccess(data));
+      }
+    } catch (err) {
+      dispatch(getPostsFailed(err.message));
+    }
+  };
+
+  useEffect(() => {
     fetchPosts();
-  }, [dispatch, userId]); 
+  }, [dispatch, postId, count]); 
   
   // Tạo bài viết 
   const handlePostSubmit = async () => {
@@ -194,15 +201,15 @@ const Home = () => {
     }
   };
 
-  // Xóa bài viết
-  const handleDeletePost = async (postId) => {
-    try{
-      await removePost(postId);
-      dispatch(deletePost(postId));
-    }catch(err){
-      alert("Failed to delete post!");
-    }
-  };
+  // // Xóa bài viết
+  // const handleDeletePost = async (postId) => {
+  //   try{
+  //     await removePost(postId);
+  //     dispatch(deletePost(postId));
+  //   }catch(err){
+  //     alert("Failed to delete post!");
+  //   }
+  // };
 
   // Like/unlike
   const handleLikePost  = async(postId) => {
@@ -215,6 +222,14 @@ const Home = () => {
       console.error("Like failed: ", err);
     }
   }
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFile(file);
+  };
+  
+
   return (
     <>
       <div className='w-full px-0 lg:px-10 pb-20 2xl:px-40 bg-bgColor lg:rounded-lg h-screen overflow-hidden'>
@@ -270,7 +285,7 @@ const Home = () => {
                 >
                   <input
                     type='file'
-                    onChange={(e) => setFile(e.target.files[0])}
+                    onChange={handleFileChange}
                     className='hidden'
                     id='imgUpload'
                     data-max-size='5120'
@@ -287,7 +302,7 @@ const Home = () => {
                   <input
                     type='file'
                     data-max-size='5120'
-                    onChange={(e) => setFile(e.target.files[0])}
+                    onChange={handleFileChange}
                     className='hidden'
                     id='videoUpload'
                     accept='.mp4, .wav'
@@ -295,7 +310,7 @@ const Home = () => {
                   <BiSolidVideo />
                   <span>Video</span>
                 </label>
-
+                
                 
 
                 <div>
@@ -309,7 +324,32 @@ const Home = () => {
                     />
                   )}
                 </div>
+                
               </div>
+              {file && (
+                  <div className="relative w-full mt-2">
+                    {file.type.startsWith("video/") ? (
+                      <video controls className="w-full rounded-lg">
+                        <source src={URL.createObjectURL(file)} type={file.type} />
+                      </video>
+                    ) : (
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt="preview"
+                        className="w-full rounded-lg"
+                      />
+                    )}
+                    {/* Nút xoá */}
+                    <button
+                      type="button"
+                      onClick={() => setFile(null)}
+                      className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 hover:bg-black"
+                    >
+                      <BiSolidXCircle color="black" size={20} />
+
+                    </button>
+                  </div>
+                )}
             </form>
 
             {loading ? (
@@ -317,15 +357,18 @@ const Home = () => {
             ) : posts.length > 0 ? (
               [...posts]
               .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sắp xếp giảm dần theo timestamp
-              .map((post, index) => (
+              .map((post, index) => {
+                console.log("Post ID:", post.postId, "Likes:", post.likes);
+                return (
                 <PostCard
                   key={post.postId || index}
                   post={post}
                   user={user}
-                  deletePost={() => handleDeletePost(post.postId)}
+                  
+                  // deletePost={() => handleDeletePost(post.postId)}
                   likePost={() => handleLikePost(post.postId)}
                 />
-              ))
+              )})
             ) : (
               <div className='flex w-full h-full items-center justify-center'>
                 <p className='text-lg text-ascent-2'>No Post Available</p>

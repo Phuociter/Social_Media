@@ -30,27 +30,28 @@ export const createPost = async (userId, content, mediaFile) => {
   }
 };
 
-// // Chỉnh sửa bài viết
-// export const editPost = async(postId, content, mediaFiles) => {
-//     const formData = new FormData();
-//     formData.append("content", content);
+// Chỉnh sửa bài viết
+export const editPost = async(postId, description, mediaFile, removedOldMedia) => {
+  const formData = new FormData();
+  formData.append("description", description);
 
-//     if(mediaFiles){
-//         mediaFiles.forEach((file)=>{
-//             formData.append("mediaFiles", file);
-//         });
-//       }
-    
-//       const response = await axios.post(`/api/posts/update/${postId}`, formData, {
-//         headers: {"Content-Type":"multipart/form-data"}
-//       });
-//       return response.data; 
+  if (mediaFile) {
+    formData.append("media", mediaFile);
+  }
 
-// };
+  if (removedOldMedia) {
+    formData.append("removeMedia", "true"); // báo BE xóa luôn media cũ
+  }
+  const response = await axios.put(`/api/posts/update/${postId}`, formData, {
+        headers: {"Content-Type":"multipart/form-data"}
+      });
+      return response.data; 
+
+};
 
 // Xóa bài viết
 export const removePost = async(postId) => {
-    const response = await axios.delete(`/api/posts/delete/${postId}`);
+    const response = await axios.delete(`http://localhost:8080/api/posts/delete/${postId}`);
     return response.data;
 };
 
@@ -66,6 +67,17 @@ export const toggleLikeAPI = async (postId, userId) => {
   }
 };
 
+// Like/unlike bài viết (POST /api/likes/comment)
+export const toggleLikeCommentAPI = async (commentId, userId) => {
+  try {
+    const response = await axios.post(`/api/likes/comment?userId=${userId}&commentId=${commentId}`);
+    console.log("Like API Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Like API Error:", error);
+    return { success: false, error: "Failed to like post" };
+  }
+};
 // // Lấy danh sách like của bài viết 
 // export const getPostLikes = async (postId) => {
 //   try {
@@ -87,7 +99,7 @@ export const getCommentsAPI = async (postId) => {
 
 // Bình luận bài viết
 export const createCommentAPI = async(postId, userId, comment) => {
-    const response = await axios.post(`/api/posts/comment?postId=${postId}&userId=${userId}&comment=${comment}`);
+    const response = await axios.post(`/api/comments/add?postId=${postId}&userId=${userId}&comment=${comment}`);
     return response.data;
 };
 
@@ -98,9 +110,21 @@ export const createCommentAPI = async(postId, userId, comment) => {
 // };
 
 // Lấy danh sách bài viết
-export const getPosts = async (userId) => {
+export const getPosts = async (count) => {
   try {
-      const response = await axios.get(`/api/posts?userid=${userId}`);
+      const response = await axios.get(`/api/posts?count=${count}`); //?userid=${userId}
+      console.log("API Response:", response.data); // Log dữ liệu từ API
+      return response.data;
+  } catch (error) {
+      console.error("API Error:", error);
+      return [];
+  }
+};
+
+// Lấy 1 bài viết
+export const getPostById = async (postId) => {
+  try {
+      const response = await axios.get(`/api/posts/${postId}`); //?userid=${userId}
       console.log("API Response:", response.data); // Log dữ liệu từ API
       return response.data;
   } catch (error) {
