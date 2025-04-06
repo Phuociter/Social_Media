@@ -21,21 +21,60 @@ import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";  
 import { useNavigate } from "react-router-dom"; 
-
+import ProfileDialog from "./ProfileDialog";
 
 const Topbar = ({ setIsSidebar }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openProfileDialog, setOpenProfileDialog] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: '',
+    email: '',
+    avatar: '',
+    role: '',
+    joinDate: '',
+    lastLogin: '',
+    totalPosts: 0,
+    approvedPosts: 0,
+    rejectedPosts: 0
+  });
   const navigate = useNavigate();
+  
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleOpenProfile = () => {
+    // Lấy dữ liệu người dùng từ localStorage
+    const userData = JSON.parse(localStorage.getItem('userData')) || {};
+    
+    // Cập nhật dữ liệu hồ sơ
+    setProfileData({
+      name: userData.name || 'Người dùng',
+      email: userData.email || 'email@example.com',
+      avatar: userData.avatar || 'https://via.placeholder.com/150',
+      role: userData.role || 'Admin',
+      joinDate: userData.joinDate || new Date().toLocaleDateString(),
+      lastLogin: userData.lastLogin || new Date().toLocaleDateString(),
+      totalPosts: 0, // Có thể cập nhật sau khi lấy dữ liệu từ API
+      approvedPosts: 0,
+      rejectedPosts: 0
+    });
+    
+    // Mở dialog hồ sơ
+    setOpenProfileDialog(true);
+    // Đóng menu
+    handleClose();
+  };
+
+  const handleCloseProfile = () => {
+    setOpenProfileDialog(false);
   };
 
   const logout = () => {
@@ -113,10 +152,16 @@ const Topbar = ({ setIsSidebar }) => {
           open={Boolean(anchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleClose}>Hồ sơ</MenuItem>
-          <MenuItem onClick={handleClose}>Cài đặt</MenuItem>
+          <MenuItem onClick={handleOpenProfile}>Hồ sơ</MenuItem>
           <MenuItem onClick={logout}>Đăng xuất</MenuItem>
         </Menu>
+
+        {/* Profile Dialog */}
+        <ProfileDialog 
+          open={openProfileDialog} 
+          onClose={handleCloseProfile} 
+          profileData={profileData} 
+        />
 
         {/* Notifications Menu */}
         {/* <Menu

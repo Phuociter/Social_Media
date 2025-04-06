@@ -23,4 +23,10 @@ public class PostController {
     public List<Post> getPostsByPostId(@PathVariable Integer postId) {
         return postService.getPostsByPostId(postId);
     }
+
+    @PostMapping("/{postId}/update")
+    public ResponseEntity<Post> updatePost(@PathVariable Integer postId, @RequestBody Post post) {
+        Post updatedPost = postService.updatePost(postId, post);
+        return ResponseEntity.ok(updatedPost);
+    }  
 }
