@@ -74,7 +74,7 @@ export const setUserCover = async (userId) => {
 
   export const fetchUserById = createAsyncThunk(
     'user/fetchUserById',
-    async (id, thunkAPI) => {
+    async (userId, thunkAPI) => {
       try {
         const response = await axios.get(`/api/users/${id}`);
         return response.data;
