@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
@@ -10,17 +11,40 @@ import {
 } from "../components";
 import { posts } from "../assets/data";
 import { NoCover } from "../assets";
+import { fetchUserById } from "../api/UserAPI" ;
 
 const Profile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.user);
-  // const { posts } = useSelector((state) => state.posts);
-  const [userInfo, setUserInfo] = useState(user);
-  const [loading, setLoading] = useState(false);
+
+  const userId = parseInt(id, 10); // ép kiểu từ chuỗi sang int
+
+  // Nếu cần kiểm tra hợp lệ:
+  if (isNaN(userId)) {
+    return <div>Invalid user ID</div>;
+  }
+
+  const { user, selectedUser, loading } = useSelector((state) => state.user);
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    if (id && id !== user?._id) {
+      dispatch(fetchUserById(id));
+    } else {
+      setUserInfo(user);
+    }
+  }, [id, user, dispatch]);
+
+  useEffect(() => {
+    if (id && id !== user?._id && selectedUser) {
+      setUserInfo(selectedUser);
+    }
+  }, [selectedUser, id, user]);
 
   const handleDelete = () => {};
   const handleLikePost = () => {};
+
+  if (loading || !userInfo) return <Loading />;
 
   return (
     <>
@@ -48,7 +72,7 @@ const Profile = () => {
             />
             {/*Vị trí mới của phần thông tin người dùng */}
 
-            <ProfileCard user={userInfo} />
+            {user && <ProfileCard user={userInfo} />}
               <div className='block lg:hidden'>
               <FriendsCard friends={userInfo?.friends} />
               </div>
