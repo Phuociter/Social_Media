@@ -1,15 +1,22 @@
+import { type } from "@testing-library/user-event/dist/type";
 import mongoose, { Schema } from "mongoose";
 
 //schema
 const userSchema = new mongoose.Schema(
   {
-    firstName: {
+      /*Tên*/
+    /*firstName: {
       type: String,
       required: [true, "First Name is Required!"],
-    },
-    lastName: {
+    },*/
+      /*Họ*/
+    /*lastName: {
       type: String,
       required: [true, "Last Name is Required!"],
+    },*/
+    screen_name:{
+      type: String,
+      required: [true, "Screen name is Required!"],
     },
     email: {
       type: String,
@@ -23,7 +30,10 @@ const userSchema = new mongoose.Schema(
       select: true,
     },
     location: { type: String },
-    profileUrl: { type: String },
+    /*Ảnh đại diện*/
+    profileimage: { type: String },
+    /*Ảnh bìa*/
+    profilecover: { type: String },
     profession: { type: String },
     friends: [{ type: Schema.Types.ObjectId, ref: "Users" }],
     views: [{ type: String }],
