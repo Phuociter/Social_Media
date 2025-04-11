@@ -8,5 +8,11 @@ public class UserDTO {
     private String username;
     private String email;
     private String screenName;
+    private String bio;
+    private String profileCover;
+    private String profileImage;
+    private String country;
+    private String website;
+    private String status;
 }
 

@@ -8,6 +8,9 @@ import { AiOutlineInteraction } from "react-icons/ai";
 import { ImConnection } from "react-icons/im";
 import { CustomButton, Loading, TextInput } from "../components";
 import { BgImage } from "../assets";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { UserRegister } from "../redux/userSlice";
 
 const Register = () => {
   const {
@@ -18,8 +21,44 @@ const Register = () => {
   } = useForm({
     mode: "onChange",
   });
+  const navigate = useNavigate();
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
 
-  const onSubmit = async (data) => {};
+    try {
+      const response = await axios.post("http://localhost:8080/api/users/register", {
+        username: data.username,
+        email: data.email,
+        password: data.password,
+      });
+      console.log(response.data);
+      if (response.data) {
+        dispatch(UserRegister(response.data));
+        setErrMsg({
+          status: "success",
+          message: "Đăng ký thành công!"
+        });
+        navigate("/login");
+      }
+    } catch (error) {
+      if (error.response?.status === 400) {
+        setErrMsg({
+          status: "failed",
+          message: error.response?.data?.message
+        });
+      }
+      else {
+        console.log(error);
+        setErrMsg({
+          status: "failed",
+          message: "Đăng ký thất bại!"
+        });
+      }
+    console.log("Error:", error.response?.data); // Log để debug
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const [errMsg, setErrMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,18 +88,18 @@ const Register = () => {
           >
             <div className='w-full flex flex-col lg:flex-row gap-1 md:gap-2'>
               <TextInput
-                name='firstName'
-                label='First Name'
-                placeholder='First Name'
+                name='userName'
+                label='Username '
+                placeholder='userName '
                 type='text'
                 styles='w-full'
-                register={register("firstName", {
-                  required: "First Name is required!",
+                register={register("username", {
+                  required: "User Name is required!",
                 })}
-                error={errors.firstName ? errors.firstName?.message : ""}
+                error={errors.username ? errors.username?.message : ""}
               />
 
-              <TextInput
+              {/* <TextInput
                 label='Last Name'
                 placeholder='Last Name'
                 type='lastName'
@@ -69,7 +108,7 @@ const Register = () => {
                   required: "Last Name do no match",
                 })}
                 error={errors.lastName ? errors.lastName?.message : ""}
-              />
+              /> */}
             </div>
 
             <TextInput
@@ -121,11 +160,10 @@ const Register = () => {
 
             {errMsg?.message && (
               <span
-                className={`text-sm ${
-                  errMsg?.status == "failed"
-                    ? "text-[#f64949fe]"
-                    : "text-[#2ba150fe]"
-                } mt-0.5`}
+                className={`text-sm ${errMsg?.status == "failed"
+                  ? "text-[#f64949fe]"
+                  : "text-[#2ba150fe]"
+                  } mt-0.5`}
               >
                 {errMsg?.message}
               </span>
