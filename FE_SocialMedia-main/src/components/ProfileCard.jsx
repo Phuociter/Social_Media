@@ -18,12 +18,13 @@ import { UpdateProfile } from "../redux/userSlice";
 const ProfileCard = ({ user }) => {
   const { user: data, edit } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-
+  console.log("USer ở profile card: ", user);
+  
   return (
     <div>
       <div className='w-full bg-primary flex flex-col items-center shadow-sm rounded-xl px-6 py-4 '>
         <div className='w-full flex items-center justify-between border-b pb-5 border-[#66666645]'>
-          <Link to={"/profile/" + user?._id} className='flex gap-2'>
+          <Link to={"/profile/" + user?.userId} className='flex gap-2'>
             <img
               src={user?.profileUrl ?? NoProfile}
               alt={user?.email}
@@ -32,16 +33,16 @@ const ProfileCard = ({ user }) => {
 
             <div className='flex flex-col justify-center'>
               <p className='text-lg font-medium text-ascent-1'>
-                {user?.firstName} {user?.lastName}
+                {user?.username}
               </p>
               <span className='text-ascent-2'>
-                {user?.profession ?? "No Profession"}
+                {user?.bio ?? "No Profession"}
               </span>
             </div>
           </Link>
 
           <div className=''>
-            {user?._id === data?._id ? (
+            {user?.userId === data?.userId ? (
               <LiaEditSolid
                 size={22}
                 className='text-blue cursor-pointer'

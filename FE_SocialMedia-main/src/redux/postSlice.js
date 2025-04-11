@@ -55,7 +55,7 @@ const postSlice = createSlice({
       const post = state.posts.find((p) => p.postId === postId);
       if (post) {
         const likes = post.likes || [];
-        const isLiked = likes.some(like => like.user.userId === userId);
+        const isLiked = likes.some(like => String(like.user.userId) === String(userId));
         if (isLiked) {
           post.likes = likes.filter(like => like.user.userId !== userId);
           post.likeCount -= 1;

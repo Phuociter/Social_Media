@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import com.example.social_media.entity.Post;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
-    @Query("SELECT p FROM Post p WHERE p.user.userId = :userId")
+    @Query("SELECT DISTINCT  p FROM Post p LEFT JOIN FETCH p.likes WHERE p.user.userId = :userId")
     List<Post> findByUserId(@Param("userId") Integer userId);
 
     @Modifying
@@ -29,7 +29,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query("SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.likes")
     List<Post> findAllWithLikes();
 
-    @Query("SELECT p FROM Post p WHERE p.postId = :postId")
+    @Query("SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.likes WHERE p.postId = :postId")
     Post findByPostId(@Param("postId") Integer postId);
 
 }

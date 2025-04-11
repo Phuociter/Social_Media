@@ -345,7 +345,7 @@
 
 
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import moment from "moment";
 import { NoProfile } from "../assets";
 import { BiComment, BiDotsVerticalRounded, BiImages, BiLike, BiShare, BiSolidLike, BiSolidVideo, BiSolidXCircle, BiX } from "react-icons/bi";
@@ -507,7 +507,8 @@ const PostCard = ({ post, user, likePost }) => {
     (_, postId) => postId,
     (comments, postId) => comments[postId] || []
   );
-  const comments = useSelector((state) => selectCommentsForPost(state, post.postId));
+  console.log(post);
+  const comments = useSelector((state) => selectCommentsForPost(state, post?.postId));
   console.log("Useselector: ", comments);
   const [loading, setLoading] = useState(false);
   // const [replyComments, setReplyComments] = useState(0);
@@ -516,12 +517,19 @@ const PostCard = ({ post, user, likePost }) => {
   const dispatch = useDispatch();
   const [showToast, setShowToast] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const isPostAuthor = post.user.userId === user.userId;
+  // const isPostAuthor = post?.user?.userId === user?.userId;
+  // const isPostAuthor = post && post.user && user && post.user.userId === user.userId;
+  const { id } = useParams(); // id từ URL
+
+  const isPostAuthor =
+    post?.user?.userId === user?.userId || id === String(user?.userId);
+
   const [isEditing, setIsEditing] = useState(false);
   const [editedFile, setEditedFile] = useState(null);
 
   const [removedOldMedia, setRemovedOldMedia] = useState(false);
 
+  
   // React Hook Form
   const {
     register,
@@ -535,12 +543,17 @@ const PostCard = ({ post, user, likePost }) => {
     }
   });
 
+  
   // Log dữ liệu likes mỗi khi post thay đổi
   useEffect(() => {
+  if (!post || !user) return null;
+
     console.log("PostCard - Post ID:", post.postId, "Likes:", post.likes);
     console.log("Current User ID:", user?.userId); // Kiểm tra user ID
   }, [post, user]);
 
+  // Kiểm tra dữ liệu trước khi render
+  
   const getComments = async () => {
     try {
       setLoading(true);
@@ -587,6 +600,7 @@ const PostCard = ({ post, user, likePost }) => {
       // Nếu không thì hiển thị comment
       setShowComments(postId);
       getComments(); // Gọi API lấy comment
+      console.log("gọi được cmt không z");
     }
   };
 
@@ -633,32 +647,35 @@ const PostCard = ({ post, user, likePost }) => {
       console.error("Like failed: ", err);
     }
   }
-  // Kiểm tra dữ liệu trước khi render
-  if (!post) return null;
+  
 
-
-
+  console.log("post.user:", post.user);
+  console.log("post hiện tịa: ", post);
+  console.log("post.user.userId: ", post.user.userId);
   return (
     <div className='mb-2 bg-primary p-4 rounded-xl'>
       {/* Phần header */}
       <div className='flex gap-3 items-center mb-2 relative'>
+        {}
+        
         {/* Phần avatar và username */}
-        <Link to={`/profile/${post.user.userId}`}>
+        {console.log("post.user: ", post.user)}
+        <Link to={`/profile/${post?.user?.userId}`}>
           <img
-            src={post.user?.profileImage || NoProfile}
-            alt={post.user?.username}
+            src={post?.user?.profileImage || NoProfile}
+            alt={post?.user?.username}
             className='w-14 h-14 object-cover rounded-full'
           />
         </Link>
 
         <div className='w-full flex justify-between'>
           <div>
-            <Link to={`/profile/${post.userId}`}>
+            <Link to={`/profile/${post?.user.userId}`}>
               <p className='font-medium text-lg text-ascent-1'>
-                {post.user?.username}
+                {post?.user?.username}
               </p>
             </Link>
-            <span className='text-ascent-2'>{post.user?.country}</span>
+            <span className='text-ascent-2'>{post?.country}</span>
           </div>
 
           {/* Phần thời gian và nút menu */}
@@ -715,8 +732,8 @@ const PostCard = ({ post, user, likePost }) => {
       {/* Nội dung bài viết */}
       <div className={`${isEditing ? 'blur-sm' : ''}`}>
         <p className='text-ascent-2'>
-          {showAll ? post.content : post.content?.slice(0, 100)}
-          {post.content?.length > 100 && (
+          {showAll ? post?.content : post?.content?.slice(0, 100)}
+          {post?.content?.length > 100 && (
             <span
               className='text-blue ml-2 font-medium cursor-pointer'
               onClick={() => setShowAll(!showAll)}
@@ -750,7 +767,7 @@ const PostCard = ({ post, user, likePost }) => {
         {/* Nút Like */}
         <p className='flex gap-2 items-center text-base cursor-pointer' onClick={likePost}>
           {post?.likes?.some(like =>
-            like.user.userId === user.userId
+            like?.user?.userId === user?.userId
           ) ? (
             <BiSolidLike size={20} color='blue' />
           ) : (

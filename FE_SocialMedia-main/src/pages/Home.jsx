@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
+import { useLocation } from "react-router-dom";
 import {
   TopBar,
   ProfileCard,
@@ -52,7 +52,7 @@ import {
 
 const Home = () => {
   const { user, edit } = useSelector((state) => state.user);
-  console.log("userrrrr: ", user);
+  // console.log("userrrrr: ", user);
   const userId = user?.userId;
   const [friendRequests, setFriendRequests] = useState([]);
   const [suggestedFriends, setSuggestedFriends] = useState([]);
@@ -61,12 +61,15 @@ const Home = () => {
   const dispatch = useDispatch();
   const {posts = [], loading = false} = useSelector((state)=>state.posts || {});
   const [posting, setPosting] = useState(false);
+  // const location  = useLocation();
+  // const isHomeOrPost = location.pathname === "/" || location.pathname.startsWith("/posts/");
+  // console.log("Location path: ", location);
   // const [loading, setLoading] = useState(false);
   // const [posts, setPosts] = useState([]);
   const [content, setContent] = useState("");
   const [preview, setPreview] = useState(null);
   // const [editedFile, setEditedFile] = useState(null);
-  
+  console.log("post orw home: ", posts);
 
  
   // React Hook Form
@@ -166,11 +169,21 @@ const Home = () => {
     dispatch(getPostsStart());
     try{
       if (postId){ // Chế độ xem 1 bài
+        console.log("")
         console.log("Chế độ xem 1 bài  viết với ID: ", postId);
         const singlePost = await getPostById(postId);
         console.log("singlePost: ", singlePost);
-        dispatch(getPostsSuccess([singlePost]));
-        console.log(posts);
+        if (singlePost) {
+          dispatch(getPostsSuccess([singlePost]));
+        } else {
+          console.warn("Không tìm thấy bài viết với ID:", postId);
+          // posts = []
+          dispatch(getPostsSuccess([])); // hoặc set một state báo lỗi
+        dispatch(getPostsFailed("lỗi"));
+
+        }
+        
+        
       }
       else{
       const data = await getPosts(count);
@@ -184,6 +197,7 @@ const Home = () => {
   useEffect(() => {
     fetchPosts();
   }, [dispatch, postId, count]); 
+
   
   // Tạo bài viết 
   const handlePostSubmit = async () => {
@@ -228,7 +242,9 @@ const Home = () => {
     if (!file) return;
     setFile(file);
   };
-  
+  const validPosts = Array.isArray(posts)
+  ? posts.filter(p => p && p.postId)  // Lọc luôn cả post rỗng hoặc thiếu ID
+  : [];
 
   return (
     <>
@@ -352,13 +368,15 @@ const Home = () => {
                 )}
             </form>
 
+            {/* {isHome && ( */}
             {loading ? (
               <Loading />
-            ) : posts.length > 0 ? (
-              [...posts]
+            ) :   validPosts.length > 0 ? (
+              validPosts
               .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sắp xếp giảm dần theo timestamp
               .map((post, index) => {
                 console.log("Post ID:", post.postId, "Likes:", post.likes);
+                // console.log("isHomemmm: ", isHomeOrPost);
                 return (
                 <PostCard
                   key={post.postId || index}

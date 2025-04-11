@@ -51,11 +51,10 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    // public List<PostResponse> getAllPostsByUser(Integer userId) {
-    // List<Post> posts = postRepository.findByUserId(userId);
-    // return
-    // posts.stream().map(PostResponse::fromEntity).collect(Collectors.toList());
-    // }
+    public List<Post> getAllPostsByUser(Integer userId) {
+        List<Post> posts = postRepository.findByUserId(userId);
+        return posts;
+    }
 
     // Hiện bài chưa like
     // public List<Post> getRandomPosts(int count, Integer userId) {

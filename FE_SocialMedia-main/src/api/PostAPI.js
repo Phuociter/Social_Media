@@ -120,7 +120,18 @@ export const getPosts = async (count) => {
       return [];
   }
 };
-
+// Lấy danh sách bài viết của id
+export const getPostsByUserId = async (id) => {
+  try {
+    console.log("Gọi API với id:", id);
+      const response = await axios.get(`/api/posts/get/${id}`); //?userid=${userId}
+      console.log("API Response:", response.data); // Log dữ liệu từ API
+      return response.data;
+  } catch (error) {
+      console.error("API Error:", error);
+      return [];
+  }
+};
 // Lấy 1 bài viết
 export const getPostById = async (postId) => {
   try {

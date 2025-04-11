@@ -2,10 +2,18 @@ import { Outlet, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Home, Login, Profile, Register, ResetPassword } from "./pages";
 import { PostCard } from "./components";
+import { useEffect } from "react";
 
 function Layout() {
   const { user } = useSelector((state) => state.user);
   const location = useLocation();
+  
+  useEffect(() => {
+    console.log("New location:", location.pathname);
+  }, [location]);
+  console.log("Layout rendered:", location.pathname);
+console.log("User info:", user);
+
   return user ?
    <Outlet />
     : 
@@ -21,8 +29,9 @@ function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path='/' element={<Home />} />
-          <Route path='/profile/:id?' element={<Profile />} />
           <Route path="/posts/:postId" element={<Home />} />
+          
+          <Route path='/profile/:id' element={<Profile />} />
         </Route>
 
         <Route path='/register' element={<Register />} />
