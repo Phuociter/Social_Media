@@ -34,12 +34,12 @@ const Login = () => {
       setErrMsg({
         status: "success", message: "Đăng nhập thành công!"
       });
+      
       if (response.data.role === "admin") {
         navigate("/admin");
       } else {
         navigate("/");
       }
-
 
     } catch (error) {
       if (error.response) {

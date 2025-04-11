@@ -8,6 +8,13 @@ import {
   BsInstagram,
   BsPersonFillAdd,
 } from "react-icons/bs";
+import {
+  getFriendRequests,
+  acceptFriendRequest,
+  denyFriendRequest,
+  getSuggestedFriends,
+  sendFriendRequest,
+} from "../api/FriendAPI";
 import { FaTwitterSquare } from "react-icons/fa";
 import { CiLocationOn } from "react-icons/ci";
 import moment from "moment";
@@ -23,16 +30,16 @@ const ProfileCard = ({ user }) => {
     <div>
       <div className='w-full bg-primary flex flex-col items-center shadow-sm rounded-xl px-6 py-4 '>
         <div className='w-full flex items-center justify-between border-b pb-5 border-[#66666645]'>
-          <Link to={"/profile/" + user?._id} className='flex gap-2'>
+          <Link to={"/profile/" + user?.userId} className='flex gap-2'>
             <img
-              src={user?.profileUrl ?? NoProfile}
+              src={user?.profileImage ?? NoProfile}
               alt={user?.email}
               className='w-14 h-14 object-cover rounded-full'
             />
 
             <div className='flex flex-col justify-center'>
               <p className='text-lg font-medium text-ascent-1'>
-                {user?.firstName} {user?.lastName}
+                {user?.username ?? "No name"}
               </p>
               <span className='text-ascent-2'>
                 {user?.profession ?? "No Profession"}

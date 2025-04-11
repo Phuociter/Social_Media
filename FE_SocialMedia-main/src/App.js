@@ -11,7 +11,7 @@ function Layout() {
   
 
   const location = useLocation();
-          // Kiểm tra toàn bộ object user
+
 
 //   return user ? (
 //     <Outlet />
@@ -25,9 +25,11 @@ function App() {
   return (
     <div data-theme={theme} className='w-full min-h-[100vh]'>
       <Routes>
-      <Route>
+
+        <Route>
         <Route path="/login" element={<PrivateRouteUser />}>
           <Route path="" element={<Login />} />
+
         </Route>
         <Route path="/register" element={<PrivateRouteUser />} />
           <Route path="" element={<Register />} />

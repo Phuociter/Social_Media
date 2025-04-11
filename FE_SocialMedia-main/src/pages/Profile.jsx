@@ -11,16 +11,18 @@ import {
 import { posts } from "../assets/data";
 
 const Profile = () => {
+  
   const { id } = useParams();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   // const { posts } = useSelector((state) => state.posts);
   const [userInfo, setUserInfo] = useState(user);
+  // console.log("Profile page loaded",userInfo.userId);
   const [loading, setLoading] = useState(false);
 
   const handleDelete = () => {};
   const handleLikePost = () => {};
-
+  // console.log("userInfo", userInfo.userId);
   return (
     <>
       <div className='home w-full px-0 lg:px-10 pb-20 2xl:px-40 bg-bgColor lg:rounded-lg h-screen overflow-hidden'>
@@ -31,7 +33,7 @@ const Profile = () => {
             <ProfileCard user={userInfo} />
 
             <div className='block lg:hidden'>
-              <FriendsCard friends={userInfo?.friends} />
+              <FriendsCard friends={userInfo?.userId} />
             </div>
           </div>
 
@@ -58,7 +60,7 @@ const Profile = () => {
 
           {/* RIGHT */}
           <div className='hidden w-1/4 h-full lg:flex flex-col gap-8 overflow-y-auto'>
-            <FriendsCard friends={userInfo?.friends} />
+            <FriendsCard userId={userInfo?.userId} />
           </div>
         </div>
       </div>

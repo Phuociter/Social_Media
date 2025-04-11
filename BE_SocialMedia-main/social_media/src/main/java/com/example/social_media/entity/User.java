@@ -3,6 +3,7 @@ package com.example.social_media.entity;
 import java.util.Objects;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.Data;
 
 @Data
@@ -13,6 +14,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Integer userId;
+
+    public Integer getUserId() {
+        return userId;
+    }
 
     @Column(nullable = false, unique = true, length = 40)
     private String username;
@@ -60,6 +65,8 @@ public class User {
     public int hashCode() {
         return Objects.hash(userId);
     }
+
+
 }
 
 
