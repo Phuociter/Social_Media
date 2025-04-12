@@ -4,12 +4,19 @@ package com.example.social_media.controller;
 import com.example.social_media.entity.User;
 import com.example.social_media.service.UserService;
 
+import com.example.social_media.service.FileStorageService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -17,6 +24,9 @@ import java.util.Optional;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -42,6 +52,21 @@ public class UserController {
             // Nếu đăng nhập thành công
             if (userLogin != null) {
                 userLogin.setPassword(null);
+                if (userLogin.getProfileImage() != null && !userLogin.getProfileImage().isEmpty()) {
+                    if (!userLogin.getProfileImage().startsWith("http")) {
+                        String imageUrl = "http://localhost:8080" + userLogin.getProfileImage();
+                        userLogin.setProfileImage(imageUrl);
+                    }
+                }
+
+                if (userLogin.getProfileCover() != null && !userLogin.getProfileCover().isEmpty()) {
+                    if (!userLogin.getProfileCover().startsWith("http")) {
+                        String imageUrl = "http://localhost:8080" + userLogin.getProfileCover();
+                        userLogin.setProfileCover(imageUrl);
+                    }
+                }
+
+
                 return ResponseEntity.ok(userLogin);
             }
             
@@ -57,9 +82,9 @@ public class UserController {
         }
     }
 
-    @GetMapping("/{id}")
-    public Optional<User> getUserById(@PathVariable Integer id) {
-        return userService.getUserById(id);
+    @GetMapping("/{userId}")
+    public Optional<User> getUserById(@PathVariable Integer userId) {
+        return userService.getUserById(userId);
     }
 
     @PostMapping
@@ -67,9 +92,9 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Integer id) {
-        userService.deleteUser(id);
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable Integer userId) {
+        userService.deleteUser(userId);
     }
 
     public class MessageResponse {
@@ -87,5 +112,95 @@ public class UserController {
             this.message = message;
         }
     }
+
+    // Post /api/users/{id} để cập nhật thông tin user
+    // POST /api/users/{id}/InfoChanging: Cập nhật thông tin cơ bản người dùng (không bao gồm ảnh)
+    @PostMapping("/{userId}/InfoChanging")
+    public ResponseEntity<Map<String, String>> updateUserInfo(
+            @PathVariable Integer userId,
+            @RequestBody User updatedUser) {
+
+        Optional<User> optionalUser = userService.getUserById(userId);
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = optionalUser.get();
+
+        // Chỉ update các trường frontend gửi lên
+        user.setUsername(updatedUser.getUsername());
+        user.setEmail(updatedUser.getEmail());
+        user.setProfession(updatedUser.getProfession());
+        user.setBio(updatedUser.getBio());
+        if(user.getStatus() == null || user.getStatus() == 0){
+            user.setStatus(1);
+        }
+        user.setCountry(updatedUser.getCountry());
+        user.setWebsite(updatedUser.getWebsite());
+
+        // Giữ lại các giá trị bắt buộc không được null
+        // password, status, role đã có sẵn trong `user` rồi, nên không cần set lại nếu không thay đổi
+
+        userService.updateUser(user);
+
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Cập nhật thông tin thành công");
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    //Post /api/users/{id}/Profile/PictureChanging Thay doi anh dai dien
+    @PostMapping("/{userId}/Profile/PictureChanging")
+    public ResponseEntity<Map<String, String>> uploadProfilePic(
+            @PathVariable Integer userId,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            Optional<User> optionalUser = userService.getUserById(userId);
+            if (optionalUser.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            User user = optionalUser.get();
+            String fileName = fileStorageService.saveProfilepic(file);
+            user.setProfileImage("/uploads/profile_pics/" + fileName);
+            userService.updateUser(user);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Cap nhat anh dai dien thanh cong");
+            response.put("profilePicUrl", user.getProfileImage());
+
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Failed to upload file"));
+        }
+    }
+
+    //Post /api/users/{id}/Profile/CoverChanging Thay doi anh bia
+    @PostMapping("/{userId}/Profile/CoverChanging")
+    public ResponseEntity<Map<String, String>> uploadCoverPic(@PathVariable Integer userId,
+                                                              @RequestParam("file") MultipartFile file){
+        try{
+            Optional<User> optionalUser = userService.getUserById(userId);
+            if (!optionalUser.isPresent()){
+                return ResponseEntity.notFound().build();
+            }
+
+            User user = optionalUser.get();
+            String fileName = fileStorageService.saveCoverpic(file);
+            user.setProfileCover("/uploads/cover_pics/"+ fileName);
+            userService.updateUser(user);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Cap nhat anh bia thanh cong");
+            response.put("coverPicUrl", user.getProfileCover());
+
+            return  ResponseEntity.ok(response);
+        }catch (IOException e){
+            return ResponseEntity.badRequest().body(Map.of("error","fail to upload file"));
+        }
+    }
+
 }
 
