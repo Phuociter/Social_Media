@@ -2,16 +2,18 @@ import { Outlet, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Home, Login, Profile, Register, ResetPassword, Dashboard, UserManagement, PostManagement } from "./pages";
 import Admin from "./admin/admin";
-import {PrivateRoute, PrivateRouteAdmin, PrivateRouteUser}  from "./pages/PrivateRoute";
+import {PrivateRoute, PrivateRouteAdmin, PublicRoute}  from "./pages/PrivateRoute";
 
 function Layout() {
-  const { user } = useSelector((state) => state.user);
-  
-
-  const location = useLocation();
-  
-  
+  const {user} = useSelector((state) => state.user);
+  if (!user) {
+    return <Navigate to="/login" />;
   }
+  if (user.role === "admin") {
+    return <Navigate to="/admin" />;
+  }
+  return <Outlet />;
+}
 
 function App() {  
   const { theme } = useSelector((state) => state.theme);
@@ -20,13 +22,13 @@ function App() {
       <Routes>
 
         <Route>
-        <Route path="/login" element={<PrivateRouteUser />}>
-          <Route path="" element={<Login />} />
+          <Route path="/login" element={<PublicRoute />}>
+            <Route path="" element={<Login />} />
+          </Route>
+          <Route path="/register" element={<PublicRoute />}>
+            <Route path="" element={<Register />} />
+          </Route>
 
-        </Route>
-        <Route path="/register" element={<PrivateRouteUser />} />
-          <Route path="" element={<Register />} />
-        </Route>
           <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
               <Route index element={<Home />} />
               <Route path='/home' element={<Home />} />
@@ -42,6 +44,7 @@ function App() {
               </Route>
             </Route>
           </Route>
+        </Route>
       </Routes>   
     </div>
   );

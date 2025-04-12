@@ -11,12 +11,18 @@ const PrivateRouteAdmin = () => {
   const { user } = useSelector((state) => state.user);
   return user && user.role === "admin" ? <Outlet /> : <Navigate to="/" />;
 };
-const PrivateRouteUser = () => {
+const PublicRoute = () => {
   const { user } = useSelector((state) => state.user);
-  return user ? <Navigate to="/" /> : <Outlet />;
+
+  if (user) {
+    return user.role === "admin" ? <Navigate to="/admin" /> : <Navigate to="/" />;
+  }
+
+  return <Outlet />;
 };
 
 
+
 export default PrivateRoute;
-export { PrivateRoute, PrivateRouteAdmin, PrivateRouteUser };
+export { PrivateRoute, PrivateRouteAdmin, PublicRoute };
 

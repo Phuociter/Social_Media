@@ -79,7 +79,9 @@ const Topbar = ({ setIsSidebar }) => {
 
   const logout = () => {
     localStorage.removeItem('user');
+
     navigate("/login");
+    window.location.reload(); // Tải lại trang để cập nhật trạng thái người dùng
   };
   
   return (
