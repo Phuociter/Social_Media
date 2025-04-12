@@ -8,78 +8,73 @@ export const loginUser = async (email, password) => {
 };
 
 
-// Gửi lời mời kết bạn
-export const sendFriendRequest = async (senderId, receiverId) => {
-  const response = await axios.post(`/api/friends/request?senderId=${senderId}&receiverId=${receiverId}`);
-  return response.data;
+export const updateInfoUser = async (userId, userData) => {
+  try {
+    const response = await axios.post(`/api/users/${userId}/InfoChanging`, userData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data; // trả về user đã được cập nhật
+  } catch (error) {
+    console.error("Lỗi khi cập nhật user:", error.response ? error.response.data : error.message);
+    throw error;
+  }
 };
 
-// Lấy danh sách lời mời chờ duyệt
-export const getFriendRequests = async (receiverId) => {
-  const response = await axios.get(`/api/friends/requests?receiverId=${2}`);
-  return response.data;
-};
-/////////////////////// 
-/////////////////////// NHỚ LÀM HÀM ĐỂ GỌI RANDOM CÁC ID TRONG FILE NÀY
-// Hàm lấy danh sách gợi ý bạn bè
-export const getSuggestedFriends = async (userId) => {
-    // Thay đổi endpoint tùy theo backend
-    const response = await axios.get(`/api/friends/suggestions?userId=${1}`);
-    return response.data;
-  };
-  
-  // Hàm từ chối lời mời kết bạn
-  export const denyFriendRequest = async (requestId) => {
-    // Thay đổi endpoint tùy theo backend
-    const response = await axios.delete(`/api/friends/request/${requestId}`);
-    return response.data;
-  };
-
-// Chấp nhận lời mời kết bạn
-export const acceptFriendRequest = async (requestId) => {
-  const response = await axios.put(`/api/friends/request/accept/${requestId}`);
-  return response.data;
-};
-
-// Hủy kết bạn
-export const unfriend = async (userId1, userId2) => {
-  const response = await axios.delete(`/api/friends/unfriend?userId1=${userId1}&userId2=${userId2}`);
-  return response.data;
-};
-
-// Lấy danh sách bạn bè
-export const getFriendList = async (userId) => {
-  const response = await axios.get(`/api/friends/list?userId=${1}`);
-  return response.data;
-};
-
-//Sửa thông tin người dùng
-export const setUserInfo = async (userId) => {
-    const response = await axios.get(`/api/friends/list?userId=${1}`);
-    return response.data;
-  };
-  
   //Sửa thông tin người dùng
-export const setUserAvarta = async (userId) => {
-    const response = await axios.get(`/api/friends/list?userId=${1}`);
-    return response.data;
+  export const uploadProfilePicture = async (userId, file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      const response = await axios.post(`/api/users/${userId}/Profile/PictureChanging`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      // Fetch lại thông tin user mới nhất
+      const updatedUser = await axios.get(`/api/users/${userId}`);
+      return updatedUser.data; // Trả về dữ liệu user mới
+    } catch (err) {
+      console.error("Upload avatar failed", err);
+      throw err;
+    }
   };
   
-  //Sửa thông tin người dùng
-export const setUserCover = async (userId) => {
-    const response = await axios.get(`/api/friends/list?userId=${1}`);
-    return response.data;
+  // Upload ảnh bìa
+  export const uploadCoverPicture = async (userId, file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      const response = await axios.post(`/api/users/${userId}/Profile/CoverChanging`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      // Fetch lại thông tin user mới nhất
+      const updatedUser = await axios.get(`/api/users/${userId}`);
+      return updatedUser.data; // Trả về dữ liệu user mới
+    } catch (err) {
+      console.error("Upload cover failed", err);
+      throw err;
+    }
   };
 
 
   export const fetchUserById = createAsyncThunk(
-    'user/fetchUserById',
+    "user/fetchUserById",
     async (userId, thunkAPI) => {
       try {
-        const response = await axios.get(`/api/users/${id}`);
+        const response = await axios.get(`/api/users/${userId}`);
+        // Loại bỏ mật khẩu để không lộ thông tin nhạy cảm
+        response.data.password = null;
         return response.data;
       } catch (error) {
-        return thunkAPI.rejectWithValue(error.response?.data || 'Something went wrong');
+        return thunkAPI.rejectWithValue(
+          error.response?.data || "Something went wrong"
+        );
       }
     }
   );
