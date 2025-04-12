@@ -12,7 +12,7 @@ export const getFriendList = async (userId) => {
   const response = await axios.get(`/api/friends/list?userId=${userId}`);
   return response.data;
 };
- origin/phung
+
 
 // Gửi lời mời kết bạn
 export const sendFriendRequest = async (senderId, receiverId) => {
