@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { fetchUserById } from "../redux/userSlice";
 import {
   FriendsCard,
   Loading,
@@ -11,40 +11,27 @@ import {
 } from "../components";
 import { posts } from "../assets/data";
 import { NoCover } from "../assets";
-import { fetchUserById } from "../api/UserAPI" ;
 
 const Profile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
+  // const { posts } = useSelector((state) => state.posts);
+  const [userInfo, setUserInfo] = useState(user);
+  const [ setLoading] = useState(false);
 
-  const userId = parseInt(id, 10); // ép kiểu từ chuỗi sang int
-
-  // Nếu cần kiểm tra hợp lệ:
-  if (isNaN(userId)) {
-    return <div>Invalid user ID</div>;
-  }
-
-  const { user, selectedUser, loading } = useSelector((state) => state.user);
-  const [userInfo, setUserInfo] = useState(null);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (id && id !== user?._id) {
+    if (id) {
       dispatch(fetchUserById(id));
-    } else {
-      setUserInfo(user);
     }
-  }, [id, user, dispatch]);
+  }, [dispatch, id]);
 
-  useEffect(() => {
-    if (id && id !== user?._id && selectedUser) {
-      setUserInfo(selectedUser);
-    }
-  }, [selectedUser, id, user]);
+  console.log("current user: ", currentUser);
 
   const handleDelete = () => {};
   const handleLikePost = () => {};
-
-  if (loading || !userInfo) return <Loading />;
 
   return (
     <>
@@ -66,15 +53,15 @@ const Profile = () => {
             
             {/*Load ảnh bìa */}
             <img
-              src={user?.coverUrl ?? NoCover}
-              alt={user?.email}
+              src={currentUser?.profileCover?? NoCover}
+              alt={currentUser?.email}
               className='w-[100%] h-[17.5rem] object-cover' 
             />
             {/*Vị trí mới của phần thông tin người dùng */}
 
-            {user && <ProfileCard user={userInfo} />}
+            <ProfileCard user={currentUser} />
               <div className='block lg:hidden'>
-              <FriendsCard friends={userInfo?.friends} />
+              <FriendsCard friends={currentUser?.friends} />
               </div>
 
             {loading ? (
@@ -84,7 +71,7 @@ const Profile = () => {
                 <PostCard
                   post={post}
                   key={post?._id}
-                  user={user}
+                  user={currentUser}
                   deletePost={handleDelete}
                   likePost={handleLikePost}
                 />
