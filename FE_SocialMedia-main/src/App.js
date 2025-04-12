@@ -1,57 +1,35 @@
 import { Outlet, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Home, Login, Profile, Register, ResetPassword, Dashboard, UserManagement, PostManagement } from "./pages";
-import Admin from "./admin/admin";
-import {PrivateRoute, PrivateRouteAdmin, PrivateRouteUser}  from "./pages/PrivateRoute";
-
-
+import { Home, Login, Profile, Register, ResetPassword, EditProfilePage } from "./pages";
 
 function Layout() {
   const { user } = useSelector((state) => state.user);
-  
-
   const location = useLocation();
+  return user ?
+   <Outlet />
+    : 
+    <Navigate to='/login' state={{ from: location }} replace />;
 
+}
 
-//   return user ? (
-//     <Outlet />
-//   ) : (
-//     <Navigate to='/login' state={{ from: location }} replace />
-//   )
-  }
-
-function App() {  
+function App() {
   const { theme } = useSelector((state) => state.theme);
+
   return (
     <div data-theme={theme} className='w-full min-h-[100vh]'>
       <Routes>
-
-        <Route>
-        <Route path="/login" element={<PrivateRouteUser />}>
-          <Route path="" element={<Login />} />
-
+        <Route element={<Layout />}>
+          <Route path='/' element={<Home />} />
+          <Route path='/profile/:id?' element={<Profile />} />
         </Route>
-        <Route path="/register" element={<PrivateRouteUser />} />
-          <Route path="" element={<Register />} />
-        </Route>
-          <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
-              <Route index element={<Home />} />
-              <Route path='/home' element={<Home />} />
-              <Route path='/profile/:id?' element={<Profile />} />
-          {/* kiẻm tra xem có phải admin hay không */}
-            <Route element={<PrivateRouteAdmin />}> 
-              <Route path='/admin' element={<Admin />} >
-                <Route index element={<Navigate to='dashboard' replace />} />
-                <Route path='dashboard' element={<Dashboard />} />  
-                <Route path='UserManagement' element={<UserManagement />} />
-                <Route path='PostManagement' element={<PostManagement />} />
-              </Route>
-            </Route>
-          </Route>
-      </Routes>   
+
+        <Route path='/register' element={<Register />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
+        <Route path="/edit-profile" element={<EditProfilePage />} />
+      </Routes>
     </div>
   );
 }
 
 export default App;
-  
