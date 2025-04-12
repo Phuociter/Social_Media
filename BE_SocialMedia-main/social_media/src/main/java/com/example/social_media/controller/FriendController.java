@@ -5,6 +5,8 @@ import com.example.social_media.entity.Friendship;
 import com.example.social_media.service.FriendService;
 import com.example.social_media.entity.User;
 
+import com.example.social_media.dto.FriendshipDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,8 @@ public class FriendController {
 
     @Autowired
     private FriendService friendService;
+
+    private FriendshipDTO friendshipDTO;
 
     @GetMapping("/suggestions")
     public ResponseEntity<List<User>> getFriendSuggestions(@RequestParam Integer userId, @RequestParam(defaultValue = "10") int limit) {
@@ -71,6 +75,63 @@ public class FriendController {
             return ResponseEntity.ok("hai nguoi khong phai la ban be.");
         }
     }
-    
+
+
+    @GetMapping("/getFriendStatus")
+    public ResponseEntity<FriendshipDTO> checkFriendshipStatus(
+            @RequestParam Integer userId1,
+            @RequestParam Integer userId2) {
+
+        // 1. Kiểm tra nếu userId1 gửi lời mời cho userId2
+        Optional<FriendRequest> fromUser1ToUser2 = friendService.getPendingRequests(userId2)
+                .stream()
+                .filter(req -> req.getSender().getUserId().equals(userId1))
+                .findFirst();
+
+        if (fromUser1ToUser2.isPresent()) {
+            FriendRequest request = fromUser1ToUser2.get();
+            return ResponseEntity.ok(new FriendshipDTO(
+                    "pending",
+                    request.getSender().getUserId(),
+                    request.getReceiver().getUserId(),
+                    request.getRequestId()
+            ));
+        }
+
+        // 2. Kiểm tra nếu userId2 gửi lời mời cho userId1
+        Optional<FriendRequest> fromUser2ToUser1 = friendService.getPendingRequests(userId1)
+                .stream()
+                .filter(req -> req.getSender().getUserId().equals(userId2))
+                .findFirst();
+
+        if (fromUser2ToUser1.isPresent()) {
+            FriendRequest request = fromUser2ToUser1.get();
+            return ResponseEntity.ok(new FriendshipDTO(
+                    "pending",
+                    request.getSender().getUserId(),
+                    request.getReceiver().getUserId(),
+                    request.getRequestId()
+            ));
+        }
+
+        // 3. Kiểm tra nếu đã là bạn
+        Optional<Friendship> friendship = friendService.isFriend(userId1, userId2);
+        if (friendship.isPresent()) {
+            return ResponseEntity.ok(new FriendshipDTO(
+                    "friends",
+                    userId1,
+                    userId2,
+                    null
+            ));
+        }
+
+        // 4. Không phải bạn, cũng không có lời mời
+        return ResponseEntity.ok(new FriendshipDTO(
+                "not_friends",
+                userId1,
+                userId2,
+                null
+        ));
+    }
 }
 
