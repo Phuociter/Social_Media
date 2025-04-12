@@ -50,4 +50,14 @@ export const unfriend = async (userId1, userId2) => {
   return response.data;
 };
 
+//Kiem tra thong tin ban be
+export const getFriendStatus = async (userId1, userId2) => {
+  const response = await axios.get(`/api/friends/getFriendStatus?userId1=${userId1}&=${userId2}`, {
+    params: {
+      userId1,
+      userId2,
+    },
+  });
+  return response.data; // { status, senderId, receiverId, requestId }
+};
 
