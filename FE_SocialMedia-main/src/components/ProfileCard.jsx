@@ -52,15 +52,6 @@ const checkFriendStatus = async () => {
     const result = await getFriendStatus(currentUser?.userId, user?.userId);
     console.log("Friend Status Result:", result);
     setFriendStatus(result);
-    /*
-      Ví dụ result sẽ là:
-      {
-        status: "pending", // hoặc "friends", "not_friends"
-        senderId: 1,
-        receiverId: 2,
-        requestId: 10
-      }
-    */
   } catch (error) {
     console.error("Lỗi khi gọi API friend status:", error);
   }
@@ -75,11 +66,6 @@ useEffect(() => {
   }
 }, [currentUser, user]);
 
-
-  console.log("after fetch status: current user: ", currentUser?.userId);
-  console.log("after fetch status: logged user: ", user?.userId);
-  console.log(" fetched status: logged user: ", friendStatus);
-  
 
   const handleFriendRequest = async () => {
     try {
