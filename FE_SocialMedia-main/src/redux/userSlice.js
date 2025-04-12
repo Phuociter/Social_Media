@@ -1,9 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchUserById } from "../api/UserAPI";
 
 const initialState = {
   user: JSON.parse(window?.localStorage.getItem("user")),
   edit: false,
-
+  currentUser: null,
+  loading: false,
+  error: null,
 };
 
 const userSlice = createSlice({
@@ -27,12 +30,33 @@ const userSlice = createSlice({
     updateProfile(state, action) {
       state.edit = action.payload;
     },
+    setUser: (state, action) => {
+      state.user = action.payload;
+    },
+    
   },
+
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUserById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload; // Gán giá trị lấy được thành currentUser
+      })
+      .addCase(fetchUserById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  },
+  
 });
 
 export default userSlice.reducer;
 
-// Action creator dùng để action đăng nhập với dữ liệu từ API
+// Action creator dùng để dispatch action đăng nhập với dữ liệu từ API
 export function UserLogin(user) {
   return (dispatch) => {
     dispatch(userSlice.actions.login(user));
@@ -41,7 +65,8 @@ export function UserLogin(user) {
 
 // Nếu cần đăng ký, bạn phải định nghĩa reducer register trong slice, nếu không, loại bỏ UserRegister.
 export function UserRegister(user) {
-  return (dispatch, getState) => {
+  return (dispatch) => {
+    // Giả sử bạn có reducer register, nếu không, loại bỏ function này.
     dispatch(userSlice.actions.register(user));
   };
 }
@@ -57,3 +82,9 @@ export function UpdateProfile(val) {
     dispatch(userSlice.actions.updateProfile(val));
   };
 }
+export function setUser(user){
+  return (dispatch) => {
+    dispatch(userSlice.actions.setUser(user))
+  };
+}
+export { fetchUserById };
