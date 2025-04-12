@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.social_media.entity.Post;
 import com.example.social_media.repository.PostRepository;
@@ -33,10 +34,10 @@ public class PostController {
         return postService.getAllPosts();
     }
 
-    @GetMapping("/{postId}")
-    public List<Post> getPostsByPostId(@PathVariable Integer postId) {
-        return postService.getPostsByPostId(postId);
-    }
+    // @GetMapping("/{postId}")
+    // public List<Post> getPostsByPostId(@PathVariable Integer postId) {
+    //     return postService.getPostsByPostId(postId);
+    // }
 
     @PostMapping("/{postId}/update")
     public ResponseEntity<Post> updatePost(@PathVariable Integer postId, @RequestBody Post post) {

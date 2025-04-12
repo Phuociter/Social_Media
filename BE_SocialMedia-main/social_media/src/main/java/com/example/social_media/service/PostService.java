@@ -6,6 +6,7 @@ import com.example.social_media.entity.Post.Status;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,8 +24,14 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class PostService {
+    
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     public List<Post> getAllPosts() {
         return postRepository.findAll();
@@ -36,9 +43,9 @@ public class PostService {
         return postRepository.findByStatus(status);
     }
 
-    public List<Post> getPostsByPostId(Integer postId) {
-        return postRepository.findByPostId(postId);
-    }
+    // public List<Post> getPostsByPostId(Integer postId) {
+    //     return postRepository.findByPostId(postId);
+    // }
     public Post blockPost(Integer postId) {
         Post post = postRepository.findById(postId).orElse(null);
         if (post != null) {
@@ -68,12 +75,7 @@ public class PostService {
     }
     
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private FileStorageService fileStorageService;
-
+   
     public Post createPost(Integer userId, String content, MultipartFile file) throws IOException {
         // 1. Kiểm tra xem user có tồn tại không
         User user = userRepository.findById(userId)
@@ -154,3 +156,4 @@ public class PostService {
         return postRepository.save(post);
     }
 }
+
