@@ -1,6 +1,7 @@
 package com.example.social_media.controller;
 
 import com.example.social_media.config.MessageResponse;
+
 import com.example.social_media.entity.User;
 import com.example.social_media.service.UserService;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -46,6 +48,7 @@ public class UserController {
     }
 
     // Đăng nhập
+
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user) {
         try {
@@ -83,6 +86,7 @@ public class UserController {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new MessageResponse("Có lỗi xảy ra khi đăng nhập"));
+
         }
     }
 
@@ -103,3 +107,4 @@ public class UserController {
     }
 
 }
+

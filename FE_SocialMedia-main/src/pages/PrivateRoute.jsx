@@ -19,3 +19,4 @@ const PrivateRouteUser = () => {
 
 export default PrivateRoute;
 export { PrivateRoute, PrivateRouteAdmin, PrivateRouteUser };
+

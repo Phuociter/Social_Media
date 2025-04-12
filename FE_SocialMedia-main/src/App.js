@@ -4,20 +4,16 @@ import { Home, Login, Profile, Register, ResetPassword, Dashboard, UserManagemen
 import Admin from "./admin/admin";
 import {PrivateRoute, PrivateRouteAdmin, PrivateRouteUser}  from "./pages/PrivateRoute";
 
-
-
 function Layout() {
   const { user } = useSelector((state) => state.user);
   
 
   const location = useLocation();
-
-
-//   return user ? (
-//     <Outlet />
-//   ) : (
-//     <Navigate to='/login' state={{ from: location }} replace />
-//   )
+  
+  return user ?
+   <Outlet />
+    : 
+    <Navigate to='/login' state={{ from: location }} replace />;
   }
 
 function App() {  
@@ -37,6 +33,7 @@ function App() {
           <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
               <Route index element={<Home />} />
               <Route path='/home' element={<Home />} />
+              <Route path="/posts/:postId" element={<Home />} />
               <Route path='/profile/:id?' element={<Profile />} />
           {/* kiẻm tra xem có phải admin hay không */}
             <Route element={<PrivateRouteAdmin />}> 

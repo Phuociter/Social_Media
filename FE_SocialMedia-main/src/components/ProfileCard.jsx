@@ -15,6 +15,7 @@ import {
   getSuggestedFriends,
   sendFriendRequest,
 } from "../api/FriendAPI";
+
 import { FaTwitterSquare } from "react-icons/fa";
 import { CiLocationOn } from "react-icons/ci";
 import moment from "moment";
@@ -33,22 +34,25 @@ const ProfileCard = ({ user }) => {
           <Link to={"/profile/" + user?.userId} className='flex gap-2'>
             <img
               src={user?.profileImage ?? NoProfile}
+
               alt={user?.email}
               className='w-14 h-14 object-cover rounded-full'
             />
 
             <div className='flex flex-col justify-center'>
               <p className='text-lg font-medium text-ascent-1'>
-                {user?.username ?? "No name"}
+
+                {user?.username}
               </p>
               <span className='text-ascent-2'>
-                {user?.profession ?? "No Profession"}
+                {user?.bio ?? "No Profession"}
               </span>
             </div>
           </Link>
 
           <div className=''>
-            {user?._id === data?._id ? (
+
+            {user?.userId === data?.userId ? (
               <LiaEditSolid
                 size={22}
                 className='text-blue cursor-pointer'

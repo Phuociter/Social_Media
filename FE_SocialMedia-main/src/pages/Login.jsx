@@ -21,7 +21,6 @@ const Login = () => {
   });
 
   const navigate = useNavigate();
-
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
@@ -40,6 +39,7 @@ const Login = () => {
       } else {
         navigate("/");
       }
+
 
     } catch (error) {
       if (error.response) {
@@ -128,6 +128,7 @@ const Login = () => {
                   ? "text-[#f64949fe]"
                   : "text-[#2ba150fe]"
                   } mt-0.5`}
+
               >
                 {errMsg?.message}
               </span>

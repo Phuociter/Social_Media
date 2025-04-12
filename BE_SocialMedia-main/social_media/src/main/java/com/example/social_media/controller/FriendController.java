@@ -5,6 +5,7 @@ import com.example.social_media.entity.Friendship;
 import com.example.social_media.service.FriendService;
 import com.example.social_media.entity.User;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ public class FriendController {
     @GetMapping("/suggestions")
     public ResponseEntity<List<User>> getFriendSuggestions(@RequestParam Integer userId, @RequestParam(defaultValue = "10") int limit) {
         List<User> suggestions = friendService.getFriendSuggestions(limit);
+
         return ResponseEntity.ok(suggestions);
     }
 
@@ -44,6 +46,7 @@ public class FriendController {
     public ResponseEntity<?> acceptRequest(@PathVariable Integer requestId) {
         friendService.acceptFriendRequest(requestId);
         return ResponseEntity.ok("loi moi da duoc chap nhan.");
+
     }
 
     // Hủy kết bạn
@@ -51,6 +54,7 @@ public class FriendController {
     public ResponseEntity<?> unfriend(@RequestParam Integer userId1, @RequestParam Integer userId2) {
         friendService.unfriend(userId1, userId2);
         return ResponseEntity.ok("da huy ket ban.");
+
     }
 
     // Lấy danh sách bạn bè
@@ -71,6 +75,6 @@ public class FriendController {
             return ResponseEntity.ok("hai nguoi khong phai la ban be.");
         }
     }
-    
+
 }
 

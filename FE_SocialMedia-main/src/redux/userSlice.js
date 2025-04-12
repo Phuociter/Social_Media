@@ -3,7 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   user: JSON.parse(window?.localStorage.getItem("user")),
   edit: false,
-
 };
 
 const userSlice = createSlice({
@@ -32,7 +31,6 @@ const userSlice = createSlice({
 
 export default userSlice.reducer;
 
-// Action creator dùng để action đăng nhập với dữ liệu từ API
 export function UserLogin(user) {
   return (dispatch) => {
     dispatch(userSlice.actions.login(user));
@@ -42,6 +40,7 @@ export function UserLogin(user) {
 // Nếu cần đăng ký, bạn phải định nghĩa reducer register trong slice, nếu không, loại bỏ UserRegister.
 export function UserRegister(user) {
   return (dispatch, getState) => {
+
     dispatch(userSlice.actions.register(user));
   };
 }

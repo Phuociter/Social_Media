@@ -12,6 +12,7 @@ export const getFriendList = async (userId) => {
   const response = await axios.get(`/api/friends/list?userId=${userId}`);
   return response.data;
 };
+ origin/phung
 
 // Gửi lời mời kết bạn
 export const sendFriendRequest = async (senderId, receiverId) => {
@@ -28,6 +29,7 @@ export const getFriendRequests = async (receiverId) => {
 export const getSuggestedFriends = async (userId) => {
     // Thay đổi endpoint tùy theo backend
     const response = await axios.get(`/api/friends/suggestions?userId=${userId}`);
+
     return response.data;
   };
   
@@ -49,5 +51,4 @@ export const unfriend = async (userId1, userId2) => {
   const response = await axios.delete(`/api/friends/unfriend?userId1=${userId1}&userId2=${userId2}`);
   return response.data;
 };
-
 
