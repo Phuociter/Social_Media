@@ -1,3 +1,4 @@
 import NoProfile from "./userprofile.png";
 import BgImage from "./img.jpeg";
-export { NoProfile, BgImage };
+import NoCover from "./userCover.jpg";
+export { NoProfile, BgImage, NoCover };

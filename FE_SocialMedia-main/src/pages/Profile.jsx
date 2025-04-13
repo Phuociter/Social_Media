@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import { fetchUserById } from "../redux/userSlice";
+
 import {
   FriendsCard,
   Loading,
@@ -8,6 +10,8 @@ import {
   ProfileCard,
   TopBar,
 } from "../components";
+import { posts } from "../assets/data";
+import { NoCover } from "../assets";
 import { getPostsFailed, getPostsStart, getPostsSuccess, toggleLikeState } from "../redux/postSlice";
 import { getPostsByUserId, toggleLikeAPI } from "../api/PostAPI";
 // import { posts } from "../assets/data";  
@@ -16,6 +20,23 @@ const Profile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
+  
+  const [userInfo, setUserInfo] = useState(user);
+  const [ setLoading] = useState(false);
+
+  const { currentUser, loading, error } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchUserById(id));
+    }
+  }, [dispatch, id]);
+
+  console.log("current user: ", currentUser);
+
+  const handleDelete = () => {};
+  const handleLikePost = () => {};
+
   const {posts = [], loading = false} = useSelector((state)=>state.posts || {});
   
   // const { posts } = useSelector((state) => state.posts);
@@ -56,9 +77,8 @@ const Profile = () => {
         <TopBar />
         <div className='w-full flex gap-2 lg:gap-4 md:pl-4 pt-5 pb-10 h-full'>
           {/* LEFT */}
-          <div className='hidden w-1/3 lg:w-1/4 md:flex flex-col gap-6 overflow-y-auto'>
-            <ProfileCard user={user} />
-
+          {/*Thử dời vị trí của profìe care sang phân giữa để hợp lý hơn */}
+          <div className='hidden w-1/6 lg:w-1/7 md:flex flex-col gap-6 overflow-y-auto'>
             <div className='block lg:hidden'>
               <FriendsCard userId={user?.userId} />
             </div>
@@ -66,6 +86,32 @@ const Profile = () => {
 
           {/* CENTER */}
           <div className=' flex-1 h-full bg-orimary px-4 flex flex-col gap-6 overflow-y-auto'>
+            
+            {/*Load ảnh bìa */}
+            <img
+              src={currentUser?.profileCover?? NoCover}
+              alt={currentUser?.email}
+              className='w-[100%] h-[17.5rem] object-cover' 
+            />
+            {/*Vị trí mới của phần thông tin người dùng */}
+
+            <ProfileCard user={currentUser} />
+              <div className='block lg:hidden'>
+              <FriendsCard friends={currentUser?.friends} />
+              </div>
+
+            {loading ? (
+              <Loading />
+            ) : posts?.length > 0 ? (
+              posts?.map((post) => (
+                <PostCard
+                  post={post}
+                  key={post?._id}
+                  user={currentUser}
+                  deletePost={handleDelete}
+                  likePost={handleLikePost}
+                />
+              ))
             {loading ? (
               <Loading />
             ) : posts && posts?.length > 0 ? (
