@@ -5,19 +5,20 @@ import { LiaEditSolid } from "react-icons/lia";
 import { useParams } from "react-router-dom";
 import {
   BsBriefcase,
-  BsFacebook,
-  BsInstagram,
   BsPersonFillAdd,
 } from "react-icons/bs";
-import { FaTwitterSquare } from "react-icons/fa";
+import { CustomButton } from "../components";
 import { CiLocationOn } from "react-icons/ci";
 import moment from "moment";
 import { NoProfile } from "../assets";
-import { sendFriendRequest,
+import {
+  sendFriendRequest,
   acceptFriendRequest,
   denyFriendRequest,
   unfriend,
-  getFriendStatus,} from "../api/FriendAPI";
+  getFriendStatus,
+  deleteFriendRequest,
+} from "../api/FriendAPI";
 
 const ProfileCard = ({ user }) => {
   const { id } = useParams();
@@ -32,39 +33,30 @@ const ProfileCard = ({ user }) => {
   };
 
 
-{/*useEffect(() => {
-  if (currentUser && user) {
-    const fetchFriendshipInfo = async () => {
-      try {
-        const response = await getFriendStatus(currentUser.userId, user.userId);
-        // Giả sử response.data chứa toàn bộ thông tin của friendship
-        setFriendStatus(response.data);
-      } catch (error) {
-        console.error("Failed to fetch friend status", error);
-      }
-    };
-    fetchFriendshipInfo();
-  }
-}, [currentUser, user]);*/}
+  const checkFriendStatus = async () => {
+    try {
+      const result = await getFriendStatus(currentUser?.userId, user?.userId);
+      console.log("Friend Status Result:", result);
+      setFriendStatus(result);
 
-const checkFriendStatus = async () => {
-  try {
-    const result = await getFriendStatus(currentUser?.userId, user?.userId);
-    console.log("Friend Status Result:", result);
-    setFriendStatus(result);
-  } catch (error) {
-    console.error("Lỗi khi gọi API friend status:", error);
-  }
-};
+    } catch (error) {
+      console.error("Lỗi khi gọi API friend status:", error);
+    }
+  };
 
-// Gọi hàm khi cần, ví dụ trong useEffect
-useEffect(() => {
-  if (currentUser?.userId && user?.userId) {
-    checkFriendStatus();
-  } else {
-    console.log("Đang chờ user được load...");
-  }
-}, [currentUser, user]);
+  // Gọi hàm khi cần, ví dụ trong useEffect
+  useEffect(() => {
+    if (currentUser?.userId && user?.userId) {
+      checkFriendStatus();
+    } else {
+      console.log("Đang chờ user được load...");
+    }
+  }, [currentUser, user]);
+
+
+  console.log("after fetch status: current user: ", currentUser?.userId);
+  console.log("after fetch status: logged user: ", user?.userId);
+  console.log(" fetched status: logged user: ", friendStatus);
 
 
   const handleFriendRequest = async () => {
@@ -78,10 +70,10 @@ useEffect(() => {
         receiverId: user?.userId,
         requestId: response.requestId || null,
       };
-  
+
       setFriendStatus(newStatus);
       localStorage.setItem("friendStatus", JSON.stringify(newStatus));
-      
+
     } catch (error) {
       console.error("Failed to send friend request:", error);
       alert("Failed to send friend request!");
@@ -131,6 +123,19 @@ useEffect(() => {
     }
   };
 
+  const handleCancel = async () => {
+    try {
+      if (!currentUser?.userId || !user?.userId) return;
+      const response = await denyFriendRequest(friendStatus.requestId);
+      alert("Cancel Request!!!");
+      setFriendStatus(null); // Xóa trạng thái bạn bè
+      localStorage.removeItem("friendStatus");
+
+    } catch (error) {
+      console.error("Failed to unfriend", error);
+    }
+  };
+
   // Logic hiển thị nút
   const renderActionButton = () => {
     // Nếu đang xem trang cá nhân của mình
@@ -143,17 +148,18 @@ useEffect(() => {
         />
       );
     }
-    
+
     // Nếu đã là bạn bè
     if (friendStatus && friendStatus.status === "accepted") {
       return (
         <div>
           <span className="text-green-500 font-medium">Bạn bè</span>
-          <button 
-            onClick={handleUnfriend} 
-            className="bg-red-500 text-white px-2 py-1 rounded ml-2">
-            Hủy kết bạn
-          </button>
+
+          <CustomButton
+            title='Unfriend'
+            containerStyles='bg-[#0444a4] text-xs text-white px-1.5 py-1 rounded-full'
+            onClick={handleUnfriend}
+          />
         </div>
       );
     }
@@ -163,39 +169,41 @@ useEffect(() => {
       // Nếu currentUser là người đã gửi lời mời
       if (friendStatus.senderId === currentUser.userId) {
         return (
-          <button
-            //onClick={()}
-            className="bg-yellow-500 text-white px-2 py-1 rounded">
-            Hủy lời mời
-          </button>
+
+          <CustomButton
+            title='Cancel request'
+            containerStyles='bg-[#0444a4] text-xs text-white px-1.5 py-1 rounded-full'
+            onClick={handleCancel}
+          />
+
         );
       } else {
         // Nghĩa là currentUser được nhận lời mời từ người khác
         return (
           <div>
-            <button
+            <CustomButton
+              title='Accept'
+              containerStyles='bg-[#0444a4] text-xs text-white px-1.5 py-1 rounded-full'
               onClick={handleAcceptFriendRequest}
-              className="bg-green-500 text-white px-2 py-1 rounded">
-              Accept
-            </button>
-            <button
+            />
+            <CustomButton
+              title='Deny'
+              containerStyles='border border-[#666] text-xs text-ascent-1 px-1.5 py-1 rounded-full'
               onClick={handleDenyFriendRequest}
-              className="bg-red-500 text-white px-2 py-1 rounded ml-2">
-              Deny
-            </button>
+            />
           </div>
         );
       }
     }
-    
+
     // Nếu chưa có lời mời nào (friendStatus === null)
     return (
-       <button
-      className="bg-[#0444a430] text-sm text-white p-1 rounded"
-      onClick={handleFriendRequest}
-    >
-      <BsPersonFillAdd size={20} className="text-[#0f52b6]" />
-    </button>
+      <button
+        className="bg-[#0444a430] text-sm text-white p-1 rounded"
+        onClick={handleFriendRequest}
+      >
+        <BsPersonFillAdd size={20} className="text-[#0f52b6]" />
+      </button>
     );
   };
 
@@ -221,7 +229,7 @@ useEffect(() => {
           </Link>
 
           <div className="">
-          {renderActionButton()}
+            {renderActionButton()}
           </div>
         </div>
 
@@ -238,7 +246,7 @@ useEffect(() => {
         </div>
 
         <div className="w-full flex flex-col gap-2 py-4 border-b border-[#66666645]">
-      
+
           <div className="flex items-center justify-between">
             <span className="text-ascent-2">Joined</span>
             <span className="text-ascent-1 text-base">
@@ -247,7 +255,7 @@ useEffect(() => {
           </div>
         </div>
 
-       
+
       </div>
     </div>
   );
