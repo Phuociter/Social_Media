@@ -1,9 +1,27 @@
 package com.example.social_media.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
-
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.Data;
 
 @Data
 @Entity
@@ -21,7 +39,7 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(length = 20)
+    @Column(name = "mediatype", length = 20)
     private String mediaType;
 
     @Column(length = 255)
@@ -31,10 +49,11 @@ public class Post {
     @Column(length = 8, nullable = false)
     private Status status = Status.approved;
 
-    @Column(nullable = false)
+
+    @Column(name = "likecount", nullable = false)
     private Integer likeCount = 0;
 
-    @Column(nullable = false)
+    @Column(name = "commentcount", nullable = false)
     private Integer commentCount = 0;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -42,6 +61,15 @@ public class Post {
     private Date timestamp = new Date();
 
     public enum Status {
-        pending, approved, rejected
+        pending, approved, rejected;
     }
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Like> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Comment> comments = new ArrayList<>();
+
 }

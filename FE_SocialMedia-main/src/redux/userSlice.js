@@ -7,6 +7,7 @@ const initialState = {
   currentUser: null,
   loading: false,
   error: null,
+
 };
 
 const userSlice = createSlice({
@@ -56,7 +57,6 @@ const userSlice = createSlice({
 
 export default userSlice.reducer;
 
-// Action creator dùng để dispatch action đăng nhập với dữ liệu từ API
 export function UserLogin(user) {
   return (dispatch) => {
     dispatch(userSlice.actions.login(user));
@@ -65,8 +65,7 @@ export function UserLogin(user) {
 
 // Nếu cần đăng ký, bạn phải định nghĩa reducer register trong slice, nếu không, loại bỏ UserRegister.
 export function UserRegister(user) {
-  return (dispatch) => {
-    // Giả sử bạn có reducer register, nếu không, loại bỏ function này.
+  return (dispatch, getState) => {
     dispatch(userSlice.actions.register(user));
   };
 }

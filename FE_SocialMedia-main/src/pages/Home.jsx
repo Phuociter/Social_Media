@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 
+import { Link, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import {
   TopBar,
   ProfileCard,
@@ -15,7 +16,8 @@ import {
 
 import { NoProfile } from "../assets";
 import { BsFiletypeGif, BsPersonFillAdd } from "react-icons/bs";
-import { BiImages, BiSolidVideo } from "react-icons/bi";
+
+import { BiImages, BiSolidVideo, BiSolidXCircle } from "react-icons/bi";
 import { useForm } from "react-hook-form";
 
 import {
@@ -27,23 +29,50 @@ import {
   sendFriendRequest,
 } from "../api/FriendAPI";
 
-// Dữ liệu mock cho posts
-import { posts } from "../assets/data";
+import { 
+  getPosts,
+  createPost,
+  editPost,
+  removePost,
+  commentPost,
+  sharePost,
+  toggleLikeAPI,
+  getPostById,
+ } from "../api/PostAPI";
+
+ import { 
+  getPostsStart, 
+  getPostsSuccess, 
+  getPostsFailed, 
+  addPost, 
+  deletePost, 
+  updatePost , 
+  toggleLikeState
+} from "../redux/postSlice";
 
 const Home = () => {
   const { user, edit } = useSelector((state) => state.user);
+  // console.log("userrrrr: ", user);
+  const userId = user?.userId;
   const [friendRequests, setFriendRequests] = useState([]);
   const [suggestedFriends, setSuggestedFriends] = useState([]);
   const [errMsg, setErrMsg] = useState("");
   const [file, setFile] = useState(null);
-  const [posting, setPosting] = useState(false);
-  const [loading, setLoading] = useState(false);
-  // const [friends, setFriends] = useState([]);
 
+  const dispatch = useDispatch();
+  const {posts = [], loading = false} = useSelector((state)=>state.posts || {});
+  const [posting, setPosting] = useState(false);
+
+  const [content, setContent] = useState("");
+  const [preview, setPreview] = useState(null);
+  console.log("post orw home: ", posts);
+ 
   // React Hook Form
   const {
     register,
     handleSubmit,
+    setValue,
+    reset,
     formState: { errors },
   } = useForm();
 
@@ -60,9 +89,9 @@ const Home = () => {
   // Hàm gọi API để lấy danh sách friend requests
   const fetchFriendRequests = async (userId) => {
     try {
- 
       let data = await getFriendRequests(userId);
       setFriendRequests(data);
+
 
     } catch (error) {
       console.error("Lỗi khi lấy friend requests:", error);
@@ -95,6 +124,7 @@ const Home = () => {
       else 
         filteredData = data;
       setSuggestedFriends(filteredData);
+
     } catch (error) {
       console.error("Lỗi khi lấy gợi ý bạn bè:", error);
     }
@@ -107,6 +137,7 @@ const Home = () => {
       // Xoá request khỏi danh sách
       setFriendRequests((prev) =>
         prev.filter((req) => req.sender.userId !== request.sender.userId)
+
       );
       alert("Đã chấp nhận lời mời kết bạn!");
     } catch (error) {
@@ -120,6 +151,7 @@ const Home = () => {
       await denyFriendRequest(request.requestId);
       setFriendRequests((prev) =>
         prev.filter((req) => req.userId !== request.sender.userId)
+
       );
       alert("Đã từ chối lời mời kết bạn!");
     } catch (error) {
@@ -139,18 +171,89 @@ const Home = () => {
       // Loại bỏ user này khỏi danh sách gợi ý
       setSuggestedFriends((prev) =>
         prev.filter((f) => f.userId !== receiverId)
+
       );
     } catch (error) {
       console.error("Lỗi khi gửi lời mời kết bạn:", error);
     }
   };
 
-  // Hàm handle post (chưa có API nên để trống)
-  const handlePostSubmit = async (data) => {
-    console.log("Nội dung post:", data);
-    console.log("File:", file);
-    // Gọi API post nếu có
+  //Post
+
+  const {postId} = useParams();
+  const count = 5;
+  // Lấy danh sách bài viết khi trang đang load
+  const fetchPosts = async () => {
+    dispatch(getPostsStart());
+    try{
+      if (postId){ // Chế độ xem 1 bài
+        console.log("")
+        console.log("Chế độ xem 1 bài  viết với ID: ", postId);
+        const singlePost = await getPostById(postId);
+        console.log("singlePost: ", singlePost);
+        if (singlePost) {
+          dispatch(getPostsSuccess([singlePost]));
+        } else {
+          console.warn("Không tìm thấy bài viết với ID:", postId);
+          // posts = []
+          dispatch(getPostsSuccess([])); // hoặc set một state báo lỗi
+        dispatch(getPostsFailed("lỗi"));
+
+        }
+        
+        
+      }
+      else{
+      const data = await getPosts(count);
+      dispatch(getPostsSuccess(data));
+      }
+    } catch (err) {
+      dispatch(getPostsFailed(err.message));
+    }
   };
+
+  useEffect(() => {
+    fetchPosts();
+  }, [dispatch, postId, count]); 
+
+  
+  // Tạo bài viết 
+  const handlePostSubmit = async () => {
+    try{
+      
+      const newPost = await createPost(user.userId, content, file);
+      dispatch(addPost(newPost));
+      console.log(newPost);
+      setContent('');
+      reset({ description: '' }); // Reset giá trị của ô input
+      setFile(null);
+      setErrMsg(null);
+    }catch(err){
+      setErrMsg({message: "Failed to post!", status: "failed"});
+    }
+  };
+
+
+  // Like/unlike
+  const handleLikePost  = async(postId) => {
+    try{  
+      dispatch(toggleLikeState({postId, userId: userId}));
+      await toggleLikeAPI(postId, userId);
+    }
+    catch(err){
+      dispatch(toggleLikeState({postId, userId: userId}));
+      console.error("Like failed: ", err);
+    }
+  }
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFile(file);
+  };
+  const validPosts = Array.isArray(posts)
+  ? posts.filter(p => p && p.postId)  // Lọc luôn cả post rỗng hoặc thiếu ID
+  : [];
 
   return (
     <>
@@ -161,7 +264,7 @@ const Home = () => {
           {/* LEFT */}
           <div className='hidden w-1/3 lg:w-1/4 h-full md:flex flex-col gap-6 overflow-y-auto'>
             <ProfileCard user={user} />
-            <FriendsCard friends={user?.friends} />
+            <FriendsCard userId={user?.userId} />
           </div>
 
           {/* CENTER */}
@@ -182,6 +285,7 @@ const Home = () => {
                   name='description'
                   register={register("description", {
                     required: "Write something about post",
+                    onChange: (e) => setContent(e.target.value) // Cập nhật state content
                   })}
                   error={errors.description ? errors.description.message : ""}
                 />
@@ -206,7 +310,7 @@ const Home = () => {
                 >
                   <input
                     type='file'
-                    onChange={(e) => setFile(e.target.files[0])}
+                    onChange={handleFileChange}
                     className='hidden'
                     id='imgUpload'
                     data-max-size='5120'
@@ -223,7 +327,8 @@ const Home = () => {
                   <input
                     type='file'
                     data-max-size='5120'
-                    onChange={(e) => setFile(e.target.files[0])}
+
+                    onChange={handleFileChange}
                     className='hidden'
                     id='videoUpload'
                     accept='.mp4, .wav'
@@ -231,23 +336,6 @@ const Home = () => {
                   <BiSolidVideo />
                   <span>Video</span>
                 </label>
-
-                <label
-                  className='flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer'
-                  htmlFor='vgifUpload'
-                >
-                  <input
-                    type='file'
-                    data-max-size='5120'
-                    onChange={(e) => setFile(e.target.files[0])}
-                    className='hidden'
-                    id='vgifUpload'
-                    accept='.gif'
-                  />
-                  <BsFiletypeGif />
-                  <span>Gif</span>
-                </label>
-
                 <div>
                   {posting ? (
                     <Loading />
@@ -259,21 +347,54 @@ const Home = () => {
                     />
                   )}
                 </div>
+
+                
               </div>
+              {file && (
+                  <div className="relative w-full mt-2">
+                    {file.type.startsWith("video/") ? (
+                      <video controls className="w-full rounded-lg">
+                        <source src={URL.createObjectURL(file)} type={file.type} />
+                      </video>
+                    ) : (
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt="preview"
+                        className="w-full rounded-lg"
+                      />
+                    )}
+                    {/* Nút xoá */}
+                    <button
+                      type="button"
+                      onClick={() => setFile(null)}
+                      className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 hover:bg-black"
+                    >
+                      <BiSolidXCircle color="black" size={20} />
+
+                    </button>
+                  </div>
+                )}
             </form>
 
+            {/* {isHome && ( */}
             {loading ? (
               <Loading />
-            ) : posts?.length > 0 ? (
-              posts?.map((post, index) => (
+            ) :   validPosts.length > 0 ? (
+              validPosts
+              .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sắp xếp giảm dần theo timestamp
+              .map((post, index) => {
+                console.log("Post ID:", post.postId, "Likes:", post.likes);
+                // console.log("isHomemmm: ", isHomeOrPost);
+                return (
                 <PostCard
-                  key={post?._id || index}
+                  key={post.postId || index}
                   post={post}
                   user={user}
-                  deletePost={() => {}}
-                  likePost={() => {}}
+                  
+                  // deletePost={() => handleDeletePost(post.postId)}
+                  likePost={() => handleLikePost(post.postId)}
                 />
-              ))
+              )})
             ) : (
               <div className='flex w-full h-full items-center justify-center'>
                 <p className='text-lg text-ascent-2'>No Post Available</p>
@@ -300,6 +421,7 @@ const Home = () => {
                       <img
                         src={request.sender?.profileImage ?? NoProfile}
                         alt={request.sender?.username}
+
                         className='w-10 h-10 object-cover rounded-full'
                       />
                       <div className='flex-1'>
@@ -308,6 +430,7 @@ const Home = () => {
                         </p>
                         <span className='text-sm text-ascent-2'>
                           {request.sender?.username ?? "No Profession"}
+
                         </span>
                       </div>
                     </Link>
@@ -317,11 +440,13 @@ const Home = () => {
                         title='Accept'
                         containerStyles='bg-[#0444a4] text-xs text-white px-1.5 py-1 rounded-full'
                         onClick={() => handleAccept(request)}
+
                       />
                       <CustomButton
                         title='Deny'
                         containerStyles='border border-[#666] text-xs text-ascent-1 px-1.5 py-1 rounded-full'
                         onClick={() => handleDeny(request)}
+
                       />
                     </div>
                   </div>
@@ -339,6 +464,7 @@ const Home = () => {
                   <div className='flex items-center justify-between' key={friend.username || index}>
                     <Link
                       to={`/profile/${friend?.userId}`}
+
                       className='w-full flex gap-4 items-center cursor-pointer'
                     >
                       <img
@@ -352,6 +478,7 @@ const Home = () => {
                         </p>
                         <span className='text-sm text-ascent-2'>
                           {friend?.username ?? "No Profession"}
+
                         </span>
                       </div>
                     </Link>
@@ -360,6 +487,7 @@ const Home = () => {
                       <button
                         className='bg-[#0444a430] text-sm text-white p-1 rounded'
                         onClick={() => handleAddFriend(friend.userId)}
+
                       >
                         <BsPersonFillAdd size={20} className='text-[#0f52b6]' />
                       </button>

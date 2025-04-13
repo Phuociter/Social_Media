@@ -93,8 +93,10 @@ const FriendsCard = ({ userId }) => {
           })}
         </div>
       </div>
+
     </div>
   );
 };
 
 export default FriendsCard;
+

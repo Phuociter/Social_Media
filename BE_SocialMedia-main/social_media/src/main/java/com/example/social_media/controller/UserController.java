@@ -1,5 +1,6 @@
 package com.example.social_media.controller;
 
+import com.example.social_media.config.MessageResponse;
 
 import com.example.social_media.entity.User;
 import com.example.social_media.service.UserService;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/users")
@@ -32,6 +34,28 @@ public class UserController {
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
+
+    // Đăng ký
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        try {
+
+            String email = user.getEmail();
+            String username = user.getUsername();
+            if (userService.getUserByEmail(email) != null || userService.getUserByUsername(username) != null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new MessageResponse("Email hoặc username đã tồn tại"));
+            }
+            User registeredUser = userService.registerUser(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Có lỗi xảy ra khi đăng ký"));
+        }
+
+    }
+
+    // Đăng nhập
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user) {
@@ -110,6 +134,7 @@ public class UserController {
     
         public void setMessage(String message) {
             this.message = message;
+
         }
     }
 

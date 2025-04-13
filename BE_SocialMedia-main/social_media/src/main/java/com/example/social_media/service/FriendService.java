@@ -2,6 +2,7 @@ package com.example.social_media.service;
 
 import com.example.social_media.entity.FriendRequest;
 import com.example.social_media.entity.Friendship;
+
 import com.example.social_media.entity.User;
 import com.example.social_media.repository.FriendRequestRepository;
 import com.example.social_media.repository.FriendshipRepository;
@@ -40,10 +41,12 @@ public class FriendService {
         User receiver = userRepository.findById(receiverId)
                 .orElseThrow(() -> new RuntimeException("khong tim thay nguoi nhan"));
 
+
         // Kiểm tra xem đã có lời mời kết bạn chưa
         Optional<FriendRequest> existingRequest = friendRequestRepository.findBySenderAndReceiver(sender, receiver);
         if (existingRequest.isPresent()) {
             throw new RuntimeException("Loi moi da duoc gui hoac hai ban la ban be.");
+
         }
 
         // Tạo lời mời kết bạn mới
@@ -61,11 +64,13 @@ public class FriendService {
         return friendRequestRepository.findByReceiverUserIdAndStatus(receiverId, FriendRequest.Status.pending);
     }
 
+
     // Hàm chấp nhận lời mời kết bạn
     public void acceptFriendRequest(Integer requestId) {
         // Tìm lời mời kết bạn theo requestId
         FriendRequest request = friendRequestRepository.findById(requestId)
             .orElseThrow(() -> new RuntimeException("khong tim thay loi moi."));
+
 
         // Cập nhật trạng thái thành ACCEPTED
         request.setStatus(FriendRequest.Status.accepted);
@@ -109,4 +114,5 @@ public class FriendService {
         return friendshipOpt;
     }
     
+
 }

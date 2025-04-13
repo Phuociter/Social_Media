@@ -19,6 +19,7 @@ import {
   getFriendStatus,
   deleteFriendRequest,
 } from "../api/FriendAPI";
+import { UpdateProfile } from "../redux/userSlice";
 
 const ProfileCard = ({ user }) => {
   const { user: currentUser, edit } = useSelector((state) => state.user); // currentUser là người đang đăng nhập
@@ -215,6 +216,7 @@ const ProfileCard = ({ user }) => {
           <Link to={"/profile/" + user?.userId} className="flex gap-2">
             <img
               src={user?.profileImage ?? NoProfile}
+
               alt={user?.email}
               className="w-14 h-14 object-cover rounded-full"
             />
@@ -225,12 +227,15 @@ const ProfileCard = ({ user }) => {
               </p>
               <span className="text-ascent-2">
                 {user?.profession ?? "No Profession"}
+
               </span>
             </div>
           </Link>
 
-          <div className="">
+
+<div className="">
             {renderActionButton()}
+
           </div>
         </div>
 

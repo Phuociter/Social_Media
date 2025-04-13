@@ -13,6 +13,7 @@ export const getFriendList = async (userId) => {
   return response.data;
 };
 
+
 // Gửi lời mời kết bạn
 export const sendFriendRequest = async (senderId, receiverId) => {
   const response = await axios.post(`/api/friends/request?senderId=${senderId}&receiverId=${receiverId}`);
@@ -28,6 +29,7 @@ export const getFriendRequests = async (receiverId) => {
 export const getSuggestedFriends = async (userId) => {
     // Thay đổi endpoint tùy theo backend
     const response = await axios.get(`/api/friends/suggestions?userId=${userId}`);
+
     return response.data;
   };
   

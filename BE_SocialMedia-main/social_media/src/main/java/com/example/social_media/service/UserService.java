@@ -3,6 +3,7 @@ package com.example.social_media.service;
 import com.example.social_media.entity.User;
 import com.example.social_media.repository.UserRepository;
 import com.example.social_media.config.MessageResponse;
+
 import com.example.social_media.entity.Role;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,7 @@ public class UserService {
     public User loginUser(String email, String password) {
         User user = userRepository.findByEmail(email);
 
+
         if (user != null && user.getPassword().equals(password)) {
             return user;
         }
@@ -76,3 +78,4 @@ public class UserService {
         return null;
     }
 }
+
