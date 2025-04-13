@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { LiaEditSolid } from "react-icons/lia";
-import { useParams } from "react-router-dom";
+
 import {
   BsBriefcase,
   BsPersonFillAdd,
@@ -21,7 +21,6 @@ import {
 } from "../api/FriendAPI";
 
 const ProfileCard = ({ user }) => {
-  const { id } = useParams();
   const { user: currentUser, edit } = useSelector((state) => state.user); // currentUser là người đang đăng nhập
   const [friendStatus, setFriendStatus] = useState(null); // State lưu trạng thái kết bạn
   const dispatch = useDispatch();
@@ -36,7 +35,6 @@ const ProfileCard = ({ user }) => {
   const checkFriendStatus = async () => {
     try {
       const result = await getFriendStatus(currentUser?.userId, user?.userId);
-      console.log("Friend Status Result:", result);
       setFriendStatus(result);
 
     } catch (error) {
@@ -54,11 +52,7 @@ const ProfileCard = ({ user }) => {
   }, [currentUser, user]);
 
 
-  console.log("after fetch status: current user: ", currentUser?.userId);
-  console.log("after fetch status: logged user: ", user?.userId);
-  console.log(" fetched status: logged user: ", friendStatus);
-
-
+  //ham gui loi moi ket ban
   const handleFriendRequest = async () => {
     try {
       if (!currentUser?.userId || !user?.userId) return;
@@ -71,6 +65,7 @@ const ProfileCard = ({ user }) => {
         requestId: response.requestId || null,
       };
 
+      console.log("newstatus", newStatus)
       setFriendStatus(newStatus);
       localStorage.setItem("friendStatus", JSON.stringify(newStatus));
 
@@ -80,6 +75,8 @@ const ProfileCard = ({ user }) => {
     }
   };
 
+
+  //ham dong y loi moi ket ban
   const handleAcceptFriendRequest = async () => {
     try {
       if (!friendStatus?.requestId) return;
@@ -90,13 +87,16 @@ const ProfileCard = ({ user }) => {
         status: "accepted",
         senderId: friendStatus?.senderId,
         receiverId: friendStatus?.receiverId,
-        requestId: null,
+        requestId: response.requestId || null,
       };
+      setFriendStatus(updatedStatus);
+      localStorage.setItem("friendStatus", JSON.stringify(updatedStatus));
     } catch (error) {
       console.error("Failed to accept friend request", error);
     }
   };
 
+  //ham tu choi loi moi ket ban
   const handleDenyFriendRequest = async () => {
     try {
       if (!friendStatus?.requestId) return;
@@ -110,6 +110,7 @@ const ProfileCard = ({ user }) => {
     }
   };
 
+  //ham unfriend
   const handleUnfriend = async () => {
     try {
       if (!currentUser?.userId || !user?.userId) return;
