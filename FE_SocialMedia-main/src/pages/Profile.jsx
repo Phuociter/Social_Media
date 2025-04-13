@@ -57,10 +57,10 @@ const Profile = () => {
         <div className='w-full flex gap-2 lg:gap-4 md:pl-4 pt-5 pb-10 h-full'>
           {/* LEFT */}
           <div className='hidden w-1/3 lg:w-1/4 md:flex flex-col gap-6 overflow-y-auto'>
-            <ProfileCard user={userInfo} />
+            <ProfileCard user={user} />
 
             <div className='block lg:hidden'>
-              <FriendsCard friends={userInfo?.userId} />
+              <FriendsCard userId={user?.userId} />
             </div>
           </div>
 
@@ -92,7 +92,7 @@ const Profile = () => {
 
           {/* RIGHT */}
           <div className='hidden w-1/4 h-full lg:flex flex-col gap-8 overflow-y-auto'>
-            <FriendsCard friends={userInfo?.userId} />
+            <FriendsCard userId={user?.userId} />
           </div>
         </div>
       </div>
