@@ -1,0 +1,17 @@
+# Node.js
+node_modules/
+.npm
+.cache/
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# Hệ điều hành
+.DS_Store       # macOS
+Thumbs.db       # Windows
