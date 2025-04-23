@@ -59,11 +59,11 @@ public class FriendController {
 
     }
 
-    @DeleteMapping("/deleteFriendRequest")
-    public ResponseEntity<?> unfriend(@RequestParam Integer requestId) {
-        friendService.deleteFriendRequest(requestId);
-        return ResponseEntity.ok("da huy ket ban.");
-    }
+    // @DeleteMapping("/deleteFriendRequest")
+    // public ResponseEntity<?> unfriend(@RequestParam Integer requestId) {
+    //     friendService.deleteFriendRequest(requestId);
+    //     return ResponseEntity.ok("da huy ket ban.");
+    // }
 
     // Lấy danh sách bạn bè
     @GetMapping("/list")

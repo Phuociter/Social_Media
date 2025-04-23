@@ -67,6 +67,8 @@ public class User {
     @Column(length = 5, nullable = false)
     private Role role = Role.user;
 
+    @Column(name ="profession",length = 255)
+    private String profession;
     // public enum Role {
 
 

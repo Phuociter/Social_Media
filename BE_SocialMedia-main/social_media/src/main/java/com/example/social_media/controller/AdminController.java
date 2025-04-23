@@ -48,7 +48,7 @@ public class AdminController {
     //Cập nhật người dùng
     @PutMapping("/users/{id}")
     public String updateUser(@PathVariable Integer id, @RequestBody User user) {
-        userService.updateUser(id, user);        
+        userService.updateUser(id);        
         return "User updated successfully";
     }
 }

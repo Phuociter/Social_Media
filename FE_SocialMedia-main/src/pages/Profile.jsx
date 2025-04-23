@@ -14,6 +14,7 @@ import { posts } from "../assets/data";
 import { NoCover } from "../assets";
 import { getPostsFailed, getPostsStart, getPostsSuccess, toggleLikeState } from "../redux/postSlice";
 import { getPostsByUserId, toggleLikeAPI } from "../api/PostAPI";
+
 // import { posts } from "../assets/data";  
 
 const Profile = () => {
