@@ -36,15 +36,15 @@ public class PostController {
 
     // @GetMapping("/{postId}")
     // public List<Post> getPostsByPostId(@PathVariable Integer postId) {
-    //     return postService.getPostsByPostId(postId);
+    // return postService.getPostsByPostId(postId);
     // }
 
     @PostMapping("/{postId}/update")
     public ResponseEntity<Post> updatePost(@PathVariable Integer postId, @RequestBody Post post) {
         Post updatedPost = postService.updatePost(postId, post);
         return ResponseEntity.ok(updatedPost);
-    }  
-    
+    }
+
     @Autowired
     private PostRepository postRepository;
 
@@ -54,7 +54,7 @@ public class PostController {
             @RequestParam("content") String content,
             @RequestParam(value = "mediaFile", required = false) MultipartFile mediaFile) throws IOException {
         Post post = postService.createPost(userId, content, mediaFile);
-        post.setCommentCount(1);
+        // post.setCommentCount(1);
         return ResponseEntity.ok(post);
     }
 
@@ -74,10 +74,17 @@ public class PostController {
     // return ResponseEntity.ok(postService.getRandomPosts(count, userId));
     // }
 
-    @GetMapping("/posts")
-    public ResponseEntity<List<Post>> getSimpleRandomPosts(
-            @RequestParam(defaultValue = "5") int count) {
-        return ResponseEntity.ok(postService.getRandomPosts(count));
+    // @GetMapping("/posts")
+    // public ResponseEntity<List<Post>> getSimpleRandomPosts(
+    // @RequestParam(defaultValue = "5") int count) {
+    // return ResponseEntity.ok(postService.getRandomPosts(count));
+    // }
+
+    // API: Lấy tất cả post, ưu tiên bạn bè
+    @GetMapping("posts/all/{userId}")
+    public ResponseEntity<List<Post>> getAllPostsWithPriority(@PathVariable Integer userId) {
+        List<Post> posts = postService.getAllPostsWithPriority(userId);
+        return ResponseEntity.ok(posts);
     }
 
     @GetMapping("/posts/{postId}")

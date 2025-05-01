@@ -110,9 +110,9 @@ export const createCommentAPI = async(postId, userId, comment) => {
 // };
 
 // Lấy danh sách bài viết
-export const getPosts = async (count) => {
+export const getPosts = async (userId) => {
   try {
-      const response = await axios.get(`/api/posts?count=${count}`); //?userid=${userId}
+      const response = await axios.get(`/api/posts/all/${userId}`); //?userid=${userId}
       console.log("API Response:", response.data); // Log dữ liệu từ API
       return response.data;
   } catch (error) {

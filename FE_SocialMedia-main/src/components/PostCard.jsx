@@ -14,7 +14,7 @@ import { addCommentState, replaceOptimisticComment, removeOptimisticComment, set
 import { createSelector } from "@reduxjs/toolkit";
 
 
-const CommentForm = ({ user, id, replyAt }) => {
+const CommentForm = ({ user, id}) => {
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const dispatch = useDispatch();
@@ -66,7 +66,7 @@ const CommentForm = ({ user, id, replyAt }) => {
     >
       <div className='w-full flex items-center gap-2 py-4'>
         <img
-          src={user?.profileUrl ?? NoProfile}
+          src={user?.profileImage ?? NoProfile}
           alt='User Image'
           className='w-10 h-10 rounded-full object-cover'
         />
@@ -74,7 +74,7 @@ const CommentForm = ({ user, id, replyAt }) => {
         <TextInput
           name='comment'
           styles='w-full rounded-full py-3'
-          placeholder={replyAt ? `Reply @${replyAt}` : "Comment this post"}
+          placeholder={ "Comment this post"}
           register={register("comment", {
             required: "Comment can not be empty",
           })}
@@ -128,13 +128,11 @@ const PostCard = ({ post, user, likePost }) => {
   const dispatch = useDispatch();
   const [showToast, setShowToast] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  // const isPostAuthor = post?.user?.userId === user?.userId;
-  // const isPostAuthor = post && post.user && user && post.user.userId === user.userId;
-  const { id } = useParams(); // id từ URL
+  const theme = useSelector((state) => state.theme.theme); // Lấy giá trị theme từ Redux store
+  
 
   const isPostAuthor =
-    post?.user?.userId === user?.userId || id === String(user?.userId);
-
+    post?.user?.userId === user?.userId ;
   const [isEditing, setIsEditing] = useState(false);
   const [editedFile, setEditedFile] = useState(null);
 
@@ -241,12 +239,20 @@ const PostCard = ({ post, user, likePost }) => {
     }
   };
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setEditedFile(file);
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      if (selectedFile.size > MAX_FILE_SIZE) {
+        alert("File quá lớn! Vui lòng chọn file nhỏ hơn 10MB.");
+        setEditedFile(null); // Không lưu file để không preview
+        return;
+      }
+      setEditedFile(selectedFile);
+    }
   };
+  
 
   const handleLikeComment = async (postId, commentId, userId) => {
     try {
@@ -453,59 +459,8 @@ const PostCard = ({ post, user, likePost }) => {
                       )}
                       {content.likes.length} Likes
                     </p>
-                    {/* <span
-                      className='text-blue cursor-pointer'
-                      onClick={() => setReplyComments(content?.commentId)}
-                    >
-                      Reply
-                    </span> */}
                   </div>
-                  {/* 
-                  {replyComments === content?._id && (
-                    <CommentForm
-                      user={user}
-                      id={content?._id}
-                      replyAt={content?.from}
-                      getComments={() => getComments(post?._id)}
-                    />
-                  )} */}
                 </div>
-
-                {/* REPLIES
-
-                <div className='py-2 px-8 mt-6'>
-                  {comment?.replies?.length > 0 && (
-                    <p
-                      className='text-base text-ascent-1 cursor-pointer'
-                      onClick={() =>
-                        setShowReply(
-                          showReply === comment?.replies?._id
-                            ? 0
-                            : comment?.replies?._id
-                        )
-                      }
-                    >
-                      Show Replies ({comment?.replies?.length})
-                    </p>
-                  )}
-
-                  {showReply === comment?.replies?._id &&
-                    comment?.replies?.map((reply) => (
-                      <ReplyCard
-                        reply={reply}
-                        user={user}
-                        key={reply?._id}
-                        // handleLike={() =>
-                        //   handleLike(
-                        //     "/posts/like-comment/" +
-                        //       comment?._id +
-                        //       "/" +
-                        //       reply?._id
-                        //   )
-                        // }
-                      />
-                    ))}
-                </div> */}
               </div>
             ))
           ) : (
@@ -517,7 +472,8 @@ const PostCard = ({ post, user, likePost }) => {
       )}
       {/* Toast notification */}
       {showToast && (
-        <div className="fixed bottom-4 right-4 px-4 py-2 rounded-lg animate-fadeIn dark:bg-gray-800 bg-gray-100">
+        <div className= "fixed bottom-4 right-4 px-4 py-2 rounded-lg animate-fadeIn bg-white text-black">
+          
           Đã sao chép liên kết!
         </div>
       )}
@@ -554,7 +510,7 @@ const PostCard = ({ post, user, likePost }) => {
               {editedFile ? (
                 <div className="relative w-full mt-2">
                   {editedFile.type.startsWith("video/") ? (
-                    <video controls className="w-full rounded-lg">
+                    <video key={URL.createObjectURL(editedFile)}  controls className="w-full rounded-lg">
                       <source src={URL.createObjectURL(editedFile)} type={editedFile.type} />
                     </video>
                   ) : (

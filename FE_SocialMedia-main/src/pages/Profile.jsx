@@ -25,7 +25,6 @@ const Profile = () => {
 
   // Lấy thông tin người dùng từ redux
   const { user, currentUser, loading1, error } = useSelector((state) => state.user);
-  
   // Khai báo state cho loading (nếu cần dùng trong component)
   const [loading, setLoading] = useState(false);
 
@@ -104,12 +103,12 @@ const Profile = () => {
             [...userPosts]
               .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
               .map((post, index) => {
-                console.log("Post ID:", post.postId, "Likes:", post.likes);
+                console.log("Post ID:", post.postId, "Likes:", post.likes, "Author: ", post.user.userId);
                 return (
                   <PostCard
                     key={post.postId || index}
                     post={post}
-                    user={currentUser}
+                    user={user}
                     deletePost={handleDelete}
                     likePost={() => handleLikePost(post.postId)}
                   />
