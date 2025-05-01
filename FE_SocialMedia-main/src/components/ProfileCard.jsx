@@ -41,6 +41,7 @@ const ProfileCard = ({ user }) => {
   useEffect(() => {
     async function checkStatus() {
       if (currentUser?.userId && user?.userId) {
+        localStorage.removeItem("friendStatus");
         const storedStatus = localStorage.getItem("friendStatus");
         if (storedStatus) {
           setFriendStatus(JSON.parse(storedStatus));  // Lấy từ localStorage nếu có
