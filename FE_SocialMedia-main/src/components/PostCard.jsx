@@ -153,13 +153,16 @@ const PostCard = ({ post, user, likePost }) => {
   });
 
   
-  // Log dữ liệu likes mỗi khi post thay đổi
-  useEffect(() => {
-  if (!post || !user) return null;
-
-    //console.log("PostCard - Post ID:", post.postId, "Likes:", post.likes);
-    //console.log("Current User ID:", user?.userId); // Kiểm tra user ID
-  }, [post, user]);
+// PostCard.jsx
+// PostCard.jsx
+useEffect(() => {
+   if (!post || !user) return null;
+    if (!post || !user) return;       // ← no value returned
+  
+     // any logging or setup you need
+     console.log("PostCard - Post ID:", post.postId, "Likes:", post.likes);
+   }, [post, user]);
+  
 
   // Kiểm tra dữ liệu trước khi render
   

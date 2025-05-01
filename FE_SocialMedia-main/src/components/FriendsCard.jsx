@@ -4,7 +4,9 @@ import { useSelector } from 'react-redux';
 import { NoProfile } from "../assets";
 import { getFriendList, unfriend } from '../api/FriendAPI';
 
-const FriendsCard = ({ userId }) => {
+import { CustomButton } from "../components";
+
+const FriendsCard = ({ userId, currentId }) => {
   const [friends, setFriends] = useState([]);
   const user = useSelector((state) => state.user);
 
@@ -13,7 +15,7 @@ const FriendsCard = ({ userId }) => {
       try {
         // Giả sử API trả về một đối tượng có thuộc tính `friends` chứa mảng
         const data = await getFriendList(user.user.userId);
-        setFriends(data); 
+        setFriends(data);
       } catch (error) {
         console.error("Error fetching friends:", error);
       }
@@ -62,6 +64,7 @@ const FriendsCard = ({ userId }) => {
               friendship.user1.userId === userId
                 ? friendship.user2
                 : friendship.user1;
+
             return (
               <div key={friendId} className="flex items-center justify-between">
                 <Link
@@ -82,15 +85,28 @@ const FriendsCard = ({ userId }) => {
                     </span>
                   </div>
                 </Link>
-                <button
-                  className='bg-red-500 text-white text-xs px-2 py-1 rounded'
-                  onClick={() => handleUnfriend(friendId)}
-                >
-                  Hủy kết bạn
-                </button>
+
+                {userId === currentId ? (
+                  <CustomButton
+                    title="Hủy kết bạn"
+                    containerStyles="bg-white text-red-500 border border-red-500 text-xs px-2 py-1 rounded"
+                    onClick={() => handleUnfriend(friendId)}
+          
+                 />
+                ) : (
+                  <Link to={`/profile/${friendId}`}>
+                    <CustomButton
+                    title="Xem trang"
+                    containerStyles="bg-blue-500 text-blue text-xs px-2 py-1 rounded"
+                    onClick={() => handleUnfriend(friendId)}
+          
+                    />
+                  </Link>
+                )}
               </div>
             );
           })}
+
         </div>
       </div>
 
