@@ -19,6 +19,9 @@ import {
 } from "../redux/postSlice";
 import { getPostsByUserId, toggleLikeAPI } from "../api/PostAPI";
 
+//user: nguoi dung dang dang nhap
+//currentUser: chu profile
+
 const Profile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -79,7 +82,7 @@ const Profile = () => {
         {/* LEFT */}
         <div className='hidden w-1/6 lg:w-1/7 md:flex flex-col gap-6 overflow-y-auto'>
           <div className='block lg:hidden'>
-            <FriendsCard userId={user?.userId} />
+            <FriendsCard userId={currentUser?.userId} />
           </div>
         </div>
 
@@ -124,7 +127,7 @@ const Profile = () => {
 
         {/* RIGHT */}
         <div className='hidden w-1/4 h-full lg:flex flex-col gap-8 overflow-y-auto'>
-          <FriendsCard userId={user?.userId} />
+          <FriendsCard userId={currentUser?.userId} currentId={user?.userId} />
         </div>
       </div>
     </div>
