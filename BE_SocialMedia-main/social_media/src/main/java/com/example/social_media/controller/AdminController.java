@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.social_media.entity.User;
 import com.example.social_media.entity.Post;
+import com.example.social_media.entity.Post.Status;
 import com.example.social_media.service.UserService;
 import com.example.social_media.service.PostService;
 
@@ -48,6 +49,41 @@ public class AdminController {
     public ResponseEntity<List<Post>> getAllPosts() {
         List<Post> posts = postService.getAllPosts();
         return ResponseEntity.ok(posts);
+    }
+
+    @PutMapping("/posts/{postId}/update")
+    public ResponseEntity<String> updatePostStatus(@PathVariable Integer postId,
+            @RequestBody Map<String, String> postData) {
+        // Lấy trạng thái từ request body (trong dạng String)
+        String statusStr = postData.get("status");
+        System.out.println("Status: " + statusStr);
+        // Kiểm tra nếu status hợp lệ
+        if (statusStr == null || statusStr.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Trạng thái không hợp lệ");
+        }
+
+        // Chuyển đổi String thành Enum Status
+        Status status;
+        try {
+            status = Status.valueOf(statusStr.toLowerCase()); // Chuyển thành enum
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Trạng thái không hợp lệ");
+        }
+
+        // Tìm bài viết theo postId
+        Post existingPost = postService.getPostById(postId);
+
+        if (existingPost != null) {
+            // Cập nhật trạng thái bài viết bằng enum Status
+            existingPost.setStatus(status); // Đây là kiểu Post.Status, không phải String
+            
+            // Lưu lại bài viết đã cập nhật
+            postService.updatePost(existingPost.getPostId(), existingPost);
+
+            return ResponseEntity.ok("Cập nhật trạng thái bài viết thành công");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Bài viết không tồn tại");
+        }
     }
 
     // khóa bai viết

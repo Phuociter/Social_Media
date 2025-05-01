@@ -26,8 +26,8 @@ public class Like {
     private Integer likeId;
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "PostID")
+    @JsonBackReference
     private Post post;
 
 
