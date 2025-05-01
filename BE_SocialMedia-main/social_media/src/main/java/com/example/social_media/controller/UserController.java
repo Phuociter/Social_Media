@@ -41,10 +41,9 @@ public class UserController {
         try {
 
             String email = user.getEmail();
-            String username = user.getUsername();
-            if (userService.getUserByEmail(email) != null || userService.getUserByUsername(username) != null) {
+            if (userService.getUserByEmail(email) != null ) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new MessageResponse("Email hoặc username đã tồn tại"));
+                        .body(new MessageResponse("Email đã tồn tại"));
             }
             User registeredUser = userService.registerUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);

@@ -69,7 +69,7 @@ public class UserService {
     public User blockUser(Integer userId) {
         User user = userRepository.findById(userId).orElse(null);
         if (user != null) {
-            user.setStatus(0);  
+            user.setStatus(user.getStatus() == 1 ? 0 : 1); // Giả sử 0 là trạng thái bị khóa
             return userRepository.save(user);
         }
         return null;
