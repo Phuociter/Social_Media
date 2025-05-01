@@ -35,7 +35,7 @@ function App() {
               <Route path='/home' element={<Home />} />
               <Route path="/posts/:postId" element={<Home />} />
               <Route path='/profile/:id?' element={<Profile />} />
-              <Route path="/edit-profile" element={<EditProfilePage />} />
+              {/* <Route path="/edit-profile" element={<EditProfilePage />} /> */}
           {/* kiẻm tra xem có phải admin hay không */}
             <Route element={<PrivateRouteAdmin />}> 
               <Route path='/admin' element={<Admin />} >

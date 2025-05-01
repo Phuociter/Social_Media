@@ -32,6 +32,7 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "PostID", nullable = false)
+    @JsonManagedReference
     private Post post;
 
     @ManyToOne

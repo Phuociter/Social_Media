@@ -34,6 +34,7 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "UserID", nullable = false)
+    @JsonIgnore
     private User user;
 
     @Column(columnDefinition = "TEXT")
@@ -63,6 +64,7 @@ public class Post {
     public enum Status {
         pending, approved, rejected;
     }
+
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

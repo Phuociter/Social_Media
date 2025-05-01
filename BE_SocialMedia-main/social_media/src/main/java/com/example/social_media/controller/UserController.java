@@ -41,10 +41,9 @@ public class UserController {
         try {
 
             String email = user.getEmail();
-            String username = user.getUsername();
-            if (userService.getUserByEmail(email) != null || userService.getUserByUsername(username) != null) {
+            if (userService.getUserByEmail(email) != null ) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new MessageResponse("Email hoặc username đã tồn tại"));
+                        .body(new MessageResponse("Email đã tồn tại"));
             }
             User registeredUser = userService.registerUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
@@ -113,30 +112,24 @@ public class UserController {
 
     @PostMapping
     public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+        return userService.registerUser(user);
+    }
+    // block user
+    @PostMapping("/{userId}")
+    public ResponseEntity<?> blockUser(@PathVariable Integer userId) {
+        Optional<User> optionalUser = userService.getUserById(userId);
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = optionalUser.get();
+        user.setStatus(0); // Đặt trạng thái là 0 (bị khóa)
+        userService.updateUser(user.getUserId());
+
+        return ResponseEntity.ok(new MessageResponse("Tài khoản đã bị khóa"));
     }
 
-    @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable Integer userId) {
-        userService.deleteUser(userId);
-    }
-
-    public class MessageResponse {
-        private String message;
     
-        public MessageResponse(String message) {
-            this.message = message;
-        }
-    
-        public String getMessage() {
-            return message;
-        }
-    
-        public void setMessage(String message) {
-            this.message = message;
-
-        }
-    }
 
     // Post /api/users/{id} để cập nhật thông tin user
     // POST /api/users/{id}/InfoChanging: Cập nhật thông tin cơ bản người dùng (không bao gồm ảnh)
@@ -166,7 +159,7 @@ public class UserController {
         // Giữ lại các giá trị bắt buộc không được null
         // password, status, role đã có sẵn trong `user` rồi, nên không cần set lại nếu không thay đổi
 
-        userService.updateUser(user);
+        userService.updateUser(user.getUserId());
 
 
         Map<String, String> response = new HashMap<>();
@@ -190,7 +183,7 @@ public class UserController {
             User user = optionalUser.get();
             String fileName = fileStorageService.saveProfilepic(file);
             user.setProfileImage("/uploads/profile_pics/" + fileName);
-            userService.updateUser(user);
+            userService.updateUser(user.getUserId());
 
             Map<String, String> response = new HashMap<>();
             response.put("message", "Cap nhat anh dai dien thanh cong");
@@ -215,7 +208,7 @@ public class UserController {
             User user = optionalUser.get();
             String fileName = fileStorageService.saveCoverpic(file);
             user.setProfileCover("/uploads/cover_pics/"+ fileName);
-            userService.updateUser(user);
+            userService.updateUser(user.getUserId());
 
             Map<String, String> response = new HashMap<>();
             response.put("message", "Cap nhat anh bia thanh cong");
