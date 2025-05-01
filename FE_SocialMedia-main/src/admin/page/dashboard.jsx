@@ -157,14 +157,7 @@ const Dashboard = () => {
             </Typography>
           </Box>
         </Box>
-        <Box
-          gridColumn="span 4"
-          backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-        </Box>
+        
       </Box>
     </Box>
   );
