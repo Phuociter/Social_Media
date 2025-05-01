@@ -188,7 +188,7 @@ const Home = () => {
   //Post
 
   const { postId } = useParams();
-  const count = 5;
+  // const count = 5;
   // Lấy danh sách bài viết khi trang đang load
   const fetchPosts = async () => {
     dispatch(getPostsStart());
@@ -211,7 +211,7 @@ const Home = () => {
 
       }
       else {
-        const data = await getPosts(count);
+        const data = await getPosts(userId);
         dispatch(getPostsSuccess(data));
       }
     } catch (err) {
@@ -221,7 +221,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, [dispatch, postId, count]);
+  }, [dispatch, postId, userId]);
 
 
   // Tạo bài viết 
@@ -253,11 +253,20 @@ const Home = () => {
     }
   }
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setFile(file);
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      if (selectedFile.size > MAX_FILE_SIZE) {
+        alert("File quá lớn! Vui lòng chọn file nhỏ hơn 10MB.");
+        setFile(null); // Không lưu file để không preview
+        return;
+      }
+      setFile(selectedFile);
+    }
   };
+
   const validPosts = Array.isArray(posts)
     ? posts.filter(p => p && p.postId)  // Lọc luôn cả post rỗng hoặc thiếu ID
     : [];
@@ -303,7 +312,7 @@ const Home = () => {
       {/* Phần đầu của form: Avatar và TextInput */}
       <div className='w-full flex items-center gap-2 py-4 border-b border-[#66666645]'>
         <img
-          src={user?.profileUrl ?? NoProfile}
+          src={user?.profileImage ?? NoProfile}
           alt='User Image'
           className='w-14 h-14 rounded-full object-cover'
         />
@@ -382,7 +391,7 @@ const Home = () => {
       {file && (
         <div className="relative w-full mt-2">
           {file.type.startsWith("video/") ? (
-            <video controls className="w-full rounded-lg">
+            <video key={URL.createObjectURL(file)} controls className="w-full rounded-lg">
               <source src={URL.createObjectURL(file)} type={file.type} />
             </video>
           ) : (
