@@ -62,14 +62,24 @@ public class UserService {
 
 
     //Cập nhật thông tin user
-    public User updateUser(Integer userId, User user) {
-        User existingUser = userRepository.findById(userId).orElse(null);
-        if (existingUser != null) {
-            existingUser.setUsername(user.getUsername());
-            existingUser.setEmail(user.getEmail());
-            existingUser.setRole(user.getRole());
-            existingUser.setStatus(user.getStatus());
-            return userRepository.save(existingUser);
+    public User updateUser(Integer userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+            user.setUsername(user.getUsername());
+            user.setEmail(user.getEmail());
+            user.setRole(user.getRole());
+            user.setStatus(user.getStatus());
+            return userRepository.save(user);
+        }
+        return null;
+    }
+
+    //Khóa tài khoản
+    public User blockUser(Integer userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+            user.setStatus(user.getStatus() == 1 ? 0 : 1); // Giả sử 0 là trạng thái bị khóa
+            return userRepository.save(user);
         }
         return null;
     }
