@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import com.example.social_media.service.LikeService;
 
 @RestController
@@ -37,5 +38,15 @@ public class LikeController {
             @RequestParam("commentId") Integer commentId) {
         likeService.toggleLikeComment(userId, commentId);
         return ResponseEntity.ok("Like/unlike thành công");
+    }
+
+    //thêm ơ đây///////////////////////////////////////////////////////////////
+    @GetMapping("/likes/last/{userId}")
+    public ResponseEntity<?> getLastLikeId(@PathVariable("userId") Integer userId) {
+        Integer likeId = likeService.getLastLikeIdByUser(userId);
+        if (likeId == null) {
+            return ResponseEntity.ok("User chưa like bài nào.");
+        }
+        return ResponseEntity.ok(likeId);
     }
 }

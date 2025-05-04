@@ -18,4 +18,5 @@ public interface LikeRepository extends JpaRepository<Like, Integer> {
 
     @Query("SELECT c.post.postId FROM Comment c WHERE c.commentId = :commentId")
     Integer findPostIdByCommentId(@Param("commentId") Integer commentId);
+    Like findTopByUser_UserIdOrderByLikeIdDesc(Integer userId);
 }

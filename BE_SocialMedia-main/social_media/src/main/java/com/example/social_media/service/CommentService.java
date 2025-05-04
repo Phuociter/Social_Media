@@ -36,4 +36,15 @@ public class CommentService {
         postRepository.save(post);
         return commentRepository.save(comment);
     }
+
+    ////thêm ở đây/////////////////////////////////////////////////////////////////////
+    public Comment getCommentById(Integer commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+    }
+
+    // Hàm lấy comment mới nhất của user theo userId
+    public Comment getLatestCommentByUserId(Integer userId) {
+        return commentRepository.findTopByUser_UserIdOrderByTimestampDesc(userId);  // Giả sử có phương thức tìm kiếm này trong repository
+    }
 }

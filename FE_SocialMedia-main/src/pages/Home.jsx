@@ -12,7 +12,8 @@ import {
   TextInput,
   Loading,
 } from "../components";
-
+import { sendNotification } from "../api/NotificationsAPI";
+import axios from "axios";
 import { NoProfile } from "../assets";
 import { BsFiletypeGif, BsPersonFillAdd } from "react-icons/bs";
 
@@ -137,7 +138,7 @@ const Home = () => {
     }
   };
 
-  // Chấp nhận lời mời kết bạn
+  // Chấp nhận lời mời kết bạn(có thêm thông báo)
   const handleAccept = async (request) => {
     try {
       await acceptFriendRequest(request.requestId);
@@ -146,6 +147,10 @@ const Home = () => {
         prev.filter((req) => req.sender.userId !== request.sender.userId)
 
       );
+            //tạo thông báo cho người gửi lời mời kết bạn///////////////////////////////////
+      const requestID = await axios.get(`/api/friends/requests/last-request-id/${request.sender.userId}&${user.userId}`);
+      console.log("requestID: ", requestID.data);
+      await sendNotification(userId,request.sender.userId,'friend_request_accepted', requestID.data);
       alert("Đã chấp nhận lời mời kết bạn!");
     } catch (error) {
       console.error("Lỗi khi chấp nhận lời mời:", error);
@@ -178,8 +183,11 @@ const Home = () => {
       // Loại bỏ user này khỏi danh sách gợi ý
       setSuggestedFriends((prev) =>
         prev.filter((f) => f.userId !== receiverId)
-
       );
+            // Gửi thông báo cho người nhận lời mời kết bạn/////////////////////////////
+      // const requestID = await axios.get(`/api/friends/requests/last-request-id/${request.sender.userId}&${user.userId}`);
+      const requestID = await axios.get(`api/friends/requests/last-request-id/${receiverId}&${userId}`);
+      await sendNotification(userId, receiverId, 'friend_request_received', requestID.data);
     } catch (error) {
       console.error("Lỗi khi gửi lời mời kết bạn:", error);
     }
@@ -235,6 +243,23 @@ const Home = () => {
       reset({ description: '' }); // Reset giá trị của ô input
       setFile(null);
       setErrMsg(null);
+            // Gửi thông báo cho tất cả bạn bè về bài viết mới////////////////////////////////////
+      const friendList = await getFriendList(userId);
+      const newPostId = await axios.get(`/api/posts/ids/${userId}`);
+
+      const friendIds = friendList.map(friend => {
+        if (friend.user1.userId === userId) {
+          return friend.user2.userId;
+        } else if (friend.user2.userId === userId) {
+          return friend.user1.userId;
+        }
+      }).filter(id => id !== undefined);
+
+      await Promise.all(
+        friendIds.map(friendID =>
+          sendNotification(userId, friendID, 'new_post', newPostId.data)
+        )
+      );
     } catch (err) {
       setErrMsg({ message: "Failed to post!", status: "failed" });
     }
@@ -246,6 +271,10 @@ const Home = () => {
     try {
       dispatch(toggleLikeState({ postId, userId: userId }));
       await toggleLikeAPI(postId, userId);
+            // Gửi thông báo cho người dùng đã like bài viết///////////////////////////////////////////////////
+      const LikePostID = await axios.get(`/api/likes/last/${userId}`);
+      const userIdOfPost = await axios.get(`/api/posts/userid/${postId}`);
+      await sendNotification(userId, userIdOfPost.data, 'like_post', LikePostID.data);
     }
     catch (err) {
       dispatch(toggleLikeState({ postId, userId: userId }));

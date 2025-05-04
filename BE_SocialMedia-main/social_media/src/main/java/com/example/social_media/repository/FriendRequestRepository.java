@@ -10,7 +10,7 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest, In
     
     List<FriendRequest> findByReceiverUserIdAndStatus(Integer receiverUserId, FriendRequest.Status status);
     Optional<FriendRequest> findBySenderAndReceiver(User sender, User receiver);
-    
+    List<FriendRequest> findByReceiverUserId(Integer receiverUserId);//thêm dòng nayf1/5
 }
 
 
