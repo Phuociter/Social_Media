@@ -2,6 +2,7 @@ package com.example.social_media.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,15 +37,15 @@ public class PostController {
 
     // @GetMapping("/{postId}")
     // public List<Post> getPostsByPostId(@PathVariable Integer postId) {
-    // return postService.getPostsByPostId(postId);
+    //     return postService.getPostsByPostId(postId);
     // }
 
     @PostMapping("/{postId}/update")
     public ResponseEntity<Post> updatePost(@PathVariable Integer postId, @RequestBody Post post) {
         Post updatedPost = postService.updatePost(postId, post);
         return ResponseEntity.ok(updatedPost);
-    }
-
+    }  
+    
     @Autowired
     private PostRepository postRepository;
 
@@ -54,7 +55,7 @@ public class PostController {
             @RequestParam("content") String content,
             @RequestParam(value = "mediaFile", required = false) MultipartFile mediaFile) throws IOException {
         Post post = postService.createPost(userId, content, mediaFile);
-        // post.setCommentCount(1);
+        post.setCommentCount(1);
         return ResponseEntity.ok(post);
     }
 
@@ -63,6 +64,7 @@ public class PostController {
         List<Post> posts = postService.getAllPostsByUser(id);
         return ResponseEntity.ok(posts);
     }
+
 
     // return ResponseEntity.ok(posts);
     // }
@@ -74,17 +76,10 @@ public class PostController {
     // return ResponseEntity.ok(postService.getRandomPosts(count, userId));
     // }
 
-    // @GetMapping("/posts")
-    // public ResponseEntity<List<Post>> getSimpleRandomPosts(
-    // @RequestParam(defaultValue = "5") int count) {
-    // return ResponseEntity.ok(postService.getRandomPosts(count));
-    // }
-
-    // API: Lấy tất cả post, ưu tiên bạn bè
-    @GetMapping("posts/all/{userId}")
-    public ResponseEntity<List<Post>> getAllPostsWithPriority(@PathVariable Integer userId) {
-        List<Post> posts = postService.getAllPostsWithPriority(userId);
-        return ResponseEntity.ok(posts);
+    @GetMapping("/posts")
+    public ResponseEntity<List<Post>> getSimpleRandomPosts(
+            @RequestParam(defaultValue = "5") int count) {
+        return ResponseEntity.ok(postService.getRandomPosts(count));
     }
 
     @GetMapping("/posts/{postId}")
@@ -110,5 +105,28 @@ public class PostController {
             @RequestParam(value = "removeMedia", required = false) boolean removeMedia) throws IOException {
         return ResponseEntity.ok(postService.updatePost(postId, description, mediaFile, removeMedia));
     }
+//hàm lấy userid của bài viết
+    @GetMapping("/posts/userid/{postId}")
+    public ResponseEntity<Integer> getUserIdByPostId(@PathVariable Integer postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        Integer userId = post.getUser().getUserId(); // Giả sử User có getUserId()
+        return ResponseEntity.ok(userId);
+    }
+
+    //hàm lất post id của cùng của user cần lấy
+    @GetMapping("/posts/ids/{userId}")
+    public ResponseEntity<List<Integer>> getUserPostIds(@PathVariable Integer userId) {
+        // Lấy tất cả các bài viết của người dùng với id
+        List<Post> posts = postService.getAllPostsByUser(userId);
+
+        // Lấy danh sách postId từ các bài viết
+        List<Integer> postIds = posts.stream()
+            .map(Post::getPostId)  // Giả sử bạn có getter cho postId trong đối tượng Post
+            .collect(Collectors.toList());  // Thu thập vào danh sách
+
+        return ResponseEntity.ok(postIds);  // Trả về danh sách postId
+    }
+
 
 }

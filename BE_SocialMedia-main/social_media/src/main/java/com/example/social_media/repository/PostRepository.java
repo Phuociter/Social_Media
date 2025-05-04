@@ -12,13 +12,10 @@ import org.springframework.data.repository.query.Param;
 import com.example.social_media.entity.Post;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
-    List<Post> findByStatus(Status status);
-
+    List<Post> findByStatus(Status status); 
     List<Post> findByContentContaining(String content);
-
-    // Tim kiem bai dang
+    //Tim kiem bai dang
     List<Post> findByContentContainingIgnoreCase(String keyword);
-
     @Query("SELECT DISTINCT  p FROM Post p LEFT JOIN FETCH p.likes WHERE p.user.userId = :userId")
     List<Post> findByUserId(@Param("userId") Integer userId);
 
@@ -42,17 +39,4 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Post findByPostId(@Param("postId") Integer postId);
 
     List<Post> findByUser(User user);
-
-    // Lấy cả post bạn bè và người lạ, ưu tiên bạn bè
-    @Query("""
-                SELECT p,
-                CASE WHEN p.user.userId IN (
-                    SELECT f.user2.userId FROM Friendship f WHERE f.user1.userId = :userId
-                    UNION
-                    SELECT f.user1.userId FROM Friendship f WHERE f.user2.userId = :userId
-                ) THEN 1 ELSE 2 END AS priority
-                FROM Post p
-                ORDER BY priority ASC, p.timestamp DESC
-            """)
-    List<Object[]> findAllPostsWithPriority(@Param("userId") Integer userId);
 }

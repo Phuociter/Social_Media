@@ -42,6 +42,30 @@ public class FriendController {
         List<FriendRequest> requests = friendService.getPendingRequests(receiverId);
         return ResponseEntity.ok(requests);
     }
+    
+    // hàm cần thiết lấy ra requestId cuối cùng của người nhận
+    @GetMapping("/requests/last-request-id/{senderId}&{receiverId}")
+    public ResponseEntity<?> getLastRequestId(@PathVariable  Integer senderId,
+                                              @PathVariable  Integer receiverId) {
+        List<FriendRequest> requests = friendService.getRequests(receiverId);
+    
+        System.out.println("Tất cả request của receiverId " + receiverId + ":");
+        for (FriendRequest req : requests) {
+            System.out.println("SenderId: " + req.getSender().getUserId() + ", RequestId: " + req.getRequestId());
+        }
+
+        Optional<Integer> requestIdOpt = requests.stream()
+        .filter(req -> req.getSender().getUserId().equals(senderId)) // Lọc theo senderId
+        .map(FriendRequest::getRequestId) // Lấy requestId
+        .findFirst();
+    
+        if (requestIdOpt.isPresent()) {
+            return ResponseEntity.ok(requestIdOpt.get());
+        } else {
+            return ResponseEntity.ok("Không tìm thấy lời mời phù hợp.");
+        }
+    }
+    
 
     // Chấp nhận lời mời kết bạn
     @PutMapping("/request/accept/{requestId}")

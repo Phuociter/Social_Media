@@ -17,43 +17,46 @@ import {
 } from "../api/FriendAPI";
 import { UpdateProfile } from "../redux/userSlice";
 
-//user = chủ profile
-// currentUser = người dùng đang đăng nhập
-
 const ProfileCard = ({ user }) => {
+  // currentUser: người đang đăng nhập
   const { user: currentUser, edit } = useSelector((state) => state.user);
   const [friendStatus, setFriendStatus] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // Xử lý khi nhấn vào "Edit Profile"
+  const handleEditClick = () => {
+    navigate("/edit-profile");
+  };
+
   // Hàm kiểm tra trạng thái kết bạn
   const checkFriendStatus = async () => {
     try {
       const result = await getFriendStatus(currentUser?.userId, user?.userId);
-      console.log("Friend status: ", result);
       setFriendStatus(result);
-      localStorage.setItem("friendStatus", JSON.stringify(result));  // Lưu vào localStorage
     } catch (error) {
       console.error("Lỗi khi gọi API friend status:", error);
     }
   };
 
+
+  console.log("TCN cua: ", user);
+
+  // Để tránh dùng async trực tiếp trong callback của useEffect,
+  // ta định nghĩa hàm async bên trong rồi gọi nó.
   useEffect(() => {
     async function checkStatus() {
       if (currentUser?.userId && user?.userId) {
-        localStorage.removeItem("friendStatus");
-        const storedStatus = localStorage.getItem("friendStatus");
-        if (storedStatus) {
-          setFriendStatus(JSON.parse(storedStatus));  // Lấy từ localStorage nếu có
-        } else {
-          await checkFriendStatus();
-        }
+        await checkFriendStatus();
+      } else {
+        console.log("Đang chờ user được load...");
       }
     }
     checkStatus();
+    // Không trả về gì (undefined) để tránh hiểu nhầm Promise là cleanup function
   }, [currentUser, user]);
 
-  // Các hàm xử lý yêu cầu kết bạn
+  // Hàm gửi lời mời kết bạn
   const handleFriendRequest = async () => {
     try {
       if (!currentUser?.userId || !user?.userId) return;
@@ -65,14 +68,16 @@ const ProfileCard = ({ user }) => {
         receiverId: user.userId,
         requestId: response.requestId || null,
       };
+      console.log("newstatus", newStatus);
       setFriendStatus(newStatus);
-      localStorage.setItem("friendStatus", JSON.stringify(newStatus));  // Lưu vào localStorage
+      localStorage.setItem("friendStatus", JSON.stringify(newStatus));
     } catch (error) {
       console.error("Failed to send friend request:", error);
       alert("Failed to send friend request!");
     }
   };
 
+  // Hàm đồng ý lời mời kết bạn
   const handleAcceptFriendRequest = async () => {
     try {
       if (!friendStatus?.requestId) return;
@@ -85,12 +90,13 @@ const ProfileCard = ({ user }) => {
         requestId: response.requestId || null,
       };
       setFriendStatus(updatedStatus);
-      localStorage.setItem("friendStatus", JSON.stringify(updatedStatus));  // Lưu vào localStorage
+      localStorage.setItem("friendStatus", JSON.stringify(updatedStatus));
     } catch (error) {
       console.error("Failed to accept friend request", error);
     }
   };
 
+  // Hàm từ chối lời mời kết bạn
   const handleDenyFriendRequest = async () => {
     try {
       if (!friendStatus?.requestId) return;
@@ -103,6 +109,7 @@ const ProfileCard = ({ user }) => {
     }
   };
 
+  // Hàm hủy lời mời kết bạn
   const handleCancel = async () => {
     try {
       if (!currentUser?.userId || !user?.userId) return;
@@ -115,6 +122,7 @@ const ProfileCard = ({ user }) => {
     }
   };
 
+  // Hàm hủy kết bạn (unfriend)
   const handleUnfriend = async () => {
     try {
       if (!currentUser?.userId || !user?.userId) return;
@@ -127,32 +135,36 @@ const ProfileCard = ({ user }) => {
     }
   };
 
+  // Logic hiển thị nút hành động dựa trên trạng thái kết bạn
   const renderActionButton = () => {
+    // Nếu đang xem trang cá nhân của chính mình
     if (currentUser?.userId === user?.userId) {
       return (
         <LiaEditSolid
           size={22}
           className="text-blue cursor-pointer"
-          onClick={() => navigate("/edit-profile")}
+          onClick={handleEditClick}
         />
       );
     }
 
-    if (friendStatus && (friendStatus.status === "accepted" || friendStatus.status === "friends")) {
+    // Nếu đã là bạn bè
+    if (friendStatus && friendStatus.status === "accepted") {
       return (
         <div>
-          <span className="text-white font-medium">Bạn bè</span>
-          <span className="text-white text-sm opacity-70 ml-4">||</span>
+          <span className="text-green-500 font-medium">Bạn bè</span>
           <CustomButton
             title="Unfriend"
-            containerStyles="bg-[#0444a4] text-xs text-white px-1.5 py-1 rounded-full ml-4"
+            containerStyles="bg-[#0444a4] text-xs text-white px-1.5 py-1 rounded-full"
             onClick={handleUnfriend}
           />
         </div>
       );
     }
 
+    // Nếu lời mời đang chờ (pending)
     if (friendStatus && friendStatus.status === "pending") {
+      // Nếu currentUser là người đã gửi lời mời
       if (friendStatus.senderId === currentUser.userId) {
         return (
           <CustomButton
@@ -162,6 +174,7 @@ const ProfileCard = ({ user }) => {
           />
         );
       } else {
+        // Nghĩa là currentUser nhận được lời mời
         return (
           <div>
             <CustomButton
@@ -179,6 +192,7 @@ const ProfileCard = ({ user }) => {
       }
     }
 
+    // Nếu chưa có lời mời nào (friendStatus === null)
     return (
       <button
         className="bg-[#0444a430] text-sm text-white p-1 rounded"
@@ -203,7 +217,9 @@ const ProfileCard = ({ user }) => {
               <p className="text-lg font-medium text-ascent-1">
                 {user?.username ?? "No name"}
               </p>
-
+              <span className="text-ascent-2">
+                {user?.profession ?? "No Profession"}
+              </span>
             </div>
           </Link>
           <div>{renderActionButton()}</div>

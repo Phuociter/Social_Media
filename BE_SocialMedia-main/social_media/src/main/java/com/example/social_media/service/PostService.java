@@ -1,9 +1,9 @@
 package com.example.social_media.service;
 
+
 import java.io.File;
 import com.example.social_media.entity.Post.Status;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
@@ -21,9 +21,10 @@ import com.example.social_media.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
+
 @Service
 public class PostService {
-
+    
     @Autowired
     private PostRepository postRepository;
     @Autowired
@@ -35,17 +36,15 @@ public class PostService {
     public List<Post> getAllPosts() {
         return postRepository.findAll();
     }
-
     public long countPosts() {
         return postRepository.count();
     }
-
     public List<Post> getPostsByStatus(Status status) {
         return postRepository.findByStatus(status);
     }
 
     // public List<Post> getPostsByPostId(Integer postId) {
-    // return postRepository.findByPostId(postId);
+    //     return postRepository.findByPostId(postId);
     // }
     public Post blockPost(Integer postId) {
         Post post = postRepository.findById(postId).orElse(null);
@@ -55,7 +54,6 @@ public class PostService {
         }
         return null;
     }
-
     public Post unblockPost(Integer postId) {
         Post post = postRepository.findById(postId).orElse(null);
         if (post != null) {
@@ -64,19 +62,20 @@ public class PostService {
         }
         return null;
     }
-
     public Post updatePost(Integer postId, Post post) {
         Post existingPost = postRepository.findById(postId).orElse(null);
         if (existingPost != null) {
             existingPost.setStatus(post.getStatus());
             existingPost.setContent(post.getContent());
             existingPost.setMediaType(post.getMediaType());
-            existingPost.setMediaURL(post.getMediaURL());
+            existingPost.setMediaURL(post.getMediaURL());   
             return postRepository.save(existingPost);
         }
         return null;
     }
+    
 
+   
     public Post createPost(Integer userId, String content, MultipartFile file) throws IOException {
         // 1. Kiểm tra xem user có tồn tại không
         User user = userRepository.findById(userId)
@@ -92,7 +91,7 @@ public class PostService {
             String mediaType = file.getContentType().startsWith("image") ? "image" : "video";
             post.setMediaType(mediaType);
         }
-        post.setMediaType("text");
+
         post.setTimestamp(new Date());
 
         // 4. Lưu vào database
@@ -104,7 +103,7 @@ public class PostService {
         return posts;
     }
 
-    // hiện hết theo count
+    // hiện hết
     public List<Post> getRandomPosts(int count) {
         // 1. Lấy tất cả post kèm likes
         List<Post> allPosts = postRepository.findAllWithLikes();
@@ -114,21 +113,8 @@ public class PostService {
 
         // 3. Trả về số lượng mong muốn (có đủ thông tin likes)
         return allPosts.stream()
-                // .limit(count)
+                .limit(count)
                 .collect(Collectors.toList());
-    }
-
-    // Lấy bài của bạn bè + người lạ, ưu tiên bạn bè
-    public List<Post> getAllPostsWithPriority(Integer userId) {
-        List<Object[]> rawResults = postRepository.findAllPostsWithPriority(userId);
-        List<Post> posts = new ArrayList<>();
-
-        for (Object[] row : rawResults) {
-            Post post = (Post) row[0];
-            posts.add(post);
-        }
-
-        return posts;
     }
 
     // Delete
@@ -170,3 +156,4 @@ public class PostService {
         return postRepository.save(post);
     }
 }
+

@@ -1,7 +1,5 @@
 package com.example.social_media.controller;
 
-import com.example.social_media.config.MessageResponse;
-
 import com.example.social_media.entity.User;
 import com.example.social_media.service.UserService;
 

@@ -18,9 +18,7 @@ const postSlice = createSlice({
       state.error=null;
     },
     getPostsSuccess(state, action){
-      console.log("Updating Redux state with:", action.payload);
       state.posts = [...action.payload]; // Gán dữ liệu mới
-      console.log("aaaaaaaaaaaa");
       state.loading = false;
     },
     getPostsFailed(state, action){
@@ -43,7 +41,6 @@ const postSlice = createSlice({
     // Cập nhật bài viết
     updatePost(state, action){
       const updatedPost = action.payload;
-      console.log("updatedPost: ", updatedPost);
       const index = state.posts.findIndex((post)=>post.postId===updatedPost.postId);
       if(index != -1){
         state.posts[index] = action.payload;
@@ -89,7 +86,6 @@ const postSlice = createSlice({
 
     addCommentState(state, action) {
       const { id: postId, comment } = action.payload;
-      console.log('Dispatching addCommentState:', action.payload);
       // Tạo bản sao mới của comments
       state.comments = {
         ...state.comments,

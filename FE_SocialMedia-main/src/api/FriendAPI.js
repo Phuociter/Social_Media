@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import { sendNotification } from './NotificationsAPI';
 // Trong ../api/FriendAPI.js
 export const loginUser = async (email, password) => {
   // Gọi API backend để xác thực
@@ -12,11 +12,14 @@ export const getFriendList = async (userId) => {
   const response = await axios.get(`/api/friends/list?userId=${userId}`);
   return response.data;
 };
-
-
-// Gửi lời mời kết bạn
+////////////////////////////THAY ĐỔI////////////////////////////////////////
+// Gửi lời mời kết bạn (đã sửa có thêm thông báo)
 export const sendFriendRequest = async (senderId, receiverId) => {
   const response = await axios.post(`/api/friends/request?senderId=${senderId}&receiverId=${receiverId}`);
+
+  // const requestID = await axios.get(`/api/friends/request/last-request-id/${senderId}/${receiverId}`);
+  // await sendNotification(senderId, receiverId, 'friend_request_received', requestID);
+
   return response.data;
 };
 
@@ -62,4 +65,5 @@ export const getFriendStatus = async (userId1, userId2) => {
   });
   return response.data; // { status, senderId, receiverId, requestId }
 };
+
 

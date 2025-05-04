@@ -50,6 +50,8 @@ import {
   updatePost,
   toggleLikeState
 } from "../redux/postSlice";
+import { sendNotification } from "../api/NotificationsAPI";
+import axios from "axios";
 
 const Home = () => {
   const { user, edit } = useSelector((state) => state.user);
@@ -109,6 +111,7 @@ const Home = () => {
   const fetchSuggestedFriends = async (userId) => {
     try {
       const friendList = await getFriendList(userId);
+      console.log("friendList: ", friendList);  
       // Lấy danh sách các userId bạn bè
       const friendIds = friendList.map(friend => {
 
@@ -118,7 +121,6 @@ const Home = () => {
           return friend.user1.userId;
         }
       }).filter(id => id !== undefined);
-
       var filteredData;
       const data = await getSuggestedFriends(userId);
 
@@ -136,16 +138,20 @@ const Home = () => {
       console.error("Lỗi khi lấy gợi ý bạn bè:", error);
     }
   };
-
-  // Chấp nhận lời mời kết bạn
+//////////////////////////// THAY ĐỔI //////////////////////////////////////////////////////////
+  // Chấp nhận lời mời kết bạn(có thêm thông báo)
   const handleAccept = async (request) => {
+    // console.log("request: ", request);
     try {
       await acceptFriendRequest(request.requestId);
-      // Xoá request khỏi danh sách
       setFriendRequests((prev) =>
         prev.filter((req) => req.sender.userId !== request.sender.userId)
 
       );
+      //tạo thông báo cho người gửi lời mời kết bạn///////////////////////////////////
+      const requestID = await axios.get(`/api/friends/requests/last-request-id/${request.sender.userId}&${user.userId}`);
+      console.log("requestID: ", requestID.data);
+      await sendNotification(userId,request.sender.userId,'friend_request_accepted', requestID.data);
       alert("Đã chấp nhận lời mời kết bạn!");
     } catch (error) {
       console.error("Lỗi khi chấp nhận lời mời:", error);
@@ -180,6 +186,12 @@ const Home = () => {
         prev.filter((f) => f.userId !== receiverId)
 
       );
+      // Gửi thông báo cho người nhận lời mời kết bạn/////////////////////////////
+      // const requestID = await axios.get(`/api/friends/requests/last-request-id/${request.sender.userId}&${user.userId}`);
+
+      const requestID = await axios.get(`api/friends/requests/last-request-id/${receiverId}&${userId}`);
+      await sendNotification(userId, receiverId, 'friend_request_received', requestID.data);
+
     } catch (error) {
       console.error("Lỗi khi gửi lời mời kết bạn:", error);
     }
@@ -188,7 +200,7 @@ const Home = () => {
   //Post
 
   const { postId } = useParams();
-  // const count = 5;
+  const count = 5;
   // Lấy danh sách bài viết khi trang đang load
   const fetchPosts = async () => {
     dispatch(getPostsStart());
@@ -211,7 +223,7 @@ const Home = () => {
 
       }
       else {
-        const data = await getPosts(userId);
+        const data = await getPosts(count);
         dispatch(getPostsSuccess(data));
       }
     } catch (err) {
@@ -221,7 +233,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, [dispatch, postId, userId]);
+  }, [dispatch, postId, count]);
 
 
   // Tạo bài viết 
@@ -230,14 +242,33 @@ const Home = () => {
 
       const newPost = await createPost(user.userId, content, file);
       dispatch(addPost(newPost));
-      console.log(newPost);
+      // console.log(newPost);
       setContent('');
       reset({ description: '' }); // Reset giá trị của ô input
       setFile(null);
       setErrMsg(null);
+      // Gửi thông báo cho tất cả bạn bè về bài viết mới////////////////////////////////////
+      const friendList = await getFriendList(userId);
+      const newPostId = await axios.get(`/api/posts/ids/${userId}`);
+      
+      const friendIds = friendList.map(friend => {
+        if (friend.user1.userId === userId) {
+          return friend.user2.userId;
+        } else if (friend.user2.userId === userId) {
+          return friend.user1.userId;
+        }
+      }).filter(id => id !== undefined);
+      
+      await Promise.all(
+        friendIds.map(friendID =>
+          sendNotification(userId, friendID, 'new_post', newPostId.data)
+        )
+      );
+      
     } catch (err) {
       setErrMsg({ message: "Failed to post!", status: "failed" });
     }
+
   };
 
 
@@ -246,6 +277,10 @@ const Home = () => {
     try {
       dispatch(toggleLikeState({ postId, userId: userId }));
       await toggleLikeAPI(postId, userId);
+      // Gửi thông báo cho người dùng đã like bài viết///////////////////////////////////////////////////
+      const LikePostID = await axios.get(`/api/likes/last/${userId}`);
+      const userIdOfPost = await axios.get(`/api/posts/userid/${postId}`);
+      await sendNotification(userId, userIdOfPost.data, 'like_post', LikePostID.data);
     }
     catch (err) {
       dispatch(toggleLikeState({ postId, userId: userId }));
@@ -253,20 +288,11 @@ const Home = () => {
     }
   }
 
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      if (selectedFile.size > MAX_FILE_SIZE) {
-        alert("File quá lớn! Vui lòng chọn file nhỏ hơn 10MB.");
-        setFile(null); // Không lưu file để không preview
-        return;
-      }
-      setFile(selectedFile);
-    }
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFile(file);
   };
-
   const validPosts = Array.isArray(posts)
     ? posts.filter(p => p && p.postId)  // Lọc luôn cả post rỗng hoặc thiếu ID
     : [];
@@ -290,29 +316,29 @@ const Home = () => {
 
           {/* CENTER */}
        {/* CENTER */}
-<div className='flex-1 h-full px-4 flex flex-col gap-6 overflow-y-auto rounded-lg'>
-  {/* Nếu đang tìm kiếm, hiển thị kết quả tìm kiếm */}
-  {isSearching ? (
-    <SearchResults
-      results={searchResults}
-      user={user}
-      onClear={() => {
-        setIsSearching(false);
-        setSearchResults({});
-      }}
-      onLikePost={handleLikePost}
-      showAllUsers={showAllUsers}
-      setShowAllUsers={setShowAllUsers}
-      showAllPosts={showAllPosts}
-      setShowAllPosts={setShowAllPosts}
-    />
-  ) : (
+      <div className='flex-1 h-full px-4 flex flex-col gap-6 overflow-y-auto rounded-lg'>
+        {/* Nếu đang tìm kiếm, hiển thị kết quả tìm kiếm */}
+        {isSearching ? (
+          <SearchResults
+            results={searchResults}
+            user={user}
+            onClear={() => {
+              setIsSearching(false);
+              setSearchResults({});
+            }}
+            onLikePost={handleLikePost}
+            showAllUsers={showAllUsers}
+            setShowAllUsers={setShowAllUsers}
+            showAllPosts={showAllPosts}
+            setShowAllPosts={setShowAllPosts}
+          />
+        ) : (
     // Khi không tìm kiếm, hiển thị form đăng bài
     <form onSubmit={handleSubmit(handlePostSubmit)} className='bg-primary px-4 rounded-lg'>
       {/* Phần đầu của form: Avatar và TextInput */}
       <div className='w-full flex items-center gap-2 py-4 border-b border-[#66666645]'>
         <img
-          src={user?.profileImage ?? NoProfile}
+          src={user?.profileUrl ?? NoProfile}
           alt='User Image'
           className='w-14 h-14 rounded-full object-cover'
         />
@@ -391,7 +417,7 @@ const Home = () => {
       {file && (
         <div className="relative w-full mt-2">
           {file.type.startsWith("video/") ? (
-            <video key={URL.createObjectURL(file)} controls className="w-full rounded-lg">
+            <video controls className="w-full rounded-lg">
               <source src={URL.createObjectURL(file)} type={file.type} />
             </video>
           ) : (

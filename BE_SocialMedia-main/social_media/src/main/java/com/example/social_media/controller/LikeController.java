@@ -2,6 +2,8 @@ package com.example.social_media.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,4 +40,15 @@ public class LikeController {
         likeService.toggleLikeComment(userId, commentId);
         return ResponseEntity.ok("Like/unlike thành công");
     }
+//thêm ơ đây///////////////////////////////////////////////////////////////
+    @GetMapping("/likes/last/{userId}")
+    public ResponseEntity<?> getLastLikeId(@PathVariable("userId") Integer userId) {
+        Integer likeId = likeService.getLastLikeIdByUser(userId);
+        if (likeId == null) {
+            return ResponseEntity.ok("User chưa like bài nào.");
+        }
+        return ResponseEntity.ok(likeId);
+    }
+
+
 }

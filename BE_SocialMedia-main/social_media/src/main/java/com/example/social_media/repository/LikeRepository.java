@@ -3,7 +3,6 @@ package com.example.social_media.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import com.example.social_media.entity.Like;
 
 public interface LikeRepository extends JpaRepository<Like, Integer> {
@@ -18,4 +17,8 @@ public interface LikeRepository extends JpaRepository<Like, Integer> {
 
     @Query("SELECT c.post.postId FROM Comment c WHERE c.commentId = :commentId")
     Integer findPostIdByCommentId(@Param("commentId") Integer commentId);
+
+    Like findTopByUser_UserIdOrderByLikeIdDesc(Integer userId);
+
+
 }

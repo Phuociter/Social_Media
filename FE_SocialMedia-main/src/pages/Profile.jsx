@@ -19,15 +19,13 @@ import {
 } from "../redux/postSlice";
 import { getPostsByUserId, toggleLikeAPI } from "../api/PostAPI";
 
-//user: nguoi dung dang dang nhap
-//currentUser: chu profile
-
 const Profile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
   // Lấy thông tin người dùng từ redux
   const { user, currentUser, loading1, error } = useSelector((state) => state.user);
+  
   // Khai báo state cho loading (nếu cần dùng trong component)
   const [loading, setLoading] = useState(false);
 
@@ -81,7 +79,7 @@ const Profile = () => {
         {/* LEFT */}
         <div className='hidden w-1/6 lg:w-1/7 md:flex flex-col gap-6 overflow-y-auto'>
           <div className='block lg:hidden'>
-            <FriendsCard userId={currentUser?.userId} />
+            <FriendsCard userId={user?.userId} />
           </div>
         </div>
 
@@ -106,12 +104,12 @@ const Profile = () => {
             [...userPosts]
               .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
               .map((post, index) => {
-                console.log("Post ID:", post.postId, "Likes:", post.likes, "Author: ", post.user.userId);
+                console.log("Post ID:", post.postId, "Likes:", post.likes);
                 return (
                   <PostCard
                     key={post.postId || index}
                     post={post}
-                    user={user}
+                    user={currentUser}
                     deletePost={handleDelete}
                     likePost={() => handleLikePost(post.postId)}
                   />
@@ -126,7 +124,7 @@ const Profile = () => {
 
         {/* RIGHT */}
         <div className='hidden w-1/4 h-full lg:flex flex-col gap-8 overflow-y-auto'>
-          <FriendsCard userId={currentUser?.userId} currentId={user?.userId} />
+          <FriendsCard userId={user?.userId} />
         </div>
       </div>
     </div>

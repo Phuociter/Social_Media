@@ -31,5 +31,23 @@ public class CommentController {
             @RequestParam String comment) {
         return ResponseEntity.ok(commentService.addComment(postId, userId, comment));
     }
+// thêm ở đây
+    @GetMapping("/userid/{commentId}")
+    public ResponseEntity<Integer> getUserIdByCommentId(@PathVariable Integer commentId) {
+        Comment comment = commentService.getCommentById(commentId);  // Lấy comment qua commentId
+        Integer userId = comment.getUser().getUserId();  // Truy cập vào userId từ User
+        return ResponseEntity.ok(userId);  // Trả về userId
+    }
+    
+    // Hàm lấy commentId mới nhất theo userId
+    @GetMapping("/latest/{userId}")
+    public ResponseEntity<Integer> getLatestCommentIdByUserId(@PathVariable Integer userId) {
+        Comment latestComment = commentService.getLatestCommentByUserId(userId);
+        if (latestComment != null) {
+            return ResponseEntity.ok(latestComment.getCommentId());  // Trả về commentId của bình luận mới nhất
+        } else {
+            return ResponseEntity.notFound().build();  // Nếu không tìm thấy bình luận nào, trả về 404
+        }
+    }
 
 }

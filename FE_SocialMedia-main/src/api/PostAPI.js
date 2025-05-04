@@ -1,18 +1,19 @@
 import axios from 'axios';
+import { getFriendList } from '../api/FriendAPI';
+import {sendNotification} from '../api/NotificationsAPI';
 
 // Tạo bài viết mới (chỉ 1 file)
 export const createPost = async (userId, content, mediaFile) => {
+  const friendList = await getFriendList(userId);
   const formData = new FormData();
   formData.append("userid", userId);
   formData.append("content", content);
 
   if (mediaFile) {
-    console.log("Appending single file:", mediaFile);
     formData.append("mediaFile", mediaFile); // Chỉ append 1 file
   }
 
   // Debug: Kiểm tra FormData trước khi gửi
-  console.log("FormData Entries:");
   for (let [key, value] of formData.entries()) {
     console.log(key, value instanceof File ? `${value.name} (${value.size} bytes)` : value);
   }
@@ -24,6 +25,7 @@ export const createPost = async (userId, content, mediaFile) => {
       }
     });
     return response.data;
+    
   } catch (error) {
     console.error("Error creating post:", error.response?.data || error.message);
     throw error;
@@ -110,9 +112,9 @@ export const createCommentAPI = async(postId, userId, comment) => {
 // };
 
 // Lấy danh sách bài viết
-export const getPosts = async (userId) => {
+export const getPosts = async (count) => {
   try {
-      const response = await axios.get(`/api/posts/all/${userId}`); //?userid=${userId}
+      const response = await axios.get(`/api/posts?count=${count}`); //?userid=${userId}
       console.log("API Response:", response.data); // Log dữ liệu từ API
       return response.data;
   } catch (error) {

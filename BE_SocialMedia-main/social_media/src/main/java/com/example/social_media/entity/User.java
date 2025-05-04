@@ -1,14 +1,10 @@
 package com.example.social_media.entity;
 
 
-import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,6 +40,7 @@ public class User {
     private String password;
 
     @Column(name = "profileimage",length = 255)
+
     private String profileImage;
 
     @Column(name = "profilecover",length = 255)

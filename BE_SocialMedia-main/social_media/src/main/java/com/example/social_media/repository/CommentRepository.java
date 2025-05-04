@@ -13,4 +13,6 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     // Lấy tất cả cmt kèm likes
     @Query("SELECT DISTINCT c FROM Comment c LEFT JOIN FETCH c.likes WHERE c.post.postId = :postId")
     List<Comment> findAllCommentsWithLikes(Integer postId);
+// thêm ở đây///////////////////////////////////
+    Comment findTopByUser_UserIdOrderByTimestampDesc(Integer userId);
 }

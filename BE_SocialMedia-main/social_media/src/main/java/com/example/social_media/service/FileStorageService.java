@@ -84,7 +84,7 @@ public class FileStorageService {
         return fileName;
     }
     public String saveCoverpic(MultipartFile file) throws IOException{
-        if (file.isEmpty() || !isValidImage(file)) {
+        if (file.isEmpty() || isValidImage(file)) {
             throw new IOException("File khong hop le");
         }
 
