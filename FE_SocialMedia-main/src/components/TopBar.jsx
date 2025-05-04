@@ -30,7 +30,7 @@ const TopBar = ({ onSearch }) => {
   // const unreadCount = notifications.filter(n => !n.read).length;
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(`api/notifications/user/${user.userId}`);
+      const response = await fetch(`/api/notifications/user/${user.userId}`);
       const data = await response.json();
       const contents = data.notifications.map(n => n.content);
       // console.log("Content Array:", contents);
