@@ -10,7 +10,7 @@ import VisibilityIcon from '@mui/icons-material/VisibilitySharp';
 import axios from 'axios';
 
 const UserManagement = () => {
-  const API_URL = 'http://localhost:8080/api/users';
+  const API_URL = 'http://localhost:8080/api/admin/users'; // Địa chỉ API để lấy danh sách users
   // Khởi tạo các state cần thiết
   const theme = useTheme(); // Hook để sử dụng theme của MUI
   const [users, setUsers] = useState([]); // State lưu danh sách users
@@ -175,14 +175,9 @@ const UserManagement = () => {
         return;
       }
       const userData = {
-        id: userId,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        password: user.password,
-        status: 1
+        status: 0
       };
-      await updateUser(userId, userData);
+      await axios.put(`${API_URL}/${userId}/block`, userData);
       showSnackbar('Block user thành công', 'success'); 
       fetchUsers(); // Refresh danh sách users
     } catch (error) {
@@ -199,15 +194,9 @@ const UserManagement = () => {
       }
 
       const userData = {
-        id: userId,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        password: user.password,
-        status: 0
+        status: 1
       };
-
-      await updateUser(userId, userData);
+      await axios.put(`${API_URL}/${userId}/block`, userData);
       showSnackbar('Unblock user thành công', 'success');
       fetchUsers(); // Refresh danh sách users
     } catch (error) {
@@ -215,7 +204,6 @@ const UserManagement = () => {
       showSnackbar('Lỗi khi unblock user', 'error');
     }
   };
-
 
   // Hàm hiển thị thông báo
   const showSnackbar = (message, severity) => {
@@ -336,13 +324,13 @@ const UserManagement = () => {
                     <VisibilityIcon sx={{ color: 'blue' }} />
                   </IconButton>
                   <IconButton onClick={() => {
-                    if (user.status === 0) {  
+                    if (user.status === 1) {  
                       handleBlock(user.userId);
                     } else {
                       handleUnblock(user.userId);
                     }
                   }} color="error" aria-label="block">
-                    {user.status === 0 ? <CheckCircleIcon /> : <BlockIcon />}
+                    {user.status === 1 ? <CheckCircleIcon color='success' /> : <BlockIcon />}
                   </IconButton>
                 </TableCell>
               </TableRow> 
@@ -394,7 +382,7 @@ const UserManagement = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Đóng</Button>
+          <Button onClick={handleCloseDialog} color='submit'>Đóng</Button>
           {/* <Button onClick={handleSubmit} variant="contained" color="primary">
             Lưu
           </Button> */}

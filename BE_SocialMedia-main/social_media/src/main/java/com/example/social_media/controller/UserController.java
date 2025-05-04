@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/users")
@@ -41,10 +40,9 @@ public class UserController {
         try {
 
             String email = user.getEmail();
-            String username = user.getUsername();
-            if (userService.getUserByEmail(email) != null || userService.getUserByUsername(username) != null) {
+            if (userService.getUserByEmail(email) != null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new MessageResponse("Email hoặc username đã tồn tại"));
+                        .body(new MessageResponse("Email đã tồn tại"));
             }
             User registeredUser = userService.registerUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
@@ -72,10 +70,25 @@ public class UserController {
             }
 
             User userLogin = userService.loginUser(email, password);
-            
-            // Nếu đăng nhập thành công
-            if (userLogin != null) {
+
+                // Kiểm tra nếu tài khoản không tồn tại
+                if (userLogin == null) {
+                    return ResponseEntity
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .body(new MessageResponse("Email hoặc mật khẩu không chính xác"));
+                }
+
+                // Kiểm tra nếu tài khoản bị khóa
+                if (userLogin.getStatus() == 0) {
+                    return ResponseEntity
+                            .status(HttpStatus.UNAUTHORIZED)
+                            .body(new MessageResponse("Tài khoản đã bị khóa"));
+                }
+
+                // Nếu đăng nhập thành công
                 userLogin.setPassword(null);
+
+                // Xử lý đường dẫn ảnh đại diện
                 if (userLogin.getProfileImage() != null && !userLogin.getProfileImage().isEmpty()) {
                     if (!userLogin.getProfileImage().startsWith("http")) {
                         String imageUrl = "http://localhost:8080" + userLogin.getProfileImage();
@@ -83,6 +96,7 @@ public class UserController {
                     }
                 }
 
+                // Xử lý đường dẫn ảnh bìa
                 if (userLogin.getProfileCover() != null && !userLogin.getProfileCover().isEmpty()) {
                     if (!userLogin.getProfileCover().startsWith("http")) {
                         String imageUrl = "http://localhost:8080" + userLogin.getProfileCover();
@@ -90,20 +104,16 @@ public class UserController {
                     }
                 }
 
-
                 return ResponseEntity.ok(userLogin);
-            }
-            
-            return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(new MessageResponse("Email hoặc mật khẩu không chính xác"));
-                
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity
+        }catch(
+
+    Exception e)
+    {
+        e.printStackTrace();
+        return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new MessageResponse("Có lỗi xảy ra khi đăng nhập"));
-        }
+    }
     }
 
     @GetMapping("/{userId}")
@@ -113,33 +123,27 @@ public class UserController {
 
     @PostMapping
     public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+        return userService.registerUser(user);
     }
 
-    @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable Integer userId) {
-        userService.deleteUser(userId);
-    }
+    // block user
+    @PostMapping("/{userId}")
+    public ResponseEntity<?> blockUser(@PathVariable Integer userId) {
+        Optional<User> optionalUser = userService.getUserById(userId);
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
-    public class MessageResponse {
-        private String message;
-    
-        public MessageResponse(String message) {
-            this.message = message;
-        }
-    
-        public String getMessage() {
-            return message;
-        }
-    
-        public void setMessage(String message) {
-            this.message = message;
+        User user = optionalUser.get();
+        user.setStatus(0); // Đặt trạng thái là 0 (bị khóa)
+        userService.updateUser(user.getUserId());
 
-        }
+        return ResponseEntity.ok(new MessageResponse("Tài khoản đã bị khóa"));
     }
 
     // Post /api/users/{id} để cập nhật thông tin user
-    // POST /api/users/{id}/InfoChanging: Cập nhật thông tin cơ bản người dùng (không bao gồm ảnh)
+    // POST /api/users/{id}/InfoChanging: Cập nhật thông tin cơ bản người dùng
+    // (không bao gồm ảnh)
     @PostMapping("/{userId}/InfoChanging")
     public ResponseEntity<Map<String, String>> updateUserInfo(
             @PathVariable Integer userId,
@@ -157,17 +161,17 @@ public class UserController {
         user.setEmail(updatedUser.getEmail());
         user.setProfession(updatedUser.getProfession());
         user.setBio(updatedUser.getBio());
-        if(user.getStatus() == null || user.getStatus() == 0){
+        if (user.getStatus() == null || user.getStatus() == 0) {
             user.setStatus(1);
         }
         user.setCountry(updatedUser.getCountry());
         user.setWebsite(updatedUser.getWebsite());
 
         // Giữ lại các giá trị bắt buộc không được null
-        // password, status, role đã có sẵn trong `user` rồi, nên không cần set lại nếu không thay đổi
+        // password, status, role đã có sẵn trong `user` rồi, nên không cần set lại nếu
+        // không thay đổi
 
-        userService.updateUser(user);
-
+        userService.updateUser(user.getUserId());
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "Cập nhật thông tin thành công");
@@ -175,8 +179,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-
-    //Post /api/users/{id}/Profile/PictureChanging Thay doi anh dai dien
+    // Post /api/users/{id}/Profile/PictureChanging Thay doi anh dai dien
     @PostMapping("/{userId}/Profile/PictureChanging")
     public ResponseEntity<Map<String, String>> uploadProfilePic(
             @PathVariable Integer userId,
@@ -190,7 +193,7 @@ public class UserController {
             User user = optionalUser.get();
             String fileName = fileStorageService.saveProfilepic(file);
             user.setProfileImage("/uploads/profile_pics/" + fileName);
-            userService.updateUser(user);
+            userService.updateUser(user.getUserId());
 
             Map<String, String> response = new HashMap<>();
             response.put("message", "Cap nhat anh dai dien thanh cong");
@@ -202,30 +205,29 @@ public class UserController {
         }
     }
 
-    //Post /api/users/{id}/Profile/CoverChanging Thay doi anh bia
+    // Post /api/users/{id}/Profile/CoverChanging Thay doi anh bia
     @PostMapping("/{userId}/Profile/CoverChanging")
     public ResponseEntity<Map<String, String>> uploadCoverPic(@PathVariable Integer userId,
-                                                              @RequestParam("file") MultipartFile file){
-        try{
+            @RequestParam("file") MultipartFile file) {
+        try {
             Optional<User> optionalUser = userService.getUserById(userId);
-            if (!optionalUser.isPresent()){
+            if (!optionalUser.isPresent()) {
                 return ResponseEntity.notFound().build();
             }
 
             User user = optionalUser.get();
             String fileName = fileStorageService.saveCoverpic(file);
-            user.setProfileCover("/uploads/cover_pics/"+ fileName);
-            userService.updateUser(user);
+            user.setProfileCover("/uploads/cover_pics/" + fileName);
+            userService.updateUser(user.getUserId());
 
             Map<String, String> response = new HashMap<>();
             response.put("message", "Cap nhat anh bia thanh cong");
             response.put("coverPicUrl", user.getProfileCover());
 
-            return  ResponseEntity.ok(response);
-        }catch (IOException e){
-            return ResponseEntity.badRequest().body(Map.of("error","fail to upload file"));
+            return ResponseEntity.ok(response);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "fail to upload file"));
         }
     }
 
 }
-

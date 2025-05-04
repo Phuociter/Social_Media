@@ -18,6 +18,7 @@ import { useTheme } from "@mui/material/styles";
 import { tokens } from "../theme";
 import { useState, useEffect } from "react";
 import LockOpenIcon from '@mui/icons-material/LockOpen';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import LockIcon from '@mui/icons-material/Lock';
 import axios from "axios";
 //Trang quản lý bài viết
@@ -39,10 +40,8 @@ const PostManagement = () => {
   // Lấy danh sách bài viết từ API
   const fetchPosts = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/posts", {
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await axios.get("http://localhost:8080/api/admin/posts", {
+       
       });
       setPosts(response.data);
       setFilteredPosts(response.data); // Khởi tạo filteredPosts ban đầu
@@ -69,30 +68,34 @@ const PostManagement = () => {
   });
   //Cập nhật bài viết
   const handleSubmit = async () => {
-    // Kiểm tra xem formData.postId có tồn tại và là một số hợp lệ không
     if (!formData.postId || isNaN(formData.postId)) {
       console.log("ID bài viết không hợp lệ");
+      showSnackbar('ID bài viết không hợp lệ', 'error');
       return;
     }
+  
     const post = {
       postId: parseInt(formData.postId),
       content: formData.content,
       mediaType: formData.mediaType,
       mediaURL: formData.mediaURL,
-      status: formData.status
+      status: formData.status ? formData.status.valueOf() : '',
     };
+  
     try {
-      const response = await axios.post(`http://localhost:8080/api/posts/${parseInt(formData.postId)}/update`, post);
-      
+      const response = await axios.put(`http://localhost:8080/api/admin/posts/${post.postId}/update`, post);
+  
       if (response.status === 200) {
         fetchPosts();
-        handleCloseDialog(); // Đóng dialog sau khi cập nhật thành công
+        handleCloseDialog();
         showSnackbar('Cập nhật trạng thái bài viết thành công', 'success');
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      showSnackbar('Đã xảy ra lỗi khi cập nhật bài viết', 'error');
     }
   };
+  
   //Đóng dialog
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -180,14 +183,10 @@ const PostManagement = () => {
         return;
       }
       const postData = {
-        postId: postId,
-        content: post.content,
-        mediaType: post.mediaType,
-        mediaURL: post.mediaURL,
         status: 'rejected'
       };
       // Sử dụng POST thay vì PUT để cập nhật trạng thái bài viết
-      const response = await axios.post(`http://localhost:8080/api/posts/${postId}/update`, postData);
+      const response = await axios.put(`http://localhost:8080/api/admin/posts/${postId}/update`, postData);
       if (response.status === 200) {
         fetchPosts();
       }
@@ -211,7 +210,7 @@ const PostManagement = () => {
         status: 'approved'
       };
       // Sử dụng POST thay vì PUT để cập nhật trạng thái bài viết
-      const response = await axios.post(`http://localhost:8080/api/posts/${postId}/update`, postData);
+      const response = await axios.put(`http://localhost:8080/api/admin/posts/${postId}/update`, postData);
       if (response.status === 200) {
         fetchPosts();
       }
@@ -248,6 +247,7 @@ const PostManagement = () => {
             <MenuItem value="">All</MenuItem>
             <MenuItem value="image">image</MenuItem>
             <MenuItem value="video">video</MenuItem>    
+            <MenuItem value="text">text</MenuItem>
           </Select>
         </FormControl>  
 
@@ -291,31 +291,41 @@ const PostManagement = () => {
                 <TableCell>
                   <IconButton 
                     onClick={() => handleOpenDialog(post)} 
-
                     color="action"  
                     aria-label="edit"
                   >
                     <EditIcon />
                   </IconButton>
                   <IconButton
-                    onClick={ () => {
-                      if (post.status && post.status.toLowerCase() === "rejected") {
-                        handleUnblockPost(post.postId); 
-                        //thêm thông báo
-                        showSnackbar('Mở bài viết thành công', 'success');  
+                  onClick={() => {
+                    const isBlocked = post.status && post.status.toLowerCase() === "rejected";
+
+                    const confirmMessage = isBlocked
+                      ? "Bạn có chắc chắn muốn **mở khóa** bài viết này không?"
+                      : "Bạn có chắc chắn muốn **khóa** bài viết này không?";
+
+                    if (window.confirm(confirmMessage)) {
+                      if (isBlocked) {
+                        handleUnblockPost(post.postId);
+                        showSnackbar("Mở bài viết thành công", "success");
                       } else {
                         handleBlockPost(post.postId);
-                        //thêm thông báo
-                        showSnackbar('Khóa bài viết thành công', 'success');
+                        showSnackbar("Khóa bài viết thành công", "success");
                       }
-                      
-                    }}
-                    color="error" 
-                    aria-label="block"  
-                  >
-                    {post.status === "approved" ? <LockOpenIcon color="success"  /> : <LockIcon color="error" />}
-                    
-                  </IconButton>
+                    }
+                  }}
+                  color="error"
+                  aria-label="block"
+                >
+                  {post.status === "approved" ? (
+                    <LockOpenIcon color="success" />
+                  ) : post.status === "pending" ? (
+                    <HourglassEmptyIcon sx={{ color: "orange" }} />
+                  ) : (
+                    <LockIcon color="error" />
+                  )}
+                </IconButton>
+
                 </TableCell>
               </TableRow>
             ))}

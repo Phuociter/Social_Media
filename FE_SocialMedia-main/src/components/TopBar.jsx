@@ -1,5 +1,6 @@
 import React, { useEffect,useState } from "react";
 import { TbSocial } from "react-icons/tb";
+import { AiFillMessage } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import TextInput from "./TextInput";
@@ -102,11 +103,12 @@ const TopBar = ({ onSearch }) => {
     <div className='topbar w-full flex items-center justify-between py-3 md:py-6 px-4 bg-primary relative'>
       {/* Logo */}
       <Link to='/' className='flex gap-2 items-center'>
-        <div className='p-1 md:p-2 bg-[#065ad8] rounded text-black'>
-          <TbSocial />
+        <div className='p-1 md:p-2 bg-[#065ad8] rounded text-white'>
+        <AiFillMessage />        
+
         </div>
         <span className='text-xl md:text-2xl text-[#065ad8] font-semibold'>
-          ShareFun
+          Bluely
         </span>
       </Link>
 {/* Search */}
