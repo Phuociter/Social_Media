@@ -223,7 +223,7 @@ useEffect(() => {
   // Share
   const handleShare = async () => {
     const shareLink = `${window.location.origin}/posts/${postId}`;
-
+    try {
     // Copy vào clipboard
     navigator.clipboard.writeText(shareLink)
       .then(() => {
