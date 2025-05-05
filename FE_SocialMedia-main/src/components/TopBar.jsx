@@ -12,6 +12,7 @@ import { Logout } from "../redux/userSlice";
 import { CustomButton } from "../components";
 import {searchAll} from "../api/SearchAPI"
 import axios from "axios";//thêm////////////
+import { sendNotification } from "../api/NotificationsAPI";
 
 const TopBar = ({ onSearch }) => {
   const { theme } = useSelector((state) => state.theme);
@@ -32,13 +33,9 @@ const TopBar = ({ onSearch }) => {
     const fetchData = async () => {
       const response = await fetch(`/api/notifications/user/${user.userId}`);
       const data = await response.json();
-      const contents = [...new Set(data.notifications.map(n => n.content))];
-      setNotifications(contents);
-
-      // const contents = data.notifications.map(n => n.content);
-      // console.log("Content Array:", contents);
-      // setNotifications(contents);
-      // xử lý data
+      // console.log(data.notifications);
+      setNotifications(data.notifications);
+  
     };
 
     fetchData(); // gọi lần đầu
@@ -58,18 +55,15 @@ const TopBar = ({ onSearch }) => {
     try {
       const keyword = data.search?.trim();
       if (!keyword) return;
+  
       const result = await searchAll(keyword);
       if (onSearch) {
-        onSearch(result);
-      } else {
-        navigate(`/?search=${encodeURIComponent(keyword)}`);
+        onSearch(result); // Gửi kết quả về Home
       }
-      reset();
     } catch (error) {
-      console.error("Search error:", error);
+      console.error("Lỗi khi tìm kiếm:", error);
     }
   };
-
   //thêm hàm này để lấy số lượng thông báo chưa đọc
   const fetchUnreadCount = async (userId) => {
     const response = await fetch(`/api/notifications/user/${userId}/unread-count`);
@@ -101,9 +95,42 @@ const TopBar = ({ onSearch }) => {
       }
   },[openNotify]);
 
-  const handleDeleteNotification = (index) => {
+  //xóa thông báo
+  const handleDeleteNotification = async (id) => {
     setNotifications((prev) => prev.filter((item) => item.id !== id));
     await sendNotification(`/api/notifications/delete/${id}`);
+  };
+
+  const handleNotificationClick = async (notification) => {
+    switch (notification.type) {
+      case 'new_post':
+        window.location.href = `/post/${notification.referenceId}`;
+        break;
+      case 'like_post':
+        const postId_L = await fetch(`/api/likes/${notification.referenceId}/post`);
+        window.location.href = `/post/${postId_L}`;
+        break;
+      case 'comment_post':
+        const postId_C = await fetch(`/api/comments/${notification.referenceId}/post`);
+        window.location.href = `/post/${postId_C}`;
+        break;
+      case 'share_post':
+        window.location.href = `/post/${notification.referenceId}`;
+        break;
+      case 'like_comment':
+          const commentId = await fetch(`/api/likes/${notification.referenceId}/comment`);
+          const postId_P_C = await fetch(`/api/comments/${commentId}/post`);
+          window.location.href = `/post/${postId_P_C}`;
+          break;
+          // case 'friend_request_received':
+          //   window.location.href = `/profile/${notification.senderId}`;
+          //   break;
+          // case 'friend_request_accepted':
+          //   window.location.href = `/profile/${notification.senderId}`;
+          //   break;
+      default:
+        console.log('Loại thông báo không xác định');
+    }
   };
 
   return (
@@ -119,10 +146,13 @@ const TopBar = ({ onSearch }) => {
         </span>
       </Link>
 {/* Search */}
-        <form className='hidden md:flex items-center' onSubmit={handleSubmit(handleSearch)}>
+      <form
+        className='hidden md:flex items-center justify-center'
+        onSubmit={handleSubmit(handleSearch)}
+      >
         <TextInput
           placeholder='Search...'
-          styles='w-[18rem] lg:w-[38rem] rounded-l-full py-3'
+          styles='w-[18rem] lg:w-[38rem]  rounded-l-full py-3 '
           register={register("search")}
         />
         <CustomButton
@@ -154,15 +184,20 @@ const TopBar = ({ onSearch }) => {
           <div className='absolute right-0 border-b top-10 w-72 text-white rounded shadow-xl'>
             <div className='p-3 bg-[#1a1a1a] border-b font-semibold'>Thông báo</div>
             <ul className='max-h-64 overflow-y-auto'>
-              {notifications.map((item, index) => (
+              {notifications.map((item) => (
                 <li
-                  key={index}
+                  key={item.notificationId}
                   className='flex justify-between items-center px-4 py-2 bg-[#1a1a1a] text-sm hover:text-[#65b0f6] hover:bg-[#2a2a2a]'
                 >
-                  <span>{item}</span>
+                  <span      
+                    className="cursor-pointer hover:underline"
+                    onClick={() => handleNotificationClick(item.type)}
+                  >
+                  {item.content}
+                  </span>
                   <button
                     className='text-red-500 hover:underline text-xs ml-2'
-                    onClick={() => handleDeleteNotification(index)}
+                    onClick={() => handleDeleteNotification(item.notificationId)}
                   >
                     Xóa
                   </button>
