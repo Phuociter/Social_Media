@@ -116,7 +116,7 @@ const EditProfile = () => {
           <form
             className='px-4 sm:px-6 flex flex-col gap-3 2xl:gap-6'
             onSubmit={handleSubmit(onSubmit)}
-                      >
+          >
             <TextInput
               name='username'
               label='User Name'
@@ -134,7 +134,7 @@ const EditProfile = () => {
                   message: "Không được quá 40 ký tự!",
                 },
                 pattern: {
-                  value:   /^[A-Za-zÀ-ỹà-ỹ\s]+$/, // Chỉ cho phép ký tự chữ cái (cả chữ hoa và chữ thường)
+                  value: /^[A-Za-zÀ-ỹà-ỹ\s]+$/, // Chỉ cho phép ký tự chữ cái (cả chữ hoa và chữ thường)
                   message: "User name chỉ được chứa chữ cái!",
                 },
               })}
@@ -147,23 +147,17 @@ const EditProfile = () => {
               type='text'
               styles='w-full'
               register={register("profession", {
-                required: "Không được bỏ trống Profession!",
-                minLength: {
-                  value: 1,
-                  message: "Ít nhất phải có 1 ký tự!",
-                },
                 maxLength: {
                   value: 255,
                   message: "Không được quá 255 ký tự!",
                 },
                 pattern: {
-                  value:   /^[A-Za-zÀ-ỹà-ỹ\s]+$/, // Chỉ cho phép ký tự chữ cái (cả chữ hoa và chữ thường)
+                  value: /^[A-Za-zÀ-ỹà-ỹ\s]+$/, // Chỉ cho phép ký tự chữ cái (cả chữ hoa và chữ thường)
                   message: "Profession chỉ được chứa chữ cái!",
                 },
               })}
               error={errors.profession?.message || ""}
             />
-
             <TextInput
               name='bio'
               label='Bio'
@@ -171,22 +165,18 @@ const EditProfile = () => {
               type='text'
               styles='w-full'
               register={register("bio", {
-                required: "Không được bỏ trống Bio!",
-                minLength: {
-                  value: 1,
-                  message: "Ít nhất phải có 1 ký tự!",
-                },
                 maxLength: {
                   value: 140,
                   message: "Không được quá 140 ký tự!",
                 },
                 pattern: {
-                  value: /^[A-Za-zÀ-ỹà-ỹ\s]+$/, // Chỉ cho phép ký tự chữ cái (cả chữ hoa và chữ thường)
-                  message: "Bio chỉ được chứa chữ cái!",
+                  value: /^[\p{L}\p{M}\s.,!?;:'"“”‘’\-–—()]+$/u,
+                  message: "Bio chỉ được chứa chữ cái và dấu câu!",
                 },
               })}
               error={errors.bio?.message || ""}
             />
+
 
             <TextInput
               name='country'
@@ -195,17 +185,12 @@ const EditProfile = () => {
               type='text'
               styles='w-full'
               register={register("country", {
-                required: "Không được bỏ trống Country!",
-                minLength: {
-                  value: 1,
-                  message: "Ít nhất phải có một ký tự!",
-                },
                 maxLength: {
                   value: 255,
                   message: "Không được quá 255 ký tự!",
                 },
                 pattern: {
-                  value:   /^[A-Za-zÀ-ỹà-ỹ\s]+$/, // Chỉ cho phép ký tự chữ cái (cả chữ hoa và chữ thường)
+                  value: /^[A-Za-zÀ-ỹà-ỹ\s]+$/, // Chỉ cho phép ký tự chữ cái (cả chữ hoa và chữ thường)
                   message: "User name chỉ được chứ chữ cái!",
                 },
               })}
@@ -228,7 +213,7 @@ const EditProfile = () => {
                   value: 255,
                   message: "Không được quá 255 ký tự!",
                 },
-      
+
               })}
               error={errors.website?.message || ""}
             />
