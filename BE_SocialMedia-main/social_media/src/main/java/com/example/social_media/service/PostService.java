@@ -40,6 +40,15 @@ public class PostService {
     public long countPosts() {
         return postRepository.count();
     }
+    public long countPostsisReject() {
+        return postRepository.countByStatus(Status.rejected);
+    }
+    public long countPostsisApprove() {
+        return postRepository.countByStatus(Status.approved);
+    }
+    public long countPostsisPending() {
+        return postRepository.countByStatus(Status.pending);
+    }
 
     public List<Post> getPostsByStatus(Status status) {
         return postRepository.findByStatus(status);
