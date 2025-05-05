@@ -58,15 +58,18 @@ const TopBar = ({ onSearch }) => {
     try {
       const keyword = data.search?.trim();
       if (!keyword) return;
-  
       const result = await searchAll(keyword);
       if (onSearch) {
-        onSearch(result); // Gửi kết quả về Home
+        onSearch(result);
+      } else {
+        navigate(`/?search=${encodeURIComponent(keyword)}`);
       }
+      reset();
     } catch (error) {
-      console.error("Lỗi khi tìm kiếm:", error);
+      console.error("Search error:", error);
     }
   };
+
   //thêm hàm này để lấy số lượng thông báo chưa đọc
   const fetchUnreadCount = async (userId) => {
     const response = await fetch(`/api/notifications/user/${userId}/unread-count`);
@@ -115,13 +118,10 @@ const TopBar = ({ onSearch }) => {
         </span>
       </Link>
 {/* Search */}
-      <form
-        className='hidden md:flex items-center justify-center'
-        onSubmit={handleSubmit(handleSearch)}
-      >
+        <form className='hidden md:flex items-center' onSubmit={handleSubmit(handleSearch)}>
         <TextInput
           placeholder='Search...'
-          styles='w-[18rem] lg:w-[38rem]  rounded-l-full py-3 '
+          styles='w-[18rem] lg:w-[38rem] rounded-l-full py-3'
           register={register("search")}
         />
         <CustomButton
