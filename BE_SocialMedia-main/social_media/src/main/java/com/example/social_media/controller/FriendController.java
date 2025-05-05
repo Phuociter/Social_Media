@@ -58,6 +58,13 @@ public class FriendController {
         return ResponseEntity.ok("da huy ket ban.");
 
     }
+       // Từ chối lời mời kết bạn (xoá lời mời)
+    @DeleteMapping("/deny")
+    public ResponseEntity<?> denyFriendRequest(@RequestParam Integer userId1, @RequestParam Integer userId2) {
+        friendService.denyFriendRequest(userId1, userId2);
+        return ResponseEntity.ok("Lời mời đã bị từ chối.");
+    }
+
 
 
     // Lấy danh sách bạn bè
