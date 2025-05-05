@@ -16,7 +16,8 @@ import {
   deleteFriendRequest,
 } from "../api/FriendAPI";
 import { UpdateProfile } from "../redux/userSlice";
-
+import { sendNotification } from "../api/NotificationsAPI";
+import axios from "axios";
 //user = chủ profile
 // currentUser = người dùng đang đăng nhập
 
@@ -59,6 +60,7 @@ const ProfileCard = ({ user }) => {
       if (!currentUser?.userId || !user?.userId) return;
       const response = await sendFriendRequest(currentUser.userId, user.userId);
       alert("Friend request sent!");
+      
       const newStatus = {
         status: "pending",
         senderId: currentUser.userId,
@@ -66,6 +68,9 @@ const ProfileCard = ({ user }) => {
         requestId: response.requestId || null,
       };
       setFriendStatus(newStatus);
+      
+      const requestID = await axios.get(`api/friends/requests/last-request-id/${user.userId}&${currentUser.userId}`);
+      await sendNotification(currentUser.userId, user.userId, 'friend_request_received', requestID.data);
       localStorage.setItem("friendStatus", JSON.stringify(newStatus));  // Lưu vào localStorage
     } catch (error) {
       console.error("Failed to send friend request:", error);
