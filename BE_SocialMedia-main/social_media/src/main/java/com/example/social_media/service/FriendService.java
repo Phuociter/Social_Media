@@ -119,16 +119,18 @@ public class FriendService {
         return friendshipOpt;
     }
 
+//Từ chối lời mời
+    public void denyFriendRequest(Integer userId1, Integer userId2) {
+        Optional<FriendRequest> requestOpt = friendRequestRepository.findBySenderUserIdAndReceiverUserId(userId1, userId2);
 
-    public void declineRequest(Integer requestId) {
-        Optional<Friendship> friendshipOpt = friendshipRepository.findById(requestId);
-        if (!friendshipOpt.isPresent()) {
-            friendshipOpt = friendshipRepository.findById(requestId);
+        if (!requestOpt.isPresent()) {
+            requestOpt = friendRequestRepository.findBySenderUserIdAndReceiverUserId(userId2, userId1);
         }
-        if (friendshipOpt.isPresent()){
-            friendshipRepository.delete(friendshipOpt.get());
+
+        if (requestOpt.isPresent()) {
+            friendRequestRepository.delete(requestOpt.get());
         } else {
-            throw new RuntimeException("Hai người không phải là bạn bè.");
+            throw new RuntimeException("Không tìm thấy lời mời kết bạn để từ chối.");
         }
     }
 }
