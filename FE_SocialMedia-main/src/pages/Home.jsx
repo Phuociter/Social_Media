@@ -306,16 +306,21 @@ const Home = () => {
   const validPosts = Array.isArray(posts)
     ? posts.filter(p => p && p.postId)  // Lọc luôn cả post rỗng hoặc thiếu ID
     : [];
+  //Tìm kiếm
+    const location = useLocation();
+  const initialResults = location.state?.searchResults;
+  useEffect(() => {
+    if (initialResults) {
+      setSearchResults(initialResults);
+      setIsSearching(true);
+      window.history.replaceState({}, document.title);
+    }
+  }, [initialResults]);
 
   return (
     <>
       <div className='w-full px-0 lg:px-10 pb-20 2xl:px-40 bg-bgColor lg:rounded-lg h-screen overflow-hidden'>
-        <TopBar onSearch={(results) => {
-          setSearchResults(results);
-          setIsSearching(true);
-          setShowAllUsers(false);
-          setShowAllPosts(false);
-        }} />
+        <TopBar onSearch={(results) => { setSearchResults(results); setIsSearching(true); }} />
 
         <div className='w-full flex gap-2 lg:gap-4 pt-5 pb-10 h-full'>
           {/* LEFT */}
@@ -328,21 +333,19 @@ const Home = () => {
        {/* CENTER */}
 <div className='flex-1 h-full px-4 flex flex-col gap-6 overflow-y-auto rounded-lg'>
   {/* Nếu đang tìm kiếm, hiển thị kết quả tìm kiếm */}
-  {isSearching ? (
-    <SearchResults
-      results={searchResults}
-      user={user}
-      onClear={() => {
-        setIsSearching(false);
-        setSearchResults({});
-      }}
-      onLikePost={handleLikePost}
-      showAllUsers={showAllUsers}
-      setShowAllUsers={setShowAllUsers}
-      showAllPosts={showAllPosts}
-      setShowAllPosts={setShowAllPosts}
-    />
-  ) : (
+  {/* Nếu đang tìm kiếm, hiển thị kết quả tìm kiếm */}
+            {isSearching ? (
+              <SearchResults
+                results={searchResults}
+                user={user}
+                onClear={() => setIsSearching(false)}
+                onLikePost={handleLikePost}
+                showAllUsers={showAllUsers}
+                setShowAllUsers={setShowAllUsers}
+                showAllPosts={showAllPosts}
+                setShowAllPosts={setShowAllPosts}
+              />
+            ) : (
     // Khi không tìm kiếm, hiển thị form đăng bài
     <form onSubmit={handleSubmit(handlePostSubmit)} className='bg-primary px-4 rounded-lg'>
       {/* Phần đầu của form: Avatar và TextInput */}
