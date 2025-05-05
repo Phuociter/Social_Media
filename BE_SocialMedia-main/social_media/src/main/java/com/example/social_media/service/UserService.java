@@ -23,6 +23,12 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
+    public long countUsersbystatusisactive() {
+        return userRepository.countByStatus(1); // Giả sử 1 là trạng thái hoạt động
+    }
+    public long countUsersbystatusisblock() {
+        return userRepository.countByStatus(0); // Giả sử 0 là trạng thái bị khóa
+    }
     public User createUser(User user) {
         return userRepository.save(user);
     }

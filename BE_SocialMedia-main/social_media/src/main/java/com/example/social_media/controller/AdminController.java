@@ -35,10 +35,16 @@ public class AdminController {
         java.util.Map<String, Long> stats = new HashMap<>();
         stats.put("totalUsers", userService.count());
         stats.put("totalPosts", postService.countPosts());
+        stats.put("totalPostsIsTatusReject", postService.countPostsisReject());
+        stats.put("totalPostsIsTatusApprove", postService.countPostsisApprove());
+        stats.put("totalPostsIsTatusPending", postService.countPostsisPending());
+        stats.put("totalUserIstatusAvtive", userService.countUsersbystatusisactive());
+        stats.put("totalUserIstatusBlock", userService.countUsersbystatusisblock());
+
         // stats.put("totalComments", postService.countComments());
         return ResponseEntity.ok(stats);
     }
-
+    
     // Lấy danh sách người dùng
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {

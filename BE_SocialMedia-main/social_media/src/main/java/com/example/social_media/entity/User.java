@@ -64,7 +64,7 @@ public class User {
     private String website;
 
     @Column(name = "status",nullable = false, length = 255)
-    private Integer status = 0;
+    private Integer status = 1;
     @Column(name="createat", nullable = false, updatable = false)
     private Date createdAt;
     // MỚI: Quản lý phân quyền (user/admin)

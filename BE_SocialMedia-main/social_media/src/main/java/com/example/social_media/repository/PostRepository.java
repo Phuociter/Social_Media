@@ -16,7 +16,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     List<Post> findByStatus(Status status);
 
     List<Post> findByContentContaining(String content);
-
+    
+    int countByStatus(Status status);
     // Tim kiem bai dang
     List<Post> findByContentContainingIgnoreCase(String keyword);
 

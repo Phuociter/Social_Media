@@ -29,6 +29,7 @@ import { LineChart } from "@mui/x-charts/LineChart";
 import useCharts from "../hooks/useCharts"; // Hook tự tạo từ bước trước
 import { useState } from "react";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { PieChart } from "@mui/x-charts/PieChart";
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -70,30 +71,36 @@ const Dashboard = () => {
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="DASHBOARD" subtitle="Thống kê tổng quan" />
       </Box>
-      <Box gridColumn="span 12" gridrow="span 1" mr="0px" display="flex" justifyContent="flex-end" sx={{ height: 60 }}>
-      <FormControl sx={{ width: 200, ml: 2 }} size="small" display="flex-End">
-            <InputLabel id="year-select-label" >Chọn năm cho biểu dồ</InputLabel>
-            <Select
-              labelId="year-select-label"
-              label="Năm"
-              value={selectedYear}
-              height="40px" 
-              onChange={(e) => setSelectedYear(e.target.value)}
-            >
-              {[2022, 2023, 2024, 2025].map((year) => (
-                <MenuItem key={year} value={year}>
-                  {year}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          
-        </Box>
+      <Box
+        gridColumn="span 12"
+        gridrow="span 1"
+        mr="0px"
+        display="flex"
+        justifyContent="flex-end"
+        sx={{ height: 60 }}
+      >
+        <FormControl sx={{ width: 200, ml: 2 }} size="small" display="flex-End">
+          <InputLabel id="year-select-label">Chọn năm cho biểu dồ</InputLabel>
+          <Select
+            labelId="year-select-label"
+            label="Năm"
+            value={selectedYear}
+            height="40px"
+            onChange={(e) => setSelectedYear(e.target.value)}
+          >
+            {[2022, 2023, 2024, 2025].map((year) => (
+              <MenuItem key={year} value={year}>
+                {year}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
       {/* GRID & CHARTS */}
       <Box
         display="grid"
         gridTemplateColumns="repeat(12, 1fr)"
-        gridAutoRows="140px"
+        gridAutoRows="200px"
         gap="20px"
       >
         {/* ROW 1 */}
@@ -156,35 +163,47 @@ const Dashboard = () => {
           </Box>
         </Box>
         <Box
-          gridColumn="span 4"
+          gridColumn="span 2"
           backgroundColor={colors.primary[400]}
           display="flex"
           alignItems="center"
           justifyContent="center"
         >
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            mt="25px"
-          >
-            <VisibilityIcon
-              sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-            />
-            <Typography
-              variant="h2"
-              color={colors.grey[100]}
-              fontWeight="bold"
-              sx={{ m: "10px 0 0 0" }}
-            >
-              {stats.totalViews}
-            </Typography>
-            <Typography color={colors.greenAccent[500]}>
-              Tổng lượt truy cập
-            </Typography>
-          </Box>
+          <PieChart
+            series={[
+              {
+                data: [
+                  { id: 0, value: stats.totalPostsIsTatusApprove, label: "chấp nhận" },
+                  { id: 1, value: stats.totalPostsIsTatusReject, label: "từ chối" },
+                  { id: 2, value: stats.totalPostsIsTatusPending, label: "chờ xử lý" },
+                ],
+              },
+            ]}
+            width={100}
+            height={100}
+          />
         </Box>
-        
+        <Box
+          gridColumn="span 2"
+          backgroundColor={colors.primary[400]}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <PieChart
+            series={[
+              {
+                data: [
+                  { id: 0, value: stats.totalUserIstatusAvtive, label: "hoạt động" },
+                  { id: 1, value: stats.totalUserIstatusBlock, label: "Bị khóa" },
+                ],
+              },
+            ]}
+            width={100}
+            height={100}
+          />
+        </Box>
+
         {/* ROW 2 */}
         {/* Biểu đồ bài viết theo tháng */}
         <Box

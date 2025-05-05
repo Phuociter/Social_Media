@@ -17,6 +17,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     User findByStatus(Integer status);
 
+    int countByStatus(Integer status);
+
     List<User> findByCreatedAt(Date createdAt);
 
     List<User> findByUsernameContainingIgnoreCase(String keyword);
