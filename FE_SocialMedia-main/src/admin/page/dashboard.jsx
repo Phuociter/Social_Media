@@ -30,6 +30,7 @@ import useCharts from "../hooks/useCharts"; // Hook tự tạo từ bước trư
 import { useState } from "react";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { PieChart } from "@mui/x-charts/PieChart";
+import { green } from "@mui/material/colors";
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -177,8 +178,8 @@ const Dashboard = () => {
           >
             <Typography
               variant="h6"
-              color={colors.grey[100]}
               fontWeight="bold"
+              color={colors.greenAccent[500]}
               sx={{ m: "0 0 20px 0" }}  
               >TỈ LỆ BÀI VIẾT</Typography>
             <PieChart
@@ -192,19 +193,20 @@ const Dashboard = () => {
                     },
                     {
                       id: 1,
-                      value: stats.totalPostsIsTatusReject,
-                      label: "từ chối",
-                    },
-                    {
-                      id: 2,
                       value: stats.totalPostsIsTatusPending,
                       label: "chờ xử lý",
                     },
+                    {
+                      id: 2,
+                      value: stats.totalPostsIsTatusReject,
+                      label: "từ chối",
+                    },
+                    
                   ],
                 },
               ]}
-              width={100}
-              height={100}
+              width={130}
+              height={130}
             />
           </Box>
         </Box>
@@ -223,7 +225,7 @@ const Dashboard = () => {
           >
             <Typography
               variant="h6"
-              color={colors.grey[100]}
+              color={colors.greenAccent[500]}
               fontWeight="bold"
               sx={{ m: "0 0 20px 0" }}  
               >TỈ LỆ NGƯỜI DÙNG</Typography>
@@ -234,7 +236,7 @@ const Dashboard = () => {
                     {
                       id: 0,
                       value: stats.totalUserIstatusAvtive,
-                      label: "Hoạt động ",
+                      label: "Hoạt động",
                     },
                     {
                       id: 1,
@@ -244,8 +246,8 @@ const Dashboard = () => {
                   ],
                 },
               ]}
-              width={100}
-              height={100}
+              width={130}
+              height={130}
             />
           </Box>
         </Box>
