@@ -69,7 +69,7 @@ public class NotificationController {
     }
 
     //  * xóa thông báo
-    @DeleteMapping("/{notificationId}")
+    @DeleteMapping("/delete/{/{notificationId}")
     public ResponseEntity<Void> deleteNotification(
             @PathVariable Integer notificationId,
             @RequestParam Integer userId) {
