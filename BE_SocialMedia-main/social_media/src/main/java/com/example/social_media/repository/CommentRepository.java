@@ -15,4 +15,6 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     List<Comment> findAllCommentsWithLikes(Integer postId);
     // thêm ở đây///////////////////////////////////
     Comment findTopByUser_UserIdOrderByTimestampDesc(Integer userId);
+    @Query("SELECT c.post.postId FROM Comment c WHERE c.commentId = :commentId")
+    Integer findPostIdByCommentId(@Param("commentId") Integer commentId);
 }
