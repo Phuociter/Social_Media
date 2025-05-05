@@ -25,6 +25,7 @@ import { getPostsByUserId, toggleLikeAPI } from "../api/PostAPI";
 const Profile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+   const navigate = useNavigate();
 
   // Lấy thông tin người dùng từ redux
   const { user, currentUser, loading1, error } = useSelector((state) => state.user);
