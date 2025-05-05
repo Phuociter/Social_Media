@@ -64,6 +64,11 @@ public class FriendService {
         return friendRequestRepository.findByReceiverUserIdAndStatus(receiverId, FriendRequest.Status.pending);
     }
 
+        //hàm lấy danh sách lời mời đã chấp nhận//////////////////////////////////////////////
+    public List<FriendRequest> getRequests(Integer receiverId) {
+        return friendRequestRepository.findByReceiverUserId(receiverId);
+    }
+
 
     // Hàm chấp nhận lời mời kết bạn
     public void acceptFriendRequest(Integer requestId) {

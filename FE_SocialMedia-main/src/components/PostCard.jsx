@@ -12,7 +12,8 @@ import { createCommentAPI, editPost, getCommentsAPI, removePost, toggleLikeComme
 import { useDispatch, useSelector } from "react-redux";
 import { addCommentState, replaceOptimisticComment, removeOptimisticComment, setCommentsState, deletePost, updatePost, toggleLikeCommentState } from "../redux/postSlice";
 import { createSelector } from "@reduxjs/toolkit";
-
+import axios from "axios";
+import { sendNotification } from "../api/NotificationsAPI";
 
 const CommentForm = ({ user, id}) => {
   const [loading, setLoading] = useState(false);
@@ -48,7 +49,10 @@ const CommentForm = ({ user, id}) => {
 
       // 3. Dispatch action
       dispatch(addCommentState({ id, comment: newComment }));
-
+            //gửi thông like báo bình luận/////////////////////////////////////////
+      const commentID = await axios.get(`/api/comments/latest/${user?.userId}`);
+      const userIdOfPost = await axios.get(`/api/posts/userid/${id}`);
+      await sendNotification(user?.userId, userIdOfPost.data, 'comment_post', commentID.data);
       // 4. Reset form - CÁCH ĐÚNG
       reset({ comment: "" }); // Reset cụ thể field
 
@@ -153,13 +157,16 @@ const PostCard = ({ post, user, likePost }) => {
   });
 
   
-  // Log dữ liệu likes mỗi khi post thay đổi
-  useEffect(() => {
-  if (!post || !user) return null;
-
-    //console.log("PostCard - Post ID:", post.postId, "Likes:", post.likes);
-    //console.log("Current User ID:", user?.userId); // Kiểm tra user ID
-  }, [post, user]);
+// PostCard.jsx
+// PostCard.jsx
+useEffect(() => {
+   if (!post || !user) return null;
+    if (!post || !user) return;       // ← no value returned
+  
+     // any logging or setup you need
+     console.log("PostCard - Post ID:", post.postId, "Likes:", post.likes);
+   }, [post, user]);
+  
 
   // Kiểm tra dữ liệu trước khi render
   
@@ -216,14 +223,23 @@ const PostCard = ({ post, user, likePost }) => {
   // Share
   const handleShare = async () => {
     const shareLink = `${window.location.origin}/posts/${postId}`;
-
+    try {
     // Copy vào clipboard
     navigator.clipboard.writeText(shareLink)
       .then(() => {
         setShowToast(true);
+        
         setTimeout(() => setShowToast(false), 2000); // Ẩn thông báo sau 2s
       })
       .catch(err => console.error("Copy failed:", err));
+    
+      // Gửi thông báo share_post/////////////////////////////////////////////////////////////////////
+      const userIdOfPost = await axios.get(`/api/posts/userid/${postId}`);
+      await sendNotification(user?.userId, userIdOfPost.data, 'share_post', postId);
+      setTimeout(() => setShowToast(false), 2000);      // Ẩn thông báo sau 2s
+    } catch (err) {
+      console.error("Share failed:", err);
+    }
   };
 
   // Chỉnh sửa bài viết
@@ -258,6 +274,10 @@ const PostCard = ({ post, user, likePost }) => {
     try {
       dispatch(toggleLikeCommentState({ postId, commentId, userId }));
       await toggleLikeCommentAPI(commentId, userId);
+      //////gửi thông báo like comment//////////////////////////////////////////////
+      const LikePostID = await axios.get(`/api/likes/last/${userId}`);
+      const userIdOfComment = await axios.get(`/api/comments/userid/${commentId}`);
+      await sendNotification(userId, userIdOfComment.data, 'like_comment', LikePostID.data);
     }
     catch (err) {
       dispatch(toggleLikeCommentState({ postId, userId: userId }));

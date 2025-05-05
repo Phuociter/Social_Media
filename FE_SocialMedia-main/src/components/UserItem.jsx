@@ -15,8 +15,9 @@ const UserItem = ({ user }) => {
                     className="w-10 h-10 rounded-full object-cover"
                 />
                 <div>
+                <p className="font-medium text-white">{user?.username}</p> {/* Thêm class text-white */}
                     <p className="font-medium text-white">{user?.profession}</p> {/* Thêm class text-white */}
-                    <p className="text-sm text-gray-500 bg-primary p-4 rounded-lg text-white">{user?.country ?? "Chưa cập nhật"}</p>
+                    <p className="text-sm text-gray-500 p-4 rounded-lg text-white">{user?.country ?? "Chưa cập nhật"}</p>
                 </div>
             </Link>
             <Link to={"/profile/" + user?.userId} className="flex gap-2">

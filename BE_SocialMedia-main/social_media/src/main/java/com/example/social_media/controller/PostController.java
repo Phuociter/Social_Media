@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RequestBody;
-
+import java.util.stream.Collectors;
 import com.example.social_media.entity.Post;
 import com.example.social_media.repository.PostRepository;
 import com.example.social_media.service.PostService;
@@ -109,6 +109,29 @@ public class PostController {
             @RequestPart(value = "media", required = false) MultipartFile mediaFile,
             @RequestParam(value = "removeMedia", required = false) boolean removeMedia) throws IOException {
         return ResponseEntity.ok(postService.updatePost(postId, description, mediaFile, removeMedia));
+    }
+
+    //hàm lấy userid của bài viết
+    @GetMapping("/posts/userid/{postId}")
+    public ResponseEntity<Integer> getUserIdByPostId(@PathVariable Integer postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        Integer userId = post.getUser().getUserId(); // Giả sử User có getUserId()
+        return ResponseEntity.ok(userId);
+    }
+
+    //hàm lất post id của cùng của user cần lấy
+    @GetMapping("/posts/ids/{userId}")
+    public ResponseEntity<List<Integer>> getUserPostIds(@PathVariable Integer userId) {
+        // Lấy tất cả các bài viết của người dùng với id
+        List<Post> posts = postService.getAllPostsByUser(userId);
+
+        // Lấy danh sách postId từ các bài viết
+        List<Integer> postIds = posts.stream()
+            .map(Post::getPostId)  // Giả sử bạn có getter cho postId trong đối tượng Post
+            .collect(Collectors.toList());  // Thu thập vào danh sách
+
+        return ResponseEntity.ok(postIds);  // Trả về danh sách postId
     }
 
 }

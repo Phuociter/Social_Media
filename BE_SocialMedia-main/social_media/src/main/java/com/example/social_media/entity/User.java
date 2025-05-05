@@ -44,7 +44,6 @@ public class User {
     private String password;
 
     @Column(name = "profileimage",length = 255)
-
     private String profileImage;
 
     @Column(name = "profilecover",length = 255)

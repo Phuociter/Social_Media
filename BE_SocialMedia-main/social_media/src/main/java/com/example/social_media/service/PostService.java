@@ -47,6 +47,9 @@ public class PostService {
     // public List<Post> getPostsByPostId(Integer postId) {
     // return postRepository.findByPostId(postId);
     // }
+    public Post getPostById(Integer postId) {
+        return postRepository.findById(postId).orElse(null);
+    }
     public Post blockPost(Integer postId) {
         Post post = postRepository.findById(postId).orElse(null);
         if (post != null) {
