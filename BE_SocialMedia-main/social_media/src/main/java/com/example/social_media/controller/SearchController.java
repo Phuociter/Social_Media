@@ -50,7 +50,7 @@ public class SearchController {
 
         List<User> users = userRepository.findByUsernameContainingIgnoreCase(keyword);
         users.forEach(u -> u.setPassword(null));
-        List<Post> posts = postRepository.findByContentContainingIgnoreCase(keyword);
+        List<Post> posts = postRepository.findByContentContainingIgnoreCaseAndStatusNotRejected(keyword);
         Map<String, Object> response = new HashMap<>();
         response.put("users", users);
         response.put("posts", posts);
