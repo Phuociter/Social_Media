@@ -2,7 +2,7 @@ import React, { useEffect,useState } from "react";
 import { TbSocial } from "react-icons/tb";
 import { AiFillMessage } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate  } from "react-router-dom";
 import TextInput from "./TextInput";
 import { useForm } from "react-hook-form";
 import { BsMoon, BsSunFill } from "react-icons/bs";
@@ -22,6 +22,7 @@ const TopBar = ({ onSearch }) => {
     register,
     handleSubmit,
     formState: { errors },
+       reset,
   } = useForm();
 
    // 🔔 State cho dropdown thông báo
@@ -50,18 +51,20 @@ const TopBar = ({ onSearch }) => {
 
     dispatch(SetTheme(themeValue));
   };
-
+//Tìm kiếm updated
   const handleSearch = async (data) => {
     try {
       const keyword = data.search?.trim();
       if (!keyword) return;
-  
       const result = await searchAll(keyword);
       if (onSearch) {
-        onSearch(result); // Gửi kết quả về Home
+        onSearch(result);
+      } else {
+        navigate(`/?search=${encodeURIComponent(keyword)}`);
       }
+      reset();
     } catch (error) {
-      console.error("Lỗi khi tìm kiếm:", error);
+      console.error("Search error:", error);
     }
   };
   //thêm hàm này để lấy số lượng thông báo chưa đọc
@@ -146,13 +149,10 @@ const TopBar = ({ onSearch }) => {
         </span>
       </Link>
 {/* Search */}
-      <form
-        className='hidden md:flex items-center justify-center'
-        onSubmit={handleSubmit(handleSearch)}
-      >
+           <form className='hidden md:flex items-center' onSubmit={handleSubmit(handleSearch)}>
         <TextInput
           placeholder='Search...'
-          styles='w-[18rem] lg:w-[38rem]  rounded-l-full py-3 '
+          styles='w-[18rem] lg:w-[38rem] rounded-l-full py-3'
           register={register("search")}
         />
         <CustomButton
