@@ -49,4 +49,13 @@ public class LikeController {
         }
         return ResponseEntity.ok(likeId);
     }
+
+        @GetMapping("/likes/{likeId}/post")
+    public ResponseEntity<?> getPostIdByLikeId(@PathVariable("likeId") Integer likeId) {
+        Integer postId = likeService.getPostIdByLikeId(likeId);
+        if (postId == null) {
+            return ResponseEntity.ok("Không tìm thấy bài viết cho like này.");
+        }
+        return ResponseEntity.ok(postId);
+    }
 }
