@@ -47,7 +47,7 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 8, nullable = false)
-    private Status status = Status.approved;
+    private Status status = Status.pending;
 
 
     @Column(name = "likecount", nullable = false)
