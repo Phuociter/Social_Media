@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
 import {
   TopBar,
   ProfileCard,
@@ -34,10 +33,6 @@ import {
 import {
   getPosts,
   createPost,
-  editPost,
-  removePost,
-  commentPost,
-  sharePost,
   toggleLikeAPI,
   getPostById,
 } from "../api/PostAPI";
@@ -47,14 +42,11 @@ import {
   getPostsSuccess,
   getPostsFailed,
   addPost,
-  deletePost,
-  updatePost,
   toggleLikeState
 } from "../redux/postSlice";
 
 const Home = () => {
   const { user, edit } = useSelector((state) => state.user);
-  // console.log("userrrrr: ", user);
   const userId = user?.userId;
   const [friendRequests, setFriendRequests] = useState([]);
   const [suggestedFriends, setSuggestedFriends] = useState([]);
@@ -66,8 +58,6 @@ const Home = () => {
   const [posting, setPosting] = useState(false);
 
   const [content, setContent] = useState("");
-  const [preview, setPreview] = useState(null);
-  console.log("post orw home: ", posts);
 
   // State cho tìm kiếm
   const [searchResults, setSearchResults] = useState({});
