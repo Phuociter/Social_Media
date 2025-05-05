@@ -116,7 +116,7 @@ const EditProfile = () => {
           <form
             className='px-4 sm:px-6 flex flex-col gap-3 2xl:gap-6'
             onSubmit={handleSubmit(onSubmit)}
-                      >
+          >
             <TextInput
               name='username'
               label='User Name'
@@ -134,104 +134,80 @@ const EditProfile = () => {
                   message: "Không được quá 40 ký tự!",
                 },
                 pattern: {
-                  value:   /^[A-Za-zÀ-ỹà-ỹ\s]+$/, // Chỉ cho phép ký tự chữ cái (cả chữ hoa và chữ thường)
+                  value: /^[A-Za-zÀ-ỹà-ỹ\s]+$/, // Chỉ cho phép ký tự chữ cái (cả chữ hoa và chữ thường)
                   message: "User name chỉ được chứa chữ cái!",
                 },
               })}
               error={errors.username?.message || ""}
             />
             <TextInput
-              name='profession'
-              label='Profession'
-              placeholder='Profession'
-              type='text'
-              styles='w-full'
-              register={register("profession", {
-                required: "Không được bỏ trống Profession!",
-                minLength: {
-                  value: 1,
-                  message: "Ít nhất phải có 1 ký tự!",
-                },
-                maxLength: {
-                  value: 255,
-                  message: "Không được quá 255 ký tự!",
-                },
-                pattern: {
-                  value:   /^[A-Za-zÀ-ỹà-ỹ\s]+$/, // Chỉ cho phép ký tự chữ cái (cả chữ hoa và chữ thường)
-                  message: "Profession chỉ được chứa chữ cái!",
-                },
-              })}
-              error={errors.profession?.message || ""}
-            />
+  name='profession'
+  label='Profession'
+  placeholder='Profession'
+  type='text'
+  styles='w-full'
+  register={register("profession", {
+    maxLength: {
+      value: 255,
+      message: "Không được quá 255 ký tự!",
+    },
+    validate: (value) =>
+      value === "" || /^[A-Za-zÀ-ỹà-ỹ\s]+$/.test(value) || "Profession chỉ được chứa chữ cái!",
+  })}
+  error={errors.profession?.message || ""}
+/>
 
-            <TextInput
-              name='bio'
-              label='Bio'
-              placeholder='Enter Bio'
-              type='text'
-              styles='w-full'
-              register={register("bio", {
-                required: "Không được bỏ trống Bio!",
-                minLength: {
-                  value: 1,
-                  message: "Ít nhất phải có 1 ký tự!",
-                },
-                maxLength: {
-                  value: 140,
-                  message: "Không được quá 140 ký tự!",
-                },
-                pattern: {
-                  value: /^[A-Za-zÀ-ỹà-ỹ\s]+$/, // Chỉ cho phép ký tự chữ cái (cả chữ hoa và chữ thường)
-                  message: "Bio chỉ được chứa chữ cái!",
-                },
-              })}
-              error={errors.bio?.message || ""}
-            />
+<TextInput
+  name='bio'
+  label='Bio'
+  placeholder='Enter Bio'
+  type='text'
+  styles='w-full'
+  register={register("bio", {
+    maxLength: {
+      value: 140,
+      message: "Không được quá 140 ký tự!",
+    },
+    validate: (value) =>
+      value === "" ||
+      /^[\p{L}\p{M}\s.,!?;:'"“”‘’\-–—()]+$/u.test(value) ||
+      "Bio chỉ được chứa chữ cái và dấu câu!",
+  })}
+  error={errors.bio?.message || ""}
+/>
 
-            <TextInput
-              name='country'
-              label='Country'
-              placeholder='Enter Country'
-              type='text'
-              styles='w-full'
-              register={register("country", {
-                required: "Không được bỏ trống Country!",
-                minLength: {
-                  value: 1,
-                  message: "Ít nhất phải có một ký tự!",
-                },
-                maxLength: {
-                  value: 255,
-                  message: "Không được quá 255 ký tự!",
-                },
-                pattern: {
-                  value:   /^[A-Za-zÀ-ỹà-ỹ\s]+$/, // Chỉ cho phép ký tự chữ cái (cả chữ hoa và chữ thường)
-                  message: "User name chỉ được chứ chữ cái!",
-                },
-              })}
-              error={errors.country?.message || ""}
-            />
+<TextInput
+  name='country'
+  label='Country'
+  placeholder='Enter Country'
+  type='text'
+  styles='w-full'
+  register={register("country", {
+    maxLength: {
+      value: 255,
+      message: "Không được quá 255 ký tự!",
+    },
+    validate: (value) =>
+      value === "" || /^[A-Za-zÀ-ỹà-ỹ\s]+$/.test(value) || "Country chỉ được chứa chữ cái!",
+  })}
+  error={errors.country?.message || ""}
+/>
 
-            <TextInput
-              name='website'
-              label='Website'
-              placeholder='Enter Website'
-              type='text'
-              styles='w-full'
-              register={register("website", {
-                required: "Không được bỏ trống Website!",
-                minLength: {
-                  value: 1,
-                  message: "Ít nhất phải có một ký tự!",
-                },
-                maxLength: {
-                  value: 255,
-                  message: "Không được quá 255 ký tự!",
-                },
-      
-              })}
-              error={errors.website?.message || ""}
-            />
+<TextInput
+  name='website'
+  label='Website'
+  placeholder='Enter Website'
+  type='text'
+  styles='w-full'
+  register={register("website", {
+    maxLength: {
+      value: 255,
+      message: "Không được quá 255 ký tự!",
+    },
+  })}
+  error={errors.website?.message || ""}
+/>
+
 
             <label className='text-sm font-medium text-ascent-2 mt-2'>
               Profile Image:
