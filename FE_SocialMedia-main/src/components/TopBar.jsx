@@ -98,7 +98,7 @@ const TopBar = ({ onSearch }) => {
   //xóa thông báo
   const handleDeleteNotification = async (id) => {
     setNotifications((prev) => prev.filter((item) => item.id !== id));
-    await sendNotification(`/api/notifications/delete/${id}`);
+    await axios.delete(`/api/notifications/delete/${id}`);
   };
 
   const handleNotificationClick = async (notification) => {
