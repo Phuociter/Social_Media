@@ -189,12 +189,9 @@ public class NotificationService {
     /**
      * Xóa một thông báo (với quyền truy cập của user)
      */
-    public void deleteNotification(Integer notificationId, Integer userId) {
+    public void deleteNotification(Integer notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
-        if (!notification.getUser().getUserId().equals(userId)) {
-            throw new RuntimeException("Not your notification");
-        }
         notificationRepository.delete(notification);
     }
 
