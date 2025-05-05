@@ -205,9 +205,6 @@ const TopBar = ({ onSearch }) => {
                 </li>
               ))}
             </ul>
-            <div className='text-center bg-[#1a1a1a] text-[#65b0f6] text-sm py-2 cursor-pointer hover:underline'>
-              Xem tất cả
-            </div>
           </div>
         )}
         </div>
