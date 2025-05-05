@@ -64,6 +64,7 @@ const PostManagement = () => {
     content: '',
     mediaType: '',  
     mediaURL: '',
+    timestamp: '',
     status: ''
   });
   //Cập nhật bài viết
@@ -79,6 +80,7 @@ const PostManagement = () => {
       content: formData.content,
       mediaType: formData.mediaType,
       mediaURL: formData.mediaURL,
+      timestamp: formData.timestamp,
       status: formData.status ? formData.status.valueOf() : '',
     };
   
@@ -104,6 +106,7 @@ const PostManagement = () => {
       content: '',
       mediaType: '',
       mediaURL: '',
+      timestamp: '',
       status: ''
     });
   };
@@ -115,6 +118,7 @@ const PostManagement = () => {
       content: post.content || '',
       mediaType: post.mediaType || '',
       mediaURL: post.mediaURL || '',
+      timestamp: post.timestamp || '',
       status: post.status || ''
     });
   };  
@@ -276,6 +280,7 @@ const PostManagement = () => {
               <TableCell>Nội dung</TableCell>
               <TableCell>Loại media</TableCell>
               <TableCell>URL media</TableCell>
+              <TableCell>Thời gian</TableCell>
               <TableCell>Trạng thái</TableCell>
               <TableCell>Thao tác</TableCell>
             </TableRow>
@@ -287,6 +292,7 @@ const PostManagement = () => {
                 <TableCell>{post.content}</TableCell>
                 <TableCell>{post.mediaType}</TableCell>
                 <TableCell>{post.mediaURL}</TableCell>
+                <TableCell>{post.timestamp}</TableCell>
                 <TableCell>{post.status}</TableCell>
                 <TableCell>
                   <IconButton 
@@ -358,6 +364,14 @@ const PostManagement = () => {
             value={formData.mediaURL}
             onChange={handleChange} 
             fullWidth 
+          />
+          <TextField
+            sx={{ marginBottom: 2, marginTop: 2 }}
+            label="Thời gian"
+            name="timestamp"
+            value={formData.timestamp}
+            onChange={handleChange}
+            fullWidth
           />
           <FormControl fullWidth sx={{ marginBottom: 2, marginTop: 2 }}>
             <InputLabel id="status-label">Trạng thái</InputLabel>

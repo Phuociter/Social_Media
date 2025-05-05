@@ -4,6 +4,7 @@ package com.example.social_media.entity;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -64,7 +65,8 @@ public class User {
 
     @Column(name = "status",nullable = false, length = 255)
     private Integer status = 0;
-
+    @Column(name="createat", nullable = false, updatable = false)
+    private Date createdAt;
     // MỚI: Quản lý phân quyền (user/admin)
     @Enumerated(EnumType.STRING)
     @Column(length = 5, nullable = false)

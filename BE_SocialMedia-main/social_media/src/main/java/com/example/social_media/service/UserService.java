@@ -1,6 +1,7 @@
 
 package com.example.social_media.service;
 
+import com.example.social_media.dto.MonthUserDTO;
 import com.example.social_media.entity.User;
 import com.example.social_media.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,10 @@ public class UserService {
 
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username);
+    }
+
+    public List<MonthUserDTO> getUserCountByMonth(int year) {
+        return userRepository.countUsersByMonth(year);
     }
     //Đăng ký
     public User registerUser(User user) {

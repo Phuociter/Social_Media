@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.social_media.entity.User;
+import com.example.social_media.dto.MonthPostDTO;
+import com.example.social_media.dto.MonthUserDTO;
 import com.example.social_media.entity.Post;
 import com.example.social_media.entity.Post.Status;
 import com.example.social_media.service.UserService;
@@ -43,7 +45,12 @@ public class AdminController {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
-
+    // lấy danh sách bài viết theo năm
+    @GetMapping("/chart/posts")
+    public ResponseEntity<List<MonthPostDTO>> getPostChart(@RequestParam int year) {
+        return ResponseEntity.ok(postService.getPostCountByMonth(year));
+    }
+    
     // Lấy danh sách bài viết
     @GetMapping("/posts")
     public ResponseEntity<List<Post>> getAllPosts() {
@@ -76,7 +83,7 @@ public class AdminController {
         if (existingPost != null) {
             // Cập nhật trạng thái bài viết bằng enum Status
             existingPost.setStatus(status); // Đây là kiểu Post.Status, không phải String
-            
+
             // Lưu lại bài viết đã cập nhật
             postService.updatePost(existingPost.getPostId(), existingPost);
 
@@ -104,6 +111,11 @@ public class AdminController {
     public String updateUser(@PathVariable Integer id, @RequestBody User user) {
         userService.updateUser(id);
         return "User updated successfully";
+    }
+
+    @GetMapping("/chart/users")
+    public ResponseEntity<List<MonthUserDTO>> getUserChart(@RequestParam int year) {
+        return ResponseEntity.ok(userService.getUserCountByMonth(year));
     }
 
     // khóa tài khoản người dùng
