@@ -68,7 +68,7 @@ const Home = () => {
   const [preview, setPreview] = useState(null);
   console.log("post orw home: ", posts);
 
-const location = useLocation();
+  const location = useLocation();
   const initialResults = location.state?.searchResults;
   useEffect(() => {
     if (initialResults) {
@@ -275,7 +275,7 @@ const location = useLocation();
   return (
     <>
       <div className='w-full px-0 lg:px-10 pb-20 2xl:px-40 bg-bgColor lg:rounded-lg h-screen overflow-hidden'>
-        <TopBar onSearch={(results) => { setSearchResults(results); setIsSearching(true); }}  />
+        <TopBar onSearch={(results) => { setSearchResults(results); setIsSearching(true); }} />
 
         <div className='w-full flex gap-2 lg:gap-4 pt-5 pb-10 h-full'>
           {/* LEFT */}
@@ -285,10 +285,10 @@ const location = useLocation();
           </div>
 
           {/* CENTER */}
-       {/* CENTER */}
-<div className='flex-1 h-full px-4 flex flex-col gap-6 overflow-y-auto rounded-lg'>
-  {/* Nếu đang tìm kiếm, hiển thị kết quả tìm kiếm */}
-  {isSearching ? (
+          {/* CENTER */}
+          <div className='flex-1 h-full px-4 flex flex-col gap-6 overflow-y-auto rounded-lg'>
+            {/* Nếu đang tìm kiếm, hiển thị kết quả tìm kiếm */}
+            {isSearching ? (
               <SearchResults
                 results={searchResults}
                 user={user}
@@ -300,154 +300,153 @@ const location = useLocation();
                 setShowAllPosts={setShowAllPosts}
               />
             ) : (
-    // Khi không tìm kiếm, hiển thị form đăng bài
-    <form onSubmit={handleSubmit(handlePostSubmit)} className='bg-primary px-4 rounded-lg'>
-      {/* Phần đầu của form: Avatar và TextInput */}
-      <div className='w-full flex items-center gap-2 py-4 border-b border-[#66666645]'>
-        <img
-          src={user?.profileUrl ?? NoProfile}
-          alt='User Image'
-          className='w-14 h-14 rounded-full object-cover'
-        />
-        <TextInput
-          styles='w-full rounded-full py-5'
-          placeholder="What's on your mind...."
-          name='description'
-          register={register("description", {
-            required: "Write something about post",
-            onChange: (e) => setContent(e.target.value) // Cập nhật state content
-          })}
-          error={errors.description ? errors.description.message : ""}
-        />
-      </div>
+              // Khi không tìm kiếm, hiển thị form đăng bài
+              <form onSubmit={handleSubmit(handlePostSubmit)} className='bg-primary px-4 rounded-lg'>
+                {/* Phần đầu của form: Avatar và TextInput */}
+                <div className='w-full flex items-center gap-2 py-4 border-b border-[#66666645]'>
+                  <img
+                    src={user?.profileUrl ?? NoProfile}
+                    alt='User Image'
+                    className='w-14 h-14 rounded-full object-cover'
+                  />
+                  <TextInput
+                    styles='w-full rounded-full py-5'
+                    placeholder="What's on your mind...."
+                    name='description'
+                    register={register("description", {
+                      required: "Write something about post",
+                      onChange: (e) => setContent(e.target.value) // Cập nhật state content
+                    })}
+                    error={errors.description ? errors.description.message : ""}
+                  />
+                </div>
 
-      {/* Thông báo lỗi */}
-      {errMsg?.message && (
-        <span
-          role='alert'
-          className={`text-sm ${
-            errMsg?.status === "failed" ? "text-[#f64949fe]" : "text-[#2ba150fe]"
-          } mt-0.5`}
-        >
-          {errMsg?.message}
-        </span>
-      )}
+                {/* Thông báo lỗi */}
+                {errMsg?.message && (
+                  <span
+                    role='alert'
+                    className={`text-sm ${errMsg?.status === "failed" ? "text-[#f64949fe]" : "text-[#2ba150fe]"
+                      } mt-0.5`}
+                  >
+                    {errMsg?.message}
+                  </span>
+                )}
 
-      {/* Phần upload ảnh và video */}
-      <div className='flex items-center justify-between py-4'>
-        {/* Upload ảnh */}
-        <label htmlFor='imgUpload' className='flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer'>
-          <input
-            type='file'
-            onChange={handleFileChange}
-            className='hidden'
-            id='imgUpload'
-            data-max-size='5120'
-            accept='.jpg, .png, .jpeg'
-          />
-          <BiImages />
-          <span>Image</span>
-        </label>
+                {/* Phần upload ảnh và video */}
+                <div className='flex items-center justify-between py-4'>
+                  {/* Upload ảnh */}
+                  <label htmlFor='imgUpload' className='flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer'>
+                    <input
+                      type='file'
+                      onChange={handleFileChange}
+                      className='hidden'
+                      id='imgUpload'
+                      data-max-size='5120'
+                      accept='.jpg, .png, .jpeg'
+                    />
+                    <BiImages />
+                    <span>Image</span>
+                  </label>
 
-        {/* Upload video */}
-        <label
-          className='flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer'
-          htmlFor='videoUpload'
-        >
-          <input
-            type='file'
-            data-max-size='5120'
-            onChange={handleFileChange}
-            className='hidden'
-            id='videoUpload'
-            accept='.mp4, .wav'
-          />
-          <BiSolidVideo />
-          <span>Video</span>
-        </label>
+                  {/* Upload video */}
+                  <label
+                    className='flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer'
+                    htmlFor='videoUpload'
+                  >
+                    <input
+                      type='file'
+                      data-max-size='5120'
+                      onChange={handleFileChange}
+                      className='hidden'
+                      id='videoUpload'
+                      accept='.mp4, .wav'
+                    />
+                    <BiSolidVideo />
+                    <span>Video</span>
+                  </label>
 
-        {/* Nút đăng bài */}
-        <div>
-          {posting ? (
-            <Loading />
-          ) : (
-            <CustomButton
-              type='submit'
-              title='Post'
-              containerStyles='bg-[#0444a4] text-white py-1 px-6 rounded-full font-semibold text-sm'
-            />
-          )}
-        </div>
-      </div>
-      
-      {/* Hiển thị preview file (Ảnh/Video) */}
-      {file && (
-        <div className="relative w-full mt-2">
-          {file.type.startsWith("video/") ? (
-            <video controls className="w-full rounded-lg">
-              <source src={URL.createObjectURL(file)} type={file.type} />
-            </video>
-          ) : (
-            <img
-              src={URL.createObjectURL(file)}
-              alt="preview"
-              className="w-full rounded-lg"
-            />
-          )}
-          {/* Nút xoá */}
-          <button
-            type="button"
-            onClick={() => setFile(null)}
-            className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 hover:bg-black"
-          >
-            <BiSolidXCircle color="black" size={20} />
-          </button>
-        </div>
-      )}
-    </form>
-  )}
+                  {/* Nút đăng bài */}
+                  <div>
+                    {posting ? (
+                      <Loading />
+                    ) : (
+                      <CustomButton
+                        type='submit'
+                        title='Post'
+                        containerStyles='bg-[#0444a4] text-white py-1 px-6 rounded-full font-semibold text-sm'
+                      />
+                    )}
+                  </div>
+                </div>
 
-  {/* Nếu không tìm kiếm, hiển thị bài viết */}
-  {loading ? (
-    <Loading />
-  ) : isSearching ? (
-    // Nếu đang tìm kiếm, chỉ hiển thị các bài viết trong searchResults
-    searchResults.posts && searchResults.posts.length > 0 ? (
-      searchResults.posts
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sắp xếp giảm dần theo timestamp
-        .map((post, index) => (
-          <PostCard
-            key={post.postId || index}
-            post={post}
-            user={user}
-            likePost={() => handleLikePost(post.postId)}
-          />
-        ))
-    ) : (
-      <div className='flex w-full h-full items-center justify-center'>
-        <p className='text-lg text-ascent-2'>No Post Found</p>
-      </div>
-    )
-  ) : (
-    // Khi không tìm kiếm, hiển thị tất cả các bài viết
-    validPosts.length > 0 ? (
-      validPosts
-        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sắp xếp giảm dần theo timestamp
-        .map((post, index) => (
-          <PostCard
-            key={post.postId || index}
-            post={post}
-            user={user}
-            likePost={() => handleLikePost(post.postId)}
-          />
-        ))
-    ) : (
-      <div className='flex w-full h-full items-center justify-center'>
-        <p className='text-lg text-ascent-2'>No Post Available</p>
-      </div>
-    )
-  )}
-</div>
+                {/* Hiển thị preview file (Ảnh/Video) */}
+                {file && (
+                  <div className="relative w-full mt-2">
+                    {file.type.startsWith("video/") ? (
+                      <video controls className="w-full rounded-lg">
+                        <source src={URL.createObjectURL(file)} type={file.type} />
+                      </video>
+                    ) : (
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt="preview"
+                        className="w-full rounded-lg"
+                      />
+                    )}
+                    {/* Nút xoá */}
+                    <button
+                      type="button"
+                      onClick={() => setFile(null)}
+                      className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 hover:bg-black"
+                    >
+                      <BiSolidXCircle color="black" size={20} />
+                    </button>
+                  </div>
+                )}
+              </form>
+            )}
+
+            {/* Nếu không tìm kiếm, hiển thị bài viết */}
+            {loading ? (
+              <Loading />
+            ) : isSearching ? (
+              // Nếu đang tìm kiếm, chỉ hiển thị các bài viết trong searchResults
+              searchResults.posts && searchResults.posts.length > 0 ? (
+                searchResults.posts
+                  .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sắp xếp giảm dần theo timestamp
+                  .map((post, index) => (
+                    <PostCard
+                      key={post.postId || index}
+                      post={post}
+                      user={user}
+                      likePost={() => handleLikePost(post.postId)}
+                    />
+                  ))
+              ) : (
+                <div className='flex w-full h-full items-center justify-center'>
+                  <p className='text-lg text-ascent-2'>No Post Found</p>
+                </div>
+              )
+            ) : (
+              // Khi không tìm kiếm, hiển thị tất cả các bài viết
+              validPosts.length > 0 ? (
+                validPosts
+                  .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Sắp xếp giảm dần theo timestamp
+                  .map((post, index) => (
+                    <PostCard
+                      key={post.postId || index}
+                      post={post}
+                      user={user}
+                      likePost={() => handleLikePost(post.postId)}
+                    />
+                  ))
+              ) : (
+                <div className='flex w-full h-full items-center justify-center'>
+                  <p className='text-lg text-ascent-2'>No Post Available</p>
+                </div>
+              )
+            )}
+          </div>
 
 
           {/* RIGHT */}
