@@ -33,12 +33,12 @@ export const getSuggestedFriends = async (userId) => {
     return response.data;
   };
   
-  // Hàm từ chối lời mời kết bạn
-  export const denyFriendRequest = async (requestId) => {
-    // Thay đổi endpoint tùy theo backend
-    const response = await axios.delete(`/api/friends/request/${requestId}`);
-    return response.data;
-  };
+export const denyFriendRequest = async (userId1, userId2) => {
+  // Thay đổi endpoint tùy theo backend
+  const response = await axios.delete(`/api/friends/deny?userId1=${userId1}&userId2=${userId2}`);
+  return response.data;
+};
+
 
 // Chấp nhận lời mời kết bạn
 export const acceptFriendRequest = async (requestId) => {
@@ -54,7 +54,7 @@ export const unfriend = async (userId1, userId2) => {
 
 //Kiem tra thong tin ban be
 export const getFriendStatus = async (userId1, userId2) => {
-  const response = await axios.get(`/api/friends/getFriendStatus?userId1=${userId1}&=${userId2}`, {
+  const response = await axios.get(`/api/friends/getFriendStatus`, {
     params: {
       userId1,
       userId2,
@@ -62,4 +62,5 @@ export const getFriendStatus = async (userId1, userId2) => {
   });
   return response.data; // { status, senderId, receiverId, requestId }
 };
+
 
