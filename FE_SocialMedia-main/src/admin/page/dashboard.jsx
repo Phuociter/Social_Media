@@ -255,7 +255,7 @@ const Dashboard = () => {
         {/* ROW 2 */}
         {/* Biểu đồ bài viết theo tháng */}
         <Box
-          gridColumn="span 6"
+          gridColumn="span 12"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
           height="400px"
@@ -284,7 +284,7 @@ const Dashboard = () => {
 
         {/* Biểu đồ người dùng theo tháng */}
         <Box
-          gridColumn="span 6"
+          gridColumn="span 12"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
           height={"400px"}
