@@ -111,7 +111,7 @@ public class PostController {
         return ResponseEntity.ok(postService.updatePost(postId, description, mediaFile, removeMedia));
     }
 
-    //hàm lấy userid của bài viết
+    // hàm lấy userid của bài viết
     @GetMapping("/posts/userid/{postId}")
     public ResponseEntity<Integer> getUserIdByPostId(@PathVariable Integer postId) {
         Post post = postRepository.findById(postId)
@@ -120,7 +120,7 @@ public class PostController {
         return ResponseEntity.ok(userId);
     }
 
-    //hàm lất post id của cùng của user cần lấy
+    // hàm lất post id của cùng của user cần lấy
     @GetMapping("/posts/ids/{userId}")
     public ResponseEntity<List<Integer>> getUserPostIds(@PathVariable Integer userId) {
         // Lấy tất cả các bài viết của người dùng với id
@@ -128,10 +128,10 @@ public class PostController {
 
         // Lấy danh sách postId từ các bài viết
         List<Integer> postIds = posts.stream()
-            .map(Post::getPostId)  // Giả sử bạn có getter cho postId trong đối tượng Post
-            .collect(Collectors.toList());  // Thu thập vào danh sách
+                .map(Post::getPostId) // Giả sử bạn có getter cho postId trong đối tượng Post
+                .collect(Collectors.toList()); // Thu thập vào danh sách
 
-        return ResponseEntity.ok(postIds);  // Trả về danh sách postId
+        return ResponseEntity.ok(postIds); // Trả về danh sách postId
     }
 
 }

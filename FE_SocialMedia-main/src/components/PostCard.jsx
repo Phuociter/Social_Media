@@ -276,7 +276,12 @@ useEffect(() => {
       await toggleLikeCommentAPI(commentId, userId);
       //////gửi thông báo like comment//////////////////////////////////////////////
       const LikePostID = await axios.get(`/api/likes/last/${userId}`);
+      console.log("LikePostID: ", LikePostID.data);
+
       const userIdOfComment = await axios.get(`/api/comments/userid/${commentId}`);
+      console.log("userIdOfComment: ", userIdOfComment.data);
+
+      console.log("UserIDDDD: ", userId);
       await sendNotification(userId, userIdOfComment.data, 'like_comment', LikePostID.data);
     }
     catch (err) {

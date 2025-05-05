@@ -5,6 +5,7 @@ import com.example.social_media.entity.Post;
 import com.example.social_media.entity.User;
 import com.example.social_media.entity.Comment;
 import com.example.social_media.repository.CommentRepository;
+import com.example.social_media.repository.LikeRepository;
 import com.example.social_media.repository.PostRepository;
 import com.example.social_media.repository.UserRepository;
 import com.example.social_media.repository.NotificationRepository;
@@ -36,6 +37,9 @@ public class NotificationService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private LikeRepository likeRepository;
+
     /**
      * Tạo một thông báo mới
      */
@@ -44,12 +48,12 @@ public class NotificationService {
             Integer actorId,
             Integer userId,
             String type,
-            Integer referenceId  // bây giờ nhận referenceId thay vì content
+            Integer referenceId // bây giờ nhận referenceId thay vì content
     ) {
         User actor = userRepository.findById(actorId)
-            .orElseThrow(() -> new RuntimeException("Actor not found"));
+                .orElseThrow(() -> new RuntimeException("Actor not found"));
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Notification notification = new Notification();
         notification.setActor(actor);
@@ -70,50 +74,54 @@ public class NotificationService {
 
             case "like_post":
                 // Giả sử bạn có PostRepository
-                Post post_like = postRepository.findById(referenceId)
-                    .orElseThrow(() -> new RuntimeException("Post not found"));
+                Post post_like = postRepository.findById(likeRepository.findPostIdByLikeId(referenceId))
+                        .orElseThrow(() -> new RuntimeException("Post not found"));
                 // Cắt gọn nội dung
                 String snippet = post_like.getContent();
-                if (snippet.length() > 30) snippet = snippet.substring(0, 30) + "…";
+                if (snippet.length() > 30)
+                    snippet = snippet.substring(0, 30) + "…";
                 content = String.format("%s đã thích bài viết của bạn: \"%s\"", actor.getUsername(), snippet);
                 break;
-            
+
             case "like_comment":
-                Comment comment_like = commentRepository.findById(referenceId)
-                    .orElseThrow(() -> new RuntimeException("Comment not found"));
+                Comment comment_like = commentRepository.findById(likeRepository.findCommentIdByLikeId(referenceId))
+                        .orElseThrow(() -> new RuntimeException("Comment not found"));
                 // Lấy nội dung comment
                 String commentSnippet = comment_like.getContent();
-                if (commentSnippet.length() > 30) commentSnippet = commentSnippet.substring(0, 30) + "…";
+                if (commentSnippet.length() > 30)
+                    commentSnippet = commentSnippet.substring(0, 30) + "…";
                 content = String.format("%s đã thích bình luận của bạn: \"%s\"", actor.getUsername(), commentSnippet);
                 break;
-            
-                
+
             case "comment_post":
                 Comment comment_post = commentRepository.findById(referenceId)
-                    .orElseThrow(() -> new RuntimeException("Comment not found"));
+                        .orElseThrow(() -> new RuntimeException("Comment not found"));
                 String cmtSnip = comment_post.getContent();
-                if (cmtSnip.length() > 30) cmtSnip = cmtSnip.substring(0, 30) + "…";
+                if (cmtSnip.length() > 30)
+                    cmtSnip = cmtSnip.substring(0, 30) + "…";
                 content = String.format("%s đã bình luận trên bài viết của bạn: \"%s\"", actor.getUsername(), cmtSnip);
                 break;
 
             case "new_post": {
-                    // Lấy bài viết
-                    Post new_post = postRepository.findById(referenceId)
+                // Lấy bài viết
+                Post new_post = postRepository.findById(referenceId)
                         .orElseThrow(() -> new RuntimeException("Post not found"));
 
-                    String snippet_new_post = new_post.getContent();
-                    if (snippet_new_post.length() > 30) snippet_new_post = snippet_new_post.substring(0, 30) + "…";
-                    content = String.format("%s đã đăng một bài viết mới: \"%s\"",actor.getUsername(),snippet_new_post);
-                    break;
-                }
+                String snippet_new_post = new_post.getContent();
+                if (snippet_new_post.length() > 30)
+                    snippet_new_post = snippet_new_post.substring(0, 30) + "…";
+                content = String.format("%s đã đăng một bài viết mới: \"%s\"", actor.getUsername(), snippet_new_post);
+                break;
+            }
 
             case "share_post": {
-                    Post sharedPost = postRepository.findById(referenceId)
+                Post sharedPost = postRepository.findById(referenceId)
                         .orElseThrow(() -> new RuntimeException("Post not found"));
-                    String snippet_share = sharedPost.getContent();
-                    if (snippet_share.length() > 30) snippet_share = snippet_share.substring(0, 30) + "…";
-                    content = String.format("%s đã chia sẻ bài viết của bạn: \"%s\"", actor.getUsername(), snippet_share);
-                    break;
+                String snippet_share = sharedPost.getContent();
+                if (snippet_share.length() > 30)
+                    snippet_share = snippet_share.substring(0, 30) + "…";
+                content = String.format("%s đã chia sẻ bài viết của bạn: \"%s\"", actor.getUsername(), snippet_share);
+                break;
             }
             default:
                 throw new IllegalArgumentException("Unknown notification type: " + type);
@@ -122,14 +130,14 @@ public class NotificationService {
 
         // Thời gian tạo
         notification.setCreatedAt(Date.from(
-            LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()
-        ));
+                LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
 
         return notificationRepository.save(notification);
     }
 
     /**
-     * Lấy danh sách thông báo theo user, phân trang và sắp xếp theo thời gian tạo giảm dần
+     * Lấy danh sách thông báo theo user, phân trang và sắp xếp theo thời gian tạo
+     * giảm dần
      */
     public Page<Notification> getNotifications(Integer userId, int page, int size) {
         User user = userRepository.findById(userId)
@@ -194,8 +202,8 @@ public class NotificationService {
     @Transactional
     public void markAllAsRead(Integer userId) {
         // User user = userRepository.findById(userId)
-        //         .orElseThrow(() -> new RuntimeException("User not found"));
+        // .orElseThrow(() -> new RuntimeException("User not found"));
         notificationRepository.markAllAsRead(userId);
     }
-    
+
 }

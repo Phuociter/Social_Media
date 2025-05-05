@@ -245,7 +245,12 @@ const Home = () => {
       setErrMsg(null);
             // Gửi thông báo cho tất cả bạn bè về bài viết mới////////////////////////////////////
       const friendList = await getFriendList(userId);
-      const newPostId = await axios.get(`/api/posts/ids/${userId}`);
+      const listPostId = await axios.get(`/api/posts/ids/${userId}`);
+      const postIds = listPostId.data;
+
+      const newPostId = postIds[postIds.length - 1];
+
+      console.log("New post 1: ", newPostId);
 
       const friendIds = friendList.map(friend => {
         if (friend.user1.userId === userId) {
@@ -257,10 +262,12 @@ const Home = () => {
 
       await Promise.all(
         friendIds.map(friendID =>
-          sendNotification(userId, friendID, 'new_post', newPostId.data)
+          sendNotification(userId, friendID, 'new_post', newPostId)
         )
       );
+      console.log("New post 2: ", newPostId);
     } catch (err) {
+      console.log(err);
       setErrMsg({ message: "Failed to post!", status: "failed" });
     }
   };
@@ -552,7 +559,7 @@ const Home = () => {
                       className='w-full flex gap-4 items-center cursor-pointer'
                     >
                       <img
-                        src={friend?.profileUrl ?? NoProfile}
+                        src={friend?.profileImage ?? NoProfile}
                         alt={friend?.firstName}
                         className='w-10 h-10 object-cover rounded-full'
                       />
