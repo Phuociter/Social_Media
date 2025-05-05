@@ -32,9 +32,12 @@ const TopBar = ({ onSearch }) => {
     const fetchData = async () => {
       const response = await fetch(`/api/notifications/user/${user.userId}`);
       const data = await response.json();
-      const contents = data.notifications.map(n => n.content);
-      // console.log("Content Array:", contents);
+      const contents = [...new Set(data.notifications.map(n => n.content))];
       setNotifications(contents);
+
+      // const contents = data.notifications.map(n => n.content);
+      // console.log("Content Array:", contents);
+      // setNotifications(contents);
       // xử lý data
     };
 

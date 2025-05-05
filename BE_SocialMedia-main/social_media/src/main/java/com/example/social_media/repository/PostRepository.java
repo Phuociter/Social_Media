@@ -52,6 +52,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                     SELECT f.user1.userId FROM Friendship f WHERE f.user2.userId = :userId
                 ) THEN 1 ELSE 2 END AS priority
                 FROM Post p
+                WHERE p.status!='rejected'
                 ORDER BY priority ASC, p.timestamp DESC
             """)
     List<Object[]> findAllPostsWithPriority(@Param("userId") Integer userId);
