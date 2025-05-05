@@ -51,4 +51,13 @@ public class CommentController {
         }
     }
 
+    @GetMapping("/comments/{commentId}/post")
+    public ResponseEntity<?> getPostIdByCommentId(@PathVariable("commentId") Integer commentId) {
+        Integer postId = commentService.getPostIdByCommentId(commentId);
+        if (postId == null) {
+            return ResponseEntity.ok("Không tìm thấy bài viết cho comment này.");
+        }
+        return ResponseEntity.ok(postId);
+    }
+
 }
