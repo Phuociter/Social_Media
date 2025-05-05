@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams,  useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { fetchUserById } from "../redux/userSlice";
 
 import {
@@ -25,13 +25,16 @@ import { getPostsByUserId, toggleLikeAPI } from "../api/PostAPI";
 const Profile = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   // Lấy thông tin người dùng từ redux
   const { user, currentUser, loading1, error } = useSelector((state) => state.user);
-  
   // Khai báo state cho loading (nếu cần dùng trong component)
   const [loading, setLoading] = useState(false);
+
+  const handleSearch = (results) => {
+    navigate("/", { state: { searchResults: results } });
+  };
 
   // Fetch thông tin user theo id từ route
   useEffect(() => {
@@ -75,25 +78,10 @@ const Profile = () => {
       console.error("Like failed: ", err);
     }
   };
-  const handleSearch = async (data) => {
-    try {
-      const keyword = data.search?.trim();
-      if (!keyword) return;
-      const result = await searchAll(keyword);
-      if (onSearch) {
-        onSearch(result);
-      } else {
-        navigate(`/?search=${encodeURIComponent(keyword)}`);
-      }
-      reset();
-    } catch (error) {
-      console.error("Search error:", error);
-    }
-  };
 
   return (
     <div className='home w-full px-0 lg:px-10 pb-20 2xl:px-40 bg-bgColor lg:rounded-lg h-screen overflow-hidden'>
-      <TopBar  onSearch= {handleSearch}/>
+      <TopBar onSearch= {handleSearch} />
       <div className='w-full flex gap-2 lg:gap-4 md:pl-4 pt-5 pb-10 h-full'>
         {/* LEFT */}
         <div className='hidden w-1/6 lg:w-1/7 md:flex flex-col gap-6 overflow-y-auto'>
@@ -123,12 +111,12 @@ const Profile = () => {
             [...userPosts]
               .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
               .map((post, index) => {
-                console.log("Post ID:", post.postId, "Likes:", post.likes);
+                console.log("Post ID:", post.postId, "Likes:", post.likes, "Author: ", post.user.userId);
                 return (
                   <PostCard
                     key={post.postId || index}
                     post={post}
-                    user={currentUser}
+                    user={user}
                     deletePost={handleDelete}
                     likePost={() => handleLikePost(post.postId)}
                   />
