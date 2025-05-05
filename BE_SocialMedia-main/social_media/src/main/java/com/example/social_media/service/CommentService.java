@@ -47,4 +47,8 @@ public class CommentService {
     public Comment getLatestCommentByUserId(Integer userId) {
         return commentRepository.findTopByUser_UserIdOrderByTimestampDesc(userId);  // Giả sử có phương thức tìm kiếm này trong repository
     }
+
+    public Integer getPostIdByCommentId(Integer commentId) {
+        return commentRepository.findPostIdByCommentId(commentId);
+    }
 }
