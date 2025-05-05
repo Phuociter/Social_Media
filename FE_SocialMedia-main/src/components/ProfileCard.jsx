@@ -55,12 +55,16 @@ const ProfileCard = ({ user }) => {
   }, [currentUser, user]);
 
   // Các hàm xử lý yêu cầu kết bạn
+  // Các hàm xử lý yêu cầu kết bạn
   const handleFriendRequest = async () => {
     try {
       if (!currentUser?.userId || !user?.userId) return;
+
+      console.log("currentUser.userId", currentUser.userId);
+      console.log("user.userId", user.userId);
+
       const response = await sendFriendRequest(currentUser.userId, user.userId);
-      alert("Friend request sent!");
-      
+      alert("Đã gửi yêu cầu kết bạn!");
       const newStatus = {
         status: "pending",
         senderId: currentUser.userId,
@@ -68,13 +72,12 @@ const ProfileCard = ({ user }) => {
         requestId: response.requestId || null,
       };
       setFriendStatus(newStatus);
-      
-      const requestID = await axios.get(`api/friends/requests/last-request-id/${user.userId}&${currentUser.userId}`);
+      const requestID = await axios.get(`/api/friends/requests/last-request-id/${currentUser.userId}&${user.userId}`);
       await sendNotification(currentUser.userId, user.userId, 'friend_request_received', requestID.data);
       localStorage.setItem("friendStatus", JSON.stringify(newStatus));  // Lưu vào localStorage
     } catch (error) {
-      console.error("Failed to send friend request:", error);
-      alert("Failed to send friend request!");
+      console.error("Yêu cầu kết bạn bị lỗi", error);
+      alert("Gửi yêu cầu kết bạn thất bại!");
     }
   };
 
