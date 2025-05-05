@@ -81,7 +81,7 @@ public class PostController {
     // }
 
     // API: Lấy tất cả post, ưu tiên bạn bè
-    @GetMapping("posts/all/{userId}")
+    @GetMapping("/posts/all/{userId}")
     public ResponseEntity<List<Post>> getAllPostsWithPriority(@PathVariable Integer userId) {
         List<Post> posts = postService.getAllPostsWithPriority(userId);
         return ResponseEntity.ok(posts);
