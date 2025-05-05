@@ -18,6 +18,7 @@ const TopBar = ({ onSearch }) => {
   const { theme } = useSelector((state) => state.theme);
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+    const navigate = useNavigate();
   const {
     register,
     handleSubmit,
