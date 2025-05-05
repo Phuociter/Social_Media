@@ -99,11 +99,11 @@ const ProfileCard = ({ user }) => {
     }
   };
 
-  const handleDenyFriendRequest = async () => {
+const handleDenyFriendRequest = async () => {
     try {
       if (!friendStatus?.requestId) return;
-      await denyFriendRequest(friendStatus.requestId);
-      alert("Friend request denied!");
+      await denyFriendRequest(friendStatus.senderId, friendStatus.receiverId);
+      //alert("Friend request denied!");
       setFriendStatus(null);
       localStorage.removeItem("friendStatus");
     } catch (error) {
@@ -113,13 +113,13 @@ const ProfileCard = ({ user }) => {
 
   const handleCancel = async () => {
     try {
-      if (!currentUser?.userId || !user?.userId) return;
-      await denyFriendRequest(friendStatus.requestId);
-      alert("Cancel Request!!!");
+      if (!friendStatus?.requestId) return;
+      await denyFriendRequest(friendStatus.senderId, friendStatus.receiverId);
+      //alert("Friend request Cancelled");
       setFriendStatus(null);
       localStorage.removeItem("friendStatus");
     } catch (error) {
-      console.error("Failed to cancel friend request", error);
+      console.error("Failed to deny friend request", error);
     }
   };
 
