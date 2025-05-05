@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.example.social_media.dto.MonthPostDTO;
 import com.example.social_media.entity.Post;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
@@ -56,4 +57,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 ORDER BY priority ASC, p.timestamp DESC
             """)
     List<Object[]> findAllPostsWithPriority(@Param("userId") Integer userId);
+
+    // Lấy số lượng bài viết theo tháng
+    @Query("SELECT new com.example.social_media.dto.MonthPostDTO(MONTH(p.timestamp), COUNT(p)) " +
+            "FROM Post p WHERE YEAR(p.timestamp) = :year GROUP BY MONTH(p.timestamp) ORDER BY MONTH(p.timestamp)")
+    List<MonthPostDTO> countPostsByMonth(@Param("year") int year);
+    
 }

@@ -29,6 +29,7 @@ const UserManagement = () => {
     username: '',
     email: '',
     role: 'user',
+    createdAt: '',
     // password: '',
     status: '',
   });
@@ -97,6 +98,7 @@ const UserManagement = () => {
       id: user.userId,
       username: user.username,
       email: user.email,
+      createdAt: user.createdAt,
       role: user.role || 'user',
       status: user.status,
     });
@@ -112,6 +114,7 @@ const UserManagement = () => {
       username: '',
       email: '',
       role: 'user',
+      createdAt: '',
       // password: '',
       status: '',
     });
@@ -149,6 +152,7 @@ const UserManagement = () => {
         id: selectedUser.userId,
         username: formData.username,
         email: formData.email,
+        createdAt: selectedUser.createat,
         role: formData.role || selectedUser.role || 'user',
         password: selectedUser.password,
         status: formData.status || selectedUser.status
@@ -306,6 +310,7 @@ const UserManagement = () => {
               <TableCell>ID</TableCell>
               <TableCell>Tên người dùng</TableCell>
               <TableCell>Email</TableCell>
+              <TableCell>Ngày tạo</TableCell>
               <TableCell>Vai trò</TableCell>
               <TableCell>Trạng thái</TableCell>
               <TableCell>Thao tác</TableCell>
@@ -317,6 +322,7 @@ const UserManagement = () => {
                 <TableCell>{user.userId}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
+                <TableCell>{user.createdAt}</TableCell>
                 <TableCell>{user.role}</TableCell>
                 <TableCell>{user.status === 0  ? 'Đã khóa' : 'Hoạt động' }</TableCell>
                 <TableCell>
@@ -368,6 +374,15 @@ const UserManagement = () => {
             label="Vai trò"
             fullWidth
             value={formData.role}
+            onChange={handleInputChange}
+            disabled={true}
+          />
+          <TextField
+            margin="dense"
+            name="createdAt"
+            label="thời gian tạo"
+            fullWidth
+            value={formData.createdAt}
             onChange={handleInputChange}
             disabled={true}
           />

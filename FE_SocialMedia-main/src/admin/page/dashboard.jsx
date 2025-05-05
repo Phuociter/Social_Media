@@ -1,6 +1,6 @@
 /**
  * Dashboard/index.jsx - Trang tổng quan
- * 
+ *
  * Chức năng:
  * - Hiển thị các thống kê tổng quan:
  *   + Số lượng người dùng
@@ -9,7 +9,14 @@
  * - Hiển thị biểu đồ thống kê
  */
 
-import { Box, Button, IconButton, Typography, useTheme, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Typography,
+  useTheme,
+  CircularProgress,
+} from "@mui/material";
 import { tokens } from "../theme";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import PeopleIcon from "@mui/icons-material/People";
@@ -17,16 +24,33 @@ import ArticleIcon from "@mui/icons-material/Article";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Header from "../component/Header";
 import useStats from "../hooks/useStats";
+import { BarChart } from "@mui/x-charts/BarChart";
+import { LineChart } from "@mui/x-charts/LineChart";
+import useCharts from "../hooks/useCharts"; // Hook tự tạo từ bước trước
+import { useState } from "react";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { stats, loading, error } = useStats();
-  
+  const convertToSeriesData = (data) => ({
+    xAxis: [
+      { scaleType: "point", data: data.map((item) => `Tháng ${item.month}`) },
+    ],
+    series: [{ data: data.map((item) => item.count) }],
+  });
+  const { chartData, chartLoading, selectedYear, setSelectedYear } =
+    useCharts();
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
         <CircularProgress />
       </Box>
     );
@@ -45,23 +69,26 @@ const Dashboard = () => {
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="DASHBOARD" subtitle="Thống kê tổng quan" />
-
-        <Box>
-          <Button
-            sx={{
-              backgroundColor: colors.blueAccent[700],
-              color: colors.grey[100],
-              fontSize: "14px",
-              fontWeight: "bold",
-              padding: "10px 20px",
-            }}
-          >
-            <DownloadOutlinedIcon sx={{ mr: "10px" }} />
-            Tải báo cáo
-          </Button>
-        </Box>
       </Box>
-
+      <Box gridColumn="span 12" gridrow="span 1" mr="0px" display="flex" justifyContent="flex-end" sx={{ height: 60 }}>
+      <FormControl sx={{ width: 200, ml: 2 }} size="small" display="flex-End">
+            <InputLabel id="year-select-label" >Chọn năm cho biểu dồ</InputLabel>
+            <Select
+              labelId="year-select-label"
+              label="Năm"
+              value={selectedYear}
+              height="40px" 
+              onChange={(e) => setSelectedYear(e.target.value)}
+            >
+              {[2022, 2023, 2024, 2025].map((year) => (
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          
+        </Box>
       {/* GRID & CHARTS */}
       <Box
         display="grid"
@@ -158,6 +185,64 @@ const Dashboard = () => {
           </Box>
         </Box>
         
+        {/* ROW 2 */}
+        {/* Biểu đồ bài viết theo tháng */}
+        <Box
+          gridColumn="span 6"
+          gridRow="span 2"
+          backgroundColor={colors.primary[400]}
+          height="400px"
+          p="20px"
+        >
+          <Typography variant="h6" color={colors.grey[100]} mb="10px">
+            Biểu đồ bài viết theo tháng
+          </Typography>
+          {chartLoading ? (
+            <CircularProgress />
+          ) : (
+            <LineChart
+              height={300}
+              {...convertToSeriesData(chartData.posts)}
+              series={[
+                {
+                  data: chartData.posts.map((p) => p.totalPosts),
+                  label: "Bài viết",
+                  color: colors.greenAccent[500],
+                  area: true,
+                },
+              ]}
+            />
+          )}
+        </Box>
+
+        {/* Biểu đồ người dùng theo tháng */}
+        <Box
+          gridColumn="span 6"
+          gridRow="span 2"
+          backgroundColor={colors.primary[400]}
+          height={"400px"}
+          p="20px"
+        >
+          <Typography variant="h6" color={colors.grey[100]} mb="10px">
+            Biểu đồ người dùng theo tháng
+          </Typography>
+          {chartLoading ? (
+            <CircularProgress />
+          ) : (
+            <LineChart
+              height={300}
+              {...convertToSeriesData(chartData.users)}
+              series={[
+                {
+                  data: chartData.users.map((u) => u.totalUsers),
+                  label: "Người dùng",
+                  color: colors.blueAccent[400],
+                  area: true,
+                },
+              ]}
+            />
+          )}
+        </Box>
       </Box>
     </Box>
   );

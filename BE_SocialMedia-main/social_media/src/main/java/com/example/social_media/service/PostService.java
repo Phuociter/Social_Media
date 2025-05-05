@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.social_media.dto.MonthPostDTO;
 import com.example.social_media.entity.Post;
 import com.example.social_media.entity.User;
 import com.example.social_media.repository.PostRepository;
@@ -43,7 +44,9 @@ public class PostService {
     public List<Post> getPostsByStatus(Status status) {
         return postRepository.findByStatus(status);
     }
-
+     public List<MonthPostDTO> getPostCountByMonth(int year) {
+        return postRepository.countPostsByMonth(year);
+    }
     // public List<Post> getPostsByPostId(Integer postId) {
     // return postRepository.findByPostId(postId);
     // }
