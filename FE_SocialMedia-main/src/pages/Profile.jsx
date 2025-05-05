@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { fetchUserById } from "../redux/userSlice";
 
 import {
@@ -40,6 +40,11 @@ const Profile = () => {
 
   console.log("current user: ", currentUser);
 
+    const handleSearch = (results) => {
+    navigate("/", { state: { searchResults: results } });
+  };
+
+  
   const handleDelete = () => {
     // Xử lý khi xóa post (nếu cần)
   };
@@ -76,7 +81,7 @@ const Profile = () => {
 
   return (
     <div className='home w-full px-0 lg:px-10 pb-20 2xl:px-40 bg-bgColor lg:rounded-lg h-screen overflow-hidden'>
-      <TopBar />
+      <TopBar onSearch= {handleSearch} />
       <div className='w-full flex gap-2 lg:gap-4 md:pl-4 pt-5 pb-10 h-full'>
         {/* LEFT */}
         <div className='hidden w-1/6 lg:w-1/7 md:flex flex-col gap-6 overflow-y-auto'>
