@@ -160,9 +160,9 @@ const Home = () => {
   // Từ chối lời mời kết bạn
   const handleDeny = async (request) => {
     try {
-      await denyFriendRequest(request.requestId);
+      await denyFriendRequest(request.sender?.userId, request.receiver?.userId);
       setFriendRequests((prev) =>
-        prev.filter((req) => req.userId !== request.sender.userId)
+        prev.filter((req) => req.sender.userId !== request.sender.userId)
 
       );
       alert("Đã từ chối lời mời kết bạn!");
