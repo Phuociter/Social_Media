@@ -102,7 +102,8 @@ const TopBar = ({ onSearch }) => {
   },[openNotify]);
 
   const handleDeleteNotification = (index) => {
-    setNotifications((prev) => prev.filter((_, i) => i !== index));
+    setNotifications((prev) => prev.filter((item) => item.id !== id));
+    await sendNotification(`/api/notifications/delete/${id}`);
   };
 
   return (
