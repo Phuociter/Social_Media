@@ -178,15 +178,18 @@ const Home = () => {
       return;
     }
     try {
+      console.log("Gửi lời mời kết bạn đến:", receiverId);
+      console.log("userId: ", user?.userId);
       await sendFriendRequest(user?.userId, receiverId);
+      // await sendFriendRequest(currentUser.userId, user.userId);
       alert("Đã gửi lời mời kết bạn!");
       // Loại bỏ user này khỏi danh sách gợi ý
       setSuggestedFriends((prev) =>
         prev.filter((f) => f.userId !== receiverId)
       );
             // Gửi thông báo cho người nhận lời mời kết bạn/////////////////////////////
-      // const requestID = await axios.get(`/api/friends/requests/last-request-id/${request.sender.userId}&${user.userId}`);
-      const requestID = await axios.get(`api/friends/requests/last-request-id/${receiverId}&${userId}`);
+      const requestID = await axios.get(`api/friends/requests/last-request-id/${userId}&${receiverId}`);
+      console.log("requestID: ", requestID.data);
       await sendNotification(userId, receiverId, 'friend_request_received', requestID.data);
     } catch (error) {
       console.error("Lỗi khi gửi lời mời kết bạn:", error);
