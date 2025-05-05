@@ -89,4 +89,8 @@ public class LikeService {
         Like lastLike = likeRepository.findTopByUser_UserIdOrderByLikeIdDesc(userId);
         return lastLike != null ? lastLike.getLikeId() : null;
     }
+
+    public Integer getPostIdByLikeId(Integer likeId) {
+        return likeRepository.findPostIdByLikeId(likeId);
+    }
 }
