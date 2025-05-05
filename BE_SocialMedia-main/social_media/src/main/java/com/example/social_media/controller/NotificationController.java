@@ -69,12 +69,10 @@ public class NotificationController {
     }
 
     //  * xóa thông báo
-    @DeleteMapping("/delete/{/{notificationId}")
-    public ResponseEntity<Void> deleteNotification(
-            @PathVariable Integer notificationId,
-            @RequestParam Integer userId) {
+    @DeleteMapping("/delete/{notificationId}")
+    public ResponseEntity<Void> deleteNotification(@PathVariable Integer notificationId) {
 
-        notificationService.deleteNotification(notificationId, userId);
+        notificationService.deleteNotification(notificationId);
         return ResponseEntity.noContent().build();
     }
 }
