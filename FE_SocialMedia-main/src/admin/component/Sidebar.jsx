@@ -154,8 +154,8 @@ const Sidebar = ({ isSidebar }) => {
                 alignItems="center"
                 ml="15px"
               >
-                <Typography variant="h3" color={colors.grey[100]}>
-                  ADMINIS
+                <Typography variant="h4" color={colors.grey[100]}>
+                  Admin Dashboard
                 </Typography>
               </Box>
             )}

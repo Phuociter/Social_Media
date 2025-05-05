@@ -21,6 +21,7 @@ const ProfileDialog = ({ open, onClose, profileData }) => {
       maxWidth="md"
       fullWidth
     >
+
       <DialogTitle>
         <Typography variant="h5" component="div">
           Hồ sơ người dùng
@@ -32,7 +33,7 @@ const ProfileDialog = ({ open, onClose, profileData }) => {
           <Grid item xs={12} md={4}>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
               <Avatar
-                src={profileData.avatar}
+                src={profileData.profileImage}
                 sx={{ width: 150, height: 150, mb: 2 }}
               />
               <Typography variant="h6">{profileData.name}</Typography>

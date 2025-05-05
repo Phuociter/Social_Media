@@ -80,7 +80,7 @@ const Dashboard = () => {
         sx={{ height: 60 }}
       >
         <FormControl sx={{ width: 200, ml: 2 }} size="small" display="flex-End">
-          <InputLabel id="year-select-label">Chọn năm cho biểu dồ</InputLabel>
+          <InputLabel id="year-select-label">Chọn năm cho biểu dồ đường</InputLabel>
           <Select
             labelId="year-select-label"
             label="Năm"
@@ -105,7 +105,7 @@ const Dashboard = () => {
       >
         {/* ROW 1 */}
         <Box
-          gridColumn="span 4"
+          gridColumn="span 3"
           backgroundColor={colors.primary[400]}
           display="flex"
           alignItems="center"
@@ -134,7 +134,7 @@ const Dashboard = () => {
           </Box>
         </Box>
         <Box
-          gridColumn="span 4"
+          gridColumn="span 3"
           backgroundColor={colors.primary[400]}
           display="flex"
           alignItems="center"
@@ -163,45 +163,91 @@ const Dashboard = () => {
           </Box>
         </Box>
         <Box
-          gridColumn="span 2"
+          gridColumn="span 3"
           backgroundColor={colors.primary[400]}
           display="flex"
           alignItems="center"
           justifyContent="center"
         >
-          <PieChart
-            series={[
-              {
-                data: [
-                  { id: 0, value: stats.totalPostsIsTatusApprove, label: "chấp nhận" },
-                  { id: 1, value: stats.totalPostsIsTatusReject, label: "từ chối" },
-                  { id: 2, value: stats.totalPostsIsTatusPending, label: "chờ xử lý" },
-                ],
-              },
-            ]}
-            width={100}
-            height={100}
-          />
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            mt="10px"
+          >
+            <Typography
+              variant="h6"
+              color={colors.grey[100]}
+              fontWeight="bold"
+              sx={{ m: "0 0 20px 0" }}  
+              >TỈ LỆ BÀI VIẾT</Typography>
+            <PieChart
+              series={[
+                {
+                  data: [
+                    {
+                      id: 0,
+                      value: stats.totalPostsIsTatusApprove,
+                      label: "chấp nhận",
+                    },
+                    {
+                      id: 1,
+                      value: stats.totalPostsIsTatusReject,
+                      label: "từ chối",
+                    },
+                    {
+                      id: 2,
+                      value: stats.totalPostsIsTatusPending,
+                      label: "chờ xử lý",
+                    },
+                  ],
+                },
+              ]}
+              width={100}
+              height={100}
+            />
+          </Box>
         </Box>
         <Box
-          gridColumn="span 2"
+          gridColumn="span 3"
           backgroundColor={colors.primary[400]}
           display="flex"
           alignItems="center"
           justifyContent="center"
         >
-          <PieChart
-            series={[
-              {
-                data: [
-                  { id: 0, value: stats.totalUserIstatusAvtive, label: "hoạt động" },
-                  { id: 1, value: stats.totalUserIstatusBlock, label: "Bị khóa" },
-                ],
-              },
-            ]}
-            width={100}
-            height={100}
-          />
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            mt="10px"
+          >
+            <Typography
+              variant="h6"
+              color={colors.grey[100]}
+              fontWeight="bold"
+              sx={{ m: "0 0 20px 0" }}  
+              >TỈ LỆ NGƯỜI DÙNG</Typography>
+            <PieChart
+              series={[
+                {
+                  data: [
+                    {
+                      id: 0,
+                      value: stats.totalUserIstatusAvtive,
+                      label: "Hoạt động ",
+                    },
+                    {
+                      id: 1,
+                      value: stats.totalUserIstatusBlock,
+                      label: "Bị khóa",
+                    },
+                  ],
+                },
+              ]}
+              width={100}
+              height={100}
+            />
+          </Box>
         </Box>
 
         {/* ROW 2 */}
