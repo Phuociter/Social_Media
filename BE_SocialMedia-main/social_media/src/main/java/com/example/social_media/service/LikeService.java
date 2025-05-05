@@ -93,4 +93,8 @@ public class LikeService {
     public Integer getPostIdByLikeId(Integer likeId) {
         return likeRepository.findPostIdByLikeId(likeId);
     }
+
+    public Integer getCommentIdByLikeId(Integer likeId) {
+        return likeRepository.findCommentIdByLikeId(likeId);
+    }
 }
