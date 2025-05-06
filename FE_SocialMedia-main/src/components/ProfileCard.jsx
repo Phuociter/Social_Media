@@ -50,7 +50,7 @@ const ProfileCard = ({ user }) => {
     } else {
       console.log("Đang chờ user được load...");
     }
-  }, [currentUser, user]);
+  }, [currentUser, user, friendStatus]);
 
 
   //ham gui loi moi ket ban
