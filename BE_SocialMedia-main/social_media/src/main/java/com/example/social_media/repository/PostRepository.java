@@ -20,7 +20,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     int countByStatus(Status status);
     // Tim kiem bai dang
    
-    List<Post> findByContentContainingIgnoreCaseAndStatusNotRejected(@Param("keyword") String keyword);
+    @Query("SELECT p FROM Post p WHERE LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%')) AND p.status <> :status")
+    List<Post> searchByContentAndStatusNotRejected(@Param("keyword") String keyword, @Param("status") Post.Status status);
 
     @Query("SELECT DISTINCT  p FROM Post p LEFT JOIN FETCH p.likes WHERE p.user.userId = :userId")
     List<Post> findByUserId(@Param("userId") Integer userId);

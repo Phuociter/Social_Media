@@ -1,8 +1,6 @@
 package com.example.social_media.entity;
 
 
-import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -73,7 +71,6 @@ public class User {
     private Role role = Role.user;
 
     // public enum Role {
-
 
     public boolean equals(Object o) {
         if (this == o) return true;

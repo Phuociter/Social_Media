@@ -18,9 +18,7 @@ const postSlice = createSlice({
       state.error=null;
     },
     getPostsSuccess(state, action){
-      console.log("Updating Redux state with:", action.payload);
       state.posts = [...action.payload]; // Gán dữ liệu mới
-      console.log("aaaaaaaaaaaa");
       state.loading = false;
     },
     getPostsFailed(state, action){
@@ -102,10 +100,7 @@ const postSlice = createSlice({
       }
     },
 
-    
-
-  
-
+  }
 });
 
 export const{

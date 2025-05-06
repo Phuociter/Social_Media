@@ -39,7 +39,7 @@ const Profile = () => {
     }
   }, [dispatch, id]);
 
-  console.log("current user: ", currentUser);
+  // console.log("current user: ", currentUser);
 
     const handleSearch = (results) => {
     navigate("/", { state: { searchResults: results } });
@@ -112,7 +112,7 @@ const Profile = () => {
             [...userPosts]
               .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
               .map((post, index) => {
-                console.log("Post ID:", post.postId, "Likes:", post.likes, "Author: ", post.user.userId);
+                // console.log("Post ID:", post.postId, "Likes:", post.likes, "Author: ", post.user.userId);
                 return (
                   <PostCard
                     key={post.postId || index}

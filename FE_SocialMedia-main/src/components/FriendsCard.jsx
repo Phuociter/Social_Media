@@ -11,19 +11,29 @@ const FriendsCard = ({ userId, currentId }) => {
   const user = useSelector((state) => state.user);
 
   useEffect(() => {
+    let intervalId;
+  
     const fetchFriends = async () => {
       try {
-        // Giả sử API trả về một đối tượng có thuộc tính `friends` chứa mảng
         const data = await getFriendList(user.user.userId);
         setFriends(data);
       } catch (error) {
         console.error("Error fetching friends:", error);
       }
     };
-
+  
     if (userId) {
+      // Gọi lần đầu tiên ngay khi mount
       fetchFriends();
+      
+      // Thiết lập interval gọi lại mỗi 1 giây
+      intervalId = setInterval(() => {
+        fetchFriends();
+      }, 1000);
     }
+  
+    // Cleanup interval khi component unmount hoặc userId thay đổi
+    return () => clearInterval(intervalId);
   }, [userId, user.user.userId]);
 
   const handleUnfriend = async (friendId) => {

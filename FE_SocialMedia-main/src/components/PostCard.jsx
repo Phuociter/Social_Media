@@ -158,13 +158,10 @@ const PostCard = ({ post, user, likePost }) => {
 
   
 // PostCard.jsx
-// PostCard.jsx
 useEffect(() => {
    if (!post || !user) return null;
     if (!post || !user) return;       // ← no value returned
   
-     // any logging or setup you need
-     console.log("PostCard - Post ID:", post.postId, "Likes:", post.likes);
    }, [post, user]);
   
 
@@ -301,7 +298,6 @@ useEffect(() => {
         {}
         
         {/* Phần avatar và username */}
-        {console.log("post.user: ", post.user)}
         <Link to={`/profile/${post?.user?.userId}`}>
           <img
             src={post?.user?.profileImage || NoProfile}
