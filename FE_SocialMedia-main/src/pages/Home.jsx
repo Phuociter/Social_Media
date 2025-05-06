@@ -142,6 +142,7 @@ const Home = () => {
       console.log("requestID: ", requestID.data);
       await sendNotification(userId,request.sender.userId,'friend_request_accepted', requestID.data);
       alert("Đã chấp nhận lời mời kết bạn!");
+      fetchFriendRequests(user.userId);
     } catch (error) {
       console.error("Lỗi khi chấp nhận lời mời:", error);
     }
