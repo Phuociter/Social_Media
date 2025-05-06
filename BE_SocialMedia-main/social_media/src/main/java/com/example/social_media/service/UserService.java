@@ -6,7 +6,7 @@ import com.example.social_media.entity.User;
 import com.example.social_media.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,6 +50,8 @@ public class UserService {
     }
     //Đăng ký
     public User registerUser(User user) {
+        user.setCreatedAt(new Date());
+
         user.setRole(user.getRole());
         return userRepository.save(user);
     }

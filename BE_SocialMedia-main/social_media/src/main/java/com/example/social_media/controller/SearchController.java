@@ -12,9 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +47,7 @@ public class SearchController {
 
         List<User> users = userRepository.findByUsernameContainingIgnoreCase(keyword);
         users.forEach(u -> u.setPassword(null));
-        List<Post> posts = postRepository.findByContentContainingIgnoreCase(keyword);
+        List<Post> posts = postRepository.searchByContentAndStatusNotRejected(keyword, Post.Status.rejected);
         Map<String, Object> response = new HashMap<>();
         response.put("users", users);
         response.put("posts", posts);

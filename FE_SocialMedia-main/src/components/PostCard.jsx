@@ -3,14 +3,14 @@ import { Link, useParams } from "react-router-dom";
 import moment from "moment";
 import { NoProfile } from "../assets";
 import { BiComment, BiDotsVerticalRounded, BiImages, BiLike, BiShare, BiSolidLike, BiSolidVideo, BiSolidXCircle, BiX } from "react-icons/bi";
-import { MdDelete, MdEdit, MdOutlineDeleteOutline } from "react-icons/md";
+import { MdDelete, MdEdit} from "react-icons/md";
 import Loading from "./Loading";
 import { useForm } from "react-hook-form";
 import TextInput from "./TextInput";
 import CustomButton from "./CustomButton";
 import { createCommentAPI, editPost, getCommentsAPI, removePost, toggleLikeCommentAPI } from "../api/PostAPI";
 import { useDispatch, useSelector } from "react-redux";
-import { addCommentState, replaceOptimisticComment, removeOptimisticComment, setCommentsState, deletePost, updatePost, toggleLikeCommentState } from "../redux/postSlice";
+import { addCommentState, setCommentsState, deletePost, updatePost, toggleLikeCommentState } from "../redux/postSlice";
 import { createSelector } from "@reduxjs/toolkit";
 import axios from "axios";
 import { sendNotification } from "../api/NotificationsAPI";
@@ -158,13 +158,10 @@ const PostCard = ({ post, user, likePost }) => {
 
   
 // PostCard.jsx
-// PostCard.jsx
 useEffect(() => {
    if (!post || !user) return null;
     if (!post || !user) return;       // ← no value returned
   
-     // any logging or setup you need
-     console.log("PostCard - Post ID:", post.postId, "Likes:", post.likes);
    }, [post, user]);
   
 
@@ -301,7 +298,6 @@ useEffect(() => {
         {}
         
         {/* Phần avatar và username */}
-        {console.log("post.user: ", post.user)}
         <Link to={`/profile/${post?.user?.userId}`}>
           <img
             src={post?.user?.profileImage || NoProfile}

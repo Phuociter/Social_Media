@@ -18,9 +18,7 @@ const postSlice = createSlice({
       state.error=null;
     },
     getPostsSuccess(state, action){
-      console.log("Updating Redux state with:", action.payload);
       state.posts = [...action.payload]; // Gán dữ liệu mới
-      console.log("aaaaaaaaaaaa");
       state.loading = false;
     },
     getPostsFailed(state, action){
@@ -102,40 +100,7 @@ const postSlice = createSlice({
       }
     },
 
-    replaceOptimisticComment(state, action){
-      const { postId, tempCommentId, realComment } = action.payload;
-      const comments = state.comments[postId];
-      if (comments) {
-        const index = comments.findIndex(c => c.commentId === tempCommentId);
-        if (index !== -1) {
-          comments[index] = realComment;
-        }
-      }
-    },
-    removeOptimisticComment(state, action){
-      const { postId, tempCommentId } = action.payload;
-      const comments = state.comments[postId];
-      if (comments) {
-        state.comments[postId] = comments.filter(c => c.commentId !== tempCommentId);
-        
-        // Giảm số lượng comment
-        const post = state.posts.find(p => p.postId === postId);
-        if (post) {
-          post.commentCount = Math.max(0, (post.commentCount || 0) - 1);
-        }
-      }
-    },
-    addComment: (state, action) => {
-      const { postId, comment } = action.payload;
-      if (!state.commentsByPostId[postId]) {
-        state.commentsByPostId[postId] = [];
-      }
-      state.commentsByPostId[postId].push(comment);
-    },
-  },
-
-  
-
+  }
 });
 
 export const{
@@ -148,7 +113,6 @@ export const{
   toggleLikeState,
   setCommentsState,
   addCommentState,
-  addComment,
   toggleLikeCommentState
 } = postSlice.actions;
 

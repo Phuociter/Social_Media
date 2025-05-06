@@ -31,7 +31,7 @@ const ProfileCard = ({ user }) => {
   const checkFriendStatus = async () => {
     try {
       const result = await getFriendStatus(currentUser?.userId, user?.userId);
-      console.log("Friend status: ", result);
+      // console.log("Friend status: ", result);
       setFriendStatus(result);
       localStorage.setItem("friendStatus", JSON.stringify(result));  // Lưu vào localStorage
     } catch (error) {
@@ -52,7 +52,7 @@ const ProfileCard = ({ user }) => {
       }
     }
     checkStatus();
-  }, [currentUser, user]);
+  }, [currentUser, user, friendStatus]);
 
   // Các hàm xử lý yêu cầu kết bạn
   // Các hàm xử lý yêu cầu kết bạn

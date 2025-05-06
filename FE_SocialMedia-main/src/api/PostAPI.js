@@ -59,7 +59,7 @@ export const removePost = async(postId) => {
 export const toggleLikeAPI = async (postId, userId) => {
   try {
     const response = await axios.post(`/api/likes?userId=${userId}&postId=${postId}`);
-    console.log("Like API Response:", response.data);
+    // console.log("Like API Response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Like API Error:", error);
@@ -71,7 +71,7 @@ export const toggleLikeAPI = async (postId, userId) => {
 export const toggleLikeCommentAPI = async (commentId, userId) => {
   try {
     const response = await axios.post(`/api/likes/comment?userId=${userId}&commentId=${commentId}`);
-    console.log("Like API Response:", response.data);
+    // console.log("Like API Response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Like API Error:", error);
@@ -113,7 +113,7 @@ export const createCommentAPI = async(postId, userId, comment) => {
 export const getPosts = async (userId) => {
   try {
       const response = await axios.get(`/api/posts/all/${userId}`); //?userid=${userId}
-      console.log("API Response:", response.data); // Log dữ liệu từ API
+      // console.log("API Response:", response.data); // Log dữ liệu từ API
       return response.data;
   } catch (error) {
       console.error("API Error:", error);
@@ -123,9 +123,9 @@ export const getPosts = async (userId) => {
 // Lấy danh sách bài viết của id
 export const getPostsByUserId = async (id) => {
   try {
-    console.log("Gọi API với id:", id);
+    // console.log("Gọi API với id:", id);
       const response = await axios.get(`/api/posts/get/${id}`); //?userid=${userId}
-      console.log("API Response:", response.data); // Log dữ liệu từ API
+      // console.log("API Response:", response.data); // Log dữ liệu từ API
       return response.data;
   } catch (error) {
       console.error("API Error:", error);
@@ -136,7 +136,7 @@ export const getPostsByUserId = async (id) => {
 export const getPostById = async (postId) => {
   try {
       const response = await axios.get(`/api/posts/${postId}`); //?userid=${userId}
-      console.log("API Response:", response.data); // Log dữ liệu từ API
+      // console.log("API Response:", response.data); // Log dữ liệu từ API
       return response.data;
   } catch (error) {
       console.error("API Error:", error);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.example.social_media.entity.Comment;
 
@@ -15,6 +16,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     List<Comment> findAllCommentsWithLikes(Integer postId);
     // thêm ở đây///////////////////////////////////
     Comment findTopByUser_UserIdOrderByTimestampDesc(Integer userId);
+
     @Query("SELECT c.post.postId FROM Comment c WHERE c.commentId = :commentId")
     Integer findPostIdByCommentId(@Param("commentId") Integer commentId);
 }
