@@ -52,7 +52,7 @@ const ProfileCard = ({ user }) => {
       }
     }
     checkStatus();
-  }, [currentUser, user]);
+  }, [currentUser, user, friendStatus]);
 
   // Các hàm xử lý yêu cầu kết bạn
   // Các hàm xử lý yêu cầu kết bạn
