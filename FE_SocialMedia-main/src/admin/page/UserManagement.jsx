@@ -1,42 +1,65 @@
 // Import các components cần thiết từ Material-UI và các dependencies khác
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, TableContainer, Paper, Table, TableHead, TableRow, TableCell, IconButton, Button, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import TextField from '@mui/material/TextField';
-import TableBody from '@mui/material/TableBody';
-import { useTheme } from '@mui/material/styles';
-import BlockIcon from '@mui/icons-material/Block';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import VisibilityIcon from '@mui/icons-material/VisibilitySharp';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  IconButton,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Snackbar,
+  Alert,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
+import TextField from "@mui/material/TextField";
+import TableBody from "@mui/material/TableBody";
+import { useTheme } from "@mui/material/styles";
+import BlockIcon from "@mui/icons-material/Block";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import VisibilityIcon from "@mui/icons-material/VisibilitySharp";
+import axios from "axios";
 
 const UserManagement = () => {
-  const API_URL = 'http://localhost:8080/api/admin/users'; // Địa chỉ API để lấy danh sách users
+  const API_URL = "http://localhost:8080/api/admin/users"; // Địa chỉ API để lấy danh sách users
   // Khởi tạo các state cần thiết
   const theme = useTheme(); // Hook để sử dụng theme của MUI
   const [users, setUsers] = useState([]); // State lưu danh sách users
   // Tìm kiếm user theo tên hoặc email và trạng thái
   // Lọc users dựa trên các điều kiện tìm kiếm
   const [searchParams, setSearchParams] = useState({
-    name: '',
-    email: '',
-    status: 'all'
+    name: "",
+    email: "",
+    status: "all",
   });
   const [filteredUsers, setFilteredUsers] = useState([]); // State lưu danh sách users đã lọc
   const [openDialog, setOpenDialog] = useState(false); // State kiểm soát việc hiển thị dialog
   const [selectedUser, setSelectedUser] = useState(null); // State lưu user đang được chọn để edit
-  const [formData, setFormData] = useState({ // State lưu dữ liệu form
+  const [formData, setFormData] = useState({
+    // State lưu dữ liệu form
     // id: '',
-    username: '',
-    email: '',
-    role: 'user',
-    createdAt: '',
+    username: "",
+    email: "",
+    role: "user",
+    createdAt: "",
     // password: '',
-    status: '',
+    status: "",
   });
-  const [snackbar, setSnackbar] = useState({ // State quản lý thông báo
+  const [snackbar, setSnackbar] = useState({
+    // State quản lý thông báo
     open: false,
-    message: '',
-    severity: 'success',
+    message: "",
+    severity: "success",
   });
 
   // Hook useEffect để fetch dữ liệu khi component mount
@@ -55,28 +78,30 @@ const UserManagement = () => {
       const response = await axios.get(`${API_URL}`);
       setUsers(response.data); // Lấy data từ response
     } catch (error) {
-      showSnackbar('Lỗi khi tải danh sách người dùng', 'error');
+      showSnackbar("Lỗi khi tải danh sách người dùng", "error");
     }
   };
   const getAllUsers = async () => {
     try {
       const response = await axios.get(`${API_URL}`);
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       return response.data; // Parse JSON response
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error("Error fetching users:", error);
       throw error;
     }
   };
   // Tìm kiếm user theo tên hoặc email và trạng thái
   const searchUsers = async (name, email, status) => {
     try {
-      const response = await axios.get(`${API_URL}?name=${name}&email=${email}&status=${status}`);
+      const response = await axios.get(
+        `${API_URL}?name=${name}&email=${email}&status=${status}`
+      );
       return response.data;
     } catch (error) {
-      console.error('Error searching users:', error);
+      console.error("Error searching users:", error);
       throw error;
     }
   };
@@ -87,7 +112,7 @@ const UserManagement = () => {
       const response = await axios.put(`${API_URL}/${userId}`, userData);
       return response.data;
     } catch (error) {
-      console.error('Error updating user:', error);
+      console.error("Error updating user:", error);
       throw error;
     }
   };
@@ -99,7 +124,7 @@ const UserManagement = () => {
       username: user.username,
       email: user.email,
       createdAt: user.createdAt,
-      role: user.role || 'user',
+      role: user.role || "user",
       status: user.status,
     });
     setOpenDialog(true);
@@ -111,12 +136,12 @@ const UserManagement = () => {
     setSelectedUser(null);
     setFormData({
       // id: '',
-      username: '',
-      email: '',
-      role: 'user',
-      createdAt: '',
+      username: "",
+      email: "",
+      role: "user",
+      createdAt: "",
       // password: '',
-      status: '',
+      status: "",
     });
   };
 
@@ -133,18 +158,19 @@ const UserManagement = () => {
   const handleSubmit = async () => {
     try {
       if (!selectedUser) {
-        showSnackbar('Không tìm thấy user cần cập nhật', 'error');
+        showSnackbar("Không tìm thấy user cần cập nhật", "error");
         return;
       }
 
       // Kiểm tra username trùng lặp
-      const existingUser = users.find(user =>
-        user.username === formData.username &&
-        user.userId !== selectedUser.userId
+      const existingUser = users.find(
+        (user) =>
+          user.username === formData.username &&
+          user.userId !== selectedUser.userId
       );
 
       if (existingUser) {
-        showSnackbar('Username đã tồn tại', 'error');
+        showSnackbar("Username đã tồn tại", "error");
         return;
       }
 
@@ -153,59 +179,84 @@ const UserManagement = () => {
         username: formData.username,
         email: formData.email,
         createdAt: selectedUser.createat,
-        role: formData.role || selectedUser.role || 'user',
+        role: formData.role || selectedUser.role || "user",
         password: selectedUser.password,
-        status: formData.status || selectedUser.status
+        status: formData.status || selectedUser.status,
       };
 
       await updateUser(selectedUser.userId, userData);
-      showSnackbar('Cập nhật thông tin người dùng thành công', 'success');
+      showSnackbar("Cập nhật thông tin người dùng thành công", "success");
       fetchUsers();
       handleCloseDialog();
     } catch (error) {
-      showSnackbar('Lỗi khi cập nhật thông tin người dùng', 'error');
-      console.error('Error updating user:', error);
+      showSnackbar("Lỗi khi cập nhật thông tin người dùng", "error");
+      console.error("Error updating user:", error);
     }
   };
 
-  // Hàm xử lý khi xóa user
+  const handleRoleChange = async (userId, newRole) => {
+    const confirmChange = window.confirm(
+      `Bạn có chắc muốn đổi vai trò thành "${newRole}"?`
+    );
+    if (!confirmChange) return;
+    try {
+      const user = users.find((u) => u.userId === userId);
+      if (!user) {
+        showSnackbar("Không tìm thấy người dùng", "error");
+        return;
+      }
+
+      const response = await axios.put(
+        `http://localhost:8080/api/admin/users/${userId}/updateRole`,
+        { role: newRole } // chỉ gửi đúng định dạng
+      );
+
+      if (response.status === 200) {
+        showSnackbar("Cập nhật vai trò thành công", "success");
+        fetchUsers(); // reload lại danh sách
+      }
+    } catch (error) {
+      console.error("Đã xảy ra lỗi khi cập nhật vai trò:", error);
+      showSnackbar("Lỗi khi cập nhật vai trò", "error");
+    }
+  };
 
   // Hàm xử lý khi block user
   const handleBlock = async (userId) => {
     try {
-      const user = users.find(u => u.userId === userId);
+      const user = users.find((u) => u.userId === userId);
       if (!user) {
-        showSnackbar('Không tìm thấy user', 'error');
+        showSnackbar("Không tìm thấy user", "error");
         return;
       }
       const userData = {
-        status: 0
+        status: 0,
       };
       await axios.put(`${API_URL}/${userId}/block`, userData);
-      showSnackbar('Block user thành công', 'success'); 
+      showSnackbar("Block user thành công", "success");
       fetchUsers(); // Refresh danh sách users
     } catch (error) {
-      console.error('Error blocking user:', error);
-      showSnackbar('Lỗi khi block user', 'error');
+      console.error("Error blocking user:", error);
+      showSnackbar("Lỗi khi block user", "error");
     }
   };
   const handleUnblock = async (userId) => {
     try {
-      const user = users.find(u => u.userId === userId);
+      const user = users.find((u) => u.userId === userId);
       if (!user) {
-        showSnackbar('Không tìm thấy user', 'error');
+        showSnackbar("Không tìm thấy user", "error");
         return;
       }
 
       const userData = {
-        status: 1
+        status: 1,
       };
       await axios.put(`${API_URL}/${userId}/block`, userData);
-      showSnackbar('Unblock user thành công', 'success');
+      showSnackbar("Unblock user thành công", "success");
       fetchUsers(); // Refresh danh sách users
     } catch (error) {
-      console.error('Error unblocking user:', error);
-      showSnackbar('Lỗi khi unblock user', 'error');
+      console.error("Error unblocking user:", error);
+      showSnackbar("Lỗi khi unblock user", "error");
     }
   };
 
@@ -230,19 +281,19 @@ const UserManagement = () => {
     // Lọc users dựa trên tên
     if (searchParams.name) {
       // Lọc users dựa trên tên
-      filtered = filtered.filter(user =>
+      filtered = filtered.filter((user) =>
         user.username.toLowerCase().includes(searchParams.name.toLowerCase())
       );
     }
     if (searchParams.email) {
-      filtered = filtered.filter(user =>
+      filtered = filtered.filter((user) =>
         user.email.toLowerCase().includes(searchParams.email.toLowerCase())
       );
     }
     // Lọc users dựa trên trạng thái
-    if (searchParams.status !== 'all') {
-      filtered = filtered.filter(user =>
-        user.status === parseInt(searchParams.status)
+    if (searchParams.status !== "all") {
+      filtered = filtered.filter(
+        (user) => user.status === parseInt(searchParams.status)
       );
     }
 
@@ -252,20 +303,20 @@ const UserManagement = () => {
   // Hàm xử lý khi người dùng thay đổi giá trị tìm kiếm
   const handleSearchChange = (e) => {
     const { name, value } = e.target;
-    setSearchParams(prev => ({
+    setSearchParams((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   return (
-    <Box sx={{ p: 3  }}>
+    <Box sx={{ p: 3 }}>
       {/* Tiêu đề */}
       <Typography variant="h4" gutterBottom>
         Quản lý người dùng
       </Typography>
       {/* Form tìm kiếm */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mb: 2 }}>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mb: 2 }}>
         {/* Input tìm kiếm theo tên */}
         <TextField
           label="Tìm theo tên"
@@ -316,30 +367,58 @@ const UserManagement = () => {
               <TableCell>Thao tác</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody >
+          <TableBody>
             {filteredUsers.map((user) => (
               <TableRow key={user.userId}>
                 <TableCell>{user.userId}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.createdAt}</TableCell>
-                <TableCell>{user.role}</TableCell>
-                <TableCell>{user.status === 0  ? 'Đã khóa' : 'Hoạt động' }</TableCell>
                 <TableCell>
-                  <IconButton onClick={() => handleOpenDialog(user)} color="primary" aria-label="edit">
-                    <VisibilityIcon sx={{ color: 'blue' }} />
+                  <FormControl fullWidth sx={{ marginBottom: 2, marginTop: 2 }}>
+                    <Select
+                      value={user.role || "user"} // fallback về "user" nếu undefined
+                      onChange={(e) =>
+                        handleRoleChange(user.userId, e.target.value)
+                      }
+                      size="small"
+                    >
+                      <MenuItem value="admin">admin</MenuItem>
+                      <MenuItem value="user">user</MenuItem>
+                    </Select>
+                  </FormControl>
+                </TableCell>
+
+                <TableCell>
+                  {user.status === 0 ? "Đã khóa" : "Hoạt động"}
+                </TableCell>
+                <TableCell>
+                  <IconButton
+                    onClick={() => handleOpenDialog(user)}
+                    color="primary"
+                    aria-label="edit"
+                  >
+                    <VisibilityIcon sx={{ color: "blue" }} />
                   </IconButton>
-                  <IconButton onClick={() => {
-                    if (user.status === 1) {  
-                      handleBlock(user.userId);
-                    } else {
-                      handleUnblock(user.userId);
-                    }
-                  }} color="error" aria-label="block">
-                    {user.status === 1 ? <CheckCircleIcon color='success' /> : <BlockIcon />}
+                  <IconButton
+                    onClick={() => {
+                      if (user.status === 1) {
+                        handleBlock(user.userId);
+                      } else {
+                        handleUnblock(user.userId);
+                      }
+                    }}
+                    color="error"
+                    aria-label="block"
+                  >
+                    {user.status === 1 ? (
+                      <CheckCircleIcon color="success" />
+                    ) : (
+                      <BlockIcon />
+                    )}
                   </IconButton>
                 </TableCell>
-              </TableRow> 
+              </TableRow>
             ))}
           </TableBody>
         </Table>
@@ -397,7 +476,9 @@ const UserManagement = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color='submit'>Đóng</Button>
+          <Button onClick={handleCloseDialog} color="submit">
+            Đóng
+          </Button>
           {/* <Button onClick={handleSubmit} variant="contained" color="primary">
             Lưu
           </Button> */}
@@ -417,4 +498,4 @@ const UserManagement = () => {
   );
 };
 
-export default UserManagement;  
+export default UserManagement;
