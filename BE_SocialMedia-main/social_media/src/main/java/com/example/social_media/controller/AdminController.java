@@ -15,8 +15,13 @@ import com.example.social_media.dto.MonthPostDTO;
 import com.example.social_media.dto.MonthUserDTO;
 import com.example.social_media.entity.Post;
 import com.example.social_media.entity.Post.Status;
+import com.example.social_media.entity.Role;
 import com.example.social_media.service.UserService;
 import com.example.social_media.service.PostService;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @RequestMapping("/api/admin")
@@ -112,11 +117,29 @@ public class AdminController {
         }
     }
 
-    // Cập nhật người dùng
-    @PutMapping("/users/{id}")
-    public String updateUser(@PathVariable Integer id, @RequestBody User user) {
-        userService.updateUser(id);
-        return "User updated successfully";
+    // Cập nhật role user với user.role là enum, và lấy dữ liệu được truyền về từ FE
+    @PutMapping("/users/{userId}/updateRole")
+    public ResponseEntity<String> updateUserRole(@PathVariable Integer userId,
+            @RequestBody Map<String, String> body) {
+        String roleStr = body.get("role");
+        System.out.println(roleStr);
+        if (roleStr == null || roleStr.isEmpty()) {
+            return ResponseEntity.badRequest().body("Role không hợp lệ");
+        }
+
+        try {
+            Role role = Role.valueOf(roleStr.toLowerCase()); // Chuyển đổi String thành Enum
+            User user = userService.getUserById(userId).orElse(null);
+            if (user != null) {
+                user.setRole(role);
+                userService.updateUser(user.getUserId());
+                return ResponseEntity.ok("Cập nhật role người dùng thành công");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Người dùng không tồn tại");
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Role không hợp lệ");
+        }
     }
 
     @GetMapping("/chart/users")
